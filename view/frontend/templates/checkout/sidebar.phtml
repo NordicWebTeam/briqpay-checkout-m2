@@ -1,0 +1,32 @@
+<?php
+/** @var \Briqpay\Checkout\Block\Checkout\Sidebar $block */
+?>
+<div class="briqpay-checkout-review" id="briqpay-checkout-review">
+    <div class="briqpay-checkout-cart briqpay-checkout-section" id="briqpay-checkout-cart">
+        <div class="briqpay-checkout-section-content" data-role="content" aria-labelledby="briqpay-checkout-cart-heading">
+            <?= $block->getChildHtml('cart'); ?>
+        </div>
+    </div>
+</div>
+
+<span class="please-wait load indicator" id="review-please-wait" style="display: none;"
+      data-text="<?= $block->escapeHtml(__('Submitting order information...')); ?>">
+    <span><?= $block->escapeHtml(__('Submitting order information...')); ?></span>
+</span>
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "briqpayCheckout": {
+                        "component": "briqpayCheckout",
+                        "config": {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>

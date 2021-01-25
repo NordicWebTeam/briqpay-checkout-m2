@@ -1,0 +1,29 @@
+<?php
+// @codingStandardsIgnoreFile
+/** @var \Briqpay\Checkout\Block\Checkout\Comment $block */
+?>
+<div id="briqpay_comment" class="briqpay-block briqpay-block-discount">
+    <?php $customerComment = $block->getQuote()->getCustomerNote(); ?>
+    <form method="post" action="<?= $block->getCommentSubmitUrl(); ?>" id="briqpay-checkout-comment">
+        <div class="briqpay-comment-title">
+            <div class="title-container">
+                <h4><?= __('Order Comment (Optionally)')?></h4>
+                <input type="button" class="briqpay-btn show-more" value="<?= __('Show More')?>"/>
+                <input type="button" class="briqpay-btn show-less" value="<?= __('Show Less')?>"/>
+            </div>
+            <div class="fieldset comment" style="display: none">
+                <div class="input-box field">
+                <textarea rows="10" value="" placeholder="<?= __('Enter a comment for this order'); ?>"
+                          name="briqpay_customer_comment" id="briqpay_order_comment_textarea"
+                          class="briqpay-show-on-focus input-text"><?= $customerComment; ?></textarea>
+                </div>
+                <div class="actions-toolbar">
+                    <div class="primary">
+                        <button id="briqpay-submit" type="submit" title="<?= __('Save'); ?>"
+                                class="action apply briqpay-btn"><?= __('Save'); ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

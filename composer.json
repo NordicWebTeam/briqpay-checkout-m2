@@ -1,0 +1,26 @@
+{
+    "name": "nwt/module-briqpay",
+    "description": "Magento 2 module for Briqpay Checkout",
+    "type": "magento2-module",
+    "license": [
+        "proprietary"
+    ],
+    "authors":[
+        {
+            "name":"Nordic Web Team",
+            "email":"support@nordicwebteam.se"
+        }
+    ],
+    "require": {
+        "ext-json": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Briqpay\\Checkout\\": ""
+        }
+    },
+    "version": "0.0.1-alpha"
+}

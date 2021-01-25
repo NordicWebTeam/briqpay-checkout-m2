@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+
+    <head>
+        <title>Success</title>
+        <css src="Briqpay_Checkout::css/briqpay.css"/>
+    </head>
+
+    <body>
+        <referenceContainer name="page.wrapper">
+            <referenceBlock name="breadcrumbs" remove="true"/>
+            <referenceBlock name="page.main.title">
+                <action method="setPageTitle">
+                    <argument translate="true" name="title" xsi:type="string">
+                        Thank you for your purchase! We have received your order.
+                    </argument>
+                </action>
+            </referenceBlock>
+        </referenceContainer>
+
+        <referenceContainer name="page.messages">
+            <block class="Briqpay\Checkout\Block\Messages" name="briqpay_checkout_validationmessages"/>
+        </referenceContainer>
+
+        <referenceContainer name="content">
+            <container name="briqpay_checkoutSidebar" as="briqpay_checkoutSidebar" label="Briqpay Checkout Sidebar" htmlTag="div"
+                       htmlId="briqpay_checkoutSidebar">
+                <block class="Briqpay\Checkout\Block\Checkout\Order\Success" name="briqpay_checkout_success" template="Briqpay_Checkout::checkout/order/success.phtml"
+                       cacheable="false"/>
+                <block class="Magento\GoogleAdwords\Block\Code" name="google.adwords.code" template="code.phtml"/>
+            </container>
+        </referenceContainer>
+
+        <container name="order.success.additional.info" label="Order Success Additional Info"/>
+    </body>
+
+</page>

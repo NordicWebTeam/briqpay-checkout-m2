@@ -1,0 +1,1964 @@
+//
+//  Variables
+//  _____________________________________________
+@briqpay-color-blue: #46aab4;
+@briqpay-light-blue: #edf9fa;
+
+@briqpay-hover-blue: #69bcc4;
+@briqpay-color-light-grey: #F4F4F4;
+@briqpay-color-dark-grey: #999999;
+@briqpay-color-white: #FFFFFF;
+@briqpay-color-black: #444444;
+@briqpay-color-dark: #292929;
+@briqpay-color-border: #C1C1C1;
+@briqpay-border: 1px solid @briqpay-color-border;
+@briqpay-color-border-2: rgba(70, 170, 180, .35);
+@briqpay-border-2: 2px solid @briqpay-color-border-2;
+@calc-width: 205px;
+@screen__xs: 320px;
+@screen__s: 420px;
+@screen__m: 768px;
+@screen__l: 1024px;
+
+
+//
+//  Mixins
+//  _____________________________________________
+
+.briqpay-btn {
+  background: @briqpay-color-blue;
+  border: 0;
+  border-color: @briqpay-color-blue;
+  color: @briqpay-color-white;
+  box-shadow: none;
+  border-radius: 5px !important;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 45px;
+  min-width: 150px;
+  transition: all .25s cubic-bezier(.25,.46,.45,.94);
+
+  @media only screen and (max-width: @screen__m) {
+    min-width: 0;
+    min-height: 30px;
+    font-size: 12px;
+  }
+
+  &:hover {
+    background: @briqpay-hover-blue;
+    border-color: @briqpay-hover-blue;
+    box-shadow: none;
+  }
+}
+
+.briqpay-heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: @briqpay-color-dark;
+  text-align: center;
+  border-bottom: @briqpay-border;
+  padding-bottom: 20px;
+  max-width: 70%;
+  margin: 30px auto;
+  @media only screen and (max-width: @screen__m) {
+    max-width: 100%;
+    font-size: 16px;
+    padding-bottom: 10px;
+  }
+}
+
+.radio {
+  &,
+  &:checked:after {
+    border-radius: 50% !important;
+  }
+}
+
+.checkbox,
+input[type=radio] {
+  position: relative;
+  width: 25px;
+  min-width: 25px;
+  height: 25px;
+  top: 6px;
+  left: 0;
+  transition: all .2s ease;
+  background-color: transparent;
+  appearance: none;
+  border-radius: 4px;
+  margin-bottom: 0 !important;
+  margin-right: 15px;
+  border: 2px solid rgba(70,170,180,.35);
+  @media only screen and (max-width: @screen__m) {
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+
+  &:checked {
+    border: 0;
+  }
+
+  &:checked:after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 3px;
+    top: 0;
+    left: 0;
+    line-height: 20px;
+    text-align: center;
+    background: transparent url("../images/checkmark.svg") no-repeat 50% 50%;
+    background-size: cover;
+    background-color: @briqpay-color-blue;
+    transition: all .2s ease;
+    @media only screen and (max-width: @screen__m) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+input[type=radio] {
+  top: 0;
+}
+
+
+//
+// Luma Theme fixes
+// _____________________________________________
+
+.fieldset {
+  &:last-child {
+    margin-bottom: 0;
+  }
+  > .field {
+    margin-bottom: .857em;
+  }
+}
+
+button:not(.primary) {
+  box-shadow: none;
+}
+
+
+//
+//  Main
+//  _____________________________________________
+
+.briqpay_checkout-index-index,
+.briqpay_checkout-order-success {
+  -webkit-font-smoothing: antialiased;
+
+  .page-title-wrapper {
+    text-align: center;
+  }
+
+  .page-title {
+    .briqpay-heading;
+    font-size: 32px;
+    color: @briqpay-color-blue;
+    border: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    margin-top: 40px;
+
+    @media only screen and (max-width: @screen__m) {
+      display: none;
+    }
+  }
+
+  .breadcrumbs {
+    text-align: center;
+    text-transform: uppercase;
+
+    .items, a {
+      color: @briqpay-color-blue;
+    }
+  }
+}
+
+//
+//  SideBar
+//  _____________________________________________
+#briqpay_checkoutSidebar {
+  color: @briqpay-color-dark;
+  display: block;
+
+  #briqpay-checkout_cart {
+    border-top: @briqpay-border;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    table {
+      width: 100%;
+      thead .col.qty {
+        width: 20%;
+      }
+    }
+    #briqpay_cart_extra {
+      border-bottom: @briqpay-border;
+      padding: 35px 0;
+      color: @briqpay-color-dark;
+      width: 50%;
+      @media only screen and (max-width: @screen__m) {
+        width: 100%;
+        order: 1;
+        border-bottom: 0;
+        padding: 20px 0;
+      }
+    }
+  }
+
+  .load.indicator {
+    position: fixed !important;
+
+    &:before {
+      background: transparent url("../images/ajax-loader.gif") no-repeat 50% 50%;
+    }
+  }
+
+  select {
+    background: @briqpay-color-white url(../images/briqpay-select-bg.svg) no-repeat 98% 50%;
+  }
+
+  input:not(.qty),
+  select,
+  textarea {
+    border: @briqpay-border-2;
+  }
+
+  input, select {
+    &:not(.qty) {
+      height: 45px;
+      @media only screen and (max-width: @screen__m) {
+        height: 35px;
+      }
+    }
+
+    &[type='checkbox'] {
+      .checkbox;
+    }
+
+    &[type='radio'] {
+      .radio;
+
+      + label:after {
+        content: none;
+      }
+
+      &:checked + label:after {
+        content: url("../images/check.svg");
+        padding-top: 1px;
+        left: 0;
+        top: 0vw;
+      }
+
+      &:checked + label:before {
+        display: none;
+      }
+    }
+  }
+
+  h4[role="heading"] {
+    .briqpay-heading;
+    margin-top: 0;
+
+    .total-amount {
+      float: right;
+    }
+  }
+
+  .briqpay-checkout-block {
+    &.discount {
+      #discount-coupon-form {
+        .fieldset {
+          position: relative;
+          display: flex;
+
+          .field {
+            flex: 1;
+          }
+
+          input {
+            font-size: 14px;
+            font-weight: 500;
+            color: @briqpay-color-dark-grey;
+            border-right: none !important;
+            @media only screen and (max-width: @screen__m) {
+              font-size: 12px;
+            }
+          }
+
+          .actions-toolbar {
+            .action.apply.primary, .action.cancel.primary {
+              & {
+                font-size: 14px;
+                font-weight: 600;
+                text-transform: initial;
+                background:  @briqpay-color-blue;
+                border-color: @briqpay-color-blue;
+                height: 45px;
+                min-width: 200px;
+                margin: 0;
+                border-radius: 0;
+                @media only screen and (max-width: @screen__m) {
+                  height: 35px;
+                  min-width: 135px;
+                  font-size: 12px;
+                  padding-top: 0;
+                  padding-bottom: 0;
+                }
+                &:hover {
+                  background: @briqpay-hover-blue;
+                  border-color: @briqpay-hover-blue;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.grand-total {
+      .total-info {
+        color: #888888;
+      }
+    }
+  }
+
+  .slick-slide {
+    &:not(.slick-active) {
+      position: relative;
+      opacity: .7;
+
+      &:after {
+        width: 100%;
+        height: 100%;
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: linear-gradient(to left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+      }
+    }
+  }
+
+  .product-item-image {
+    max-width: 145px;
+    @media only screen and (max-width: @screen__m) {
+      max-width: 100px;
+    }
+  }
+
+  .briqpay-checkout-block.newsletter {
+    padding: 0 30px;
+    @media only screen and (max-width: @screen__m) {
+      padding: 0;
+    }
+    label {
+      font-size: 16px;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+label[for="coupon-toggle"] {
+  span {
+    text-decoration: underline;
+  }
+}
+
+#briqpayOrder {
+  position: relative;
+}
+
+#briqpay-checkout-iframe {
+  vertical-align: bottom;
+}
+
+.different-checkout-link {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 500;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 0;
+  text-decoration: none;
+  font-size: 18px;
+
+  a {
+    color: @briqpay-light-blue;
+  }
+}
+
+.briqpay-comment-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  h4 {
+    color: @briqpay-color-dark;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: initial;
+    @media only screen and (max-width: @screen__m) {
+      font-size: 12px;
+      margin: 0;
+      line-height: 40px;
+    }
+  }
+
+  .briqpay-btn.show-more,
+  .briqpay-btn.show-less {
+    padding: 0;
+    min-width: 200px;
+    line-height: 45px;
+    @media only screen and (max-width: @screen__m) {
+      min-width: 100px;
+      line-height: 30px;
+    }
+  }
+
+  .briqpay-btn.show-less {
+    display: none;
+  }
+}
+
+table {
+  &.checkout-review {
+    th {
+      font-size: 18px;
+      font-weight: 700;
+      padding-top: 25px;
+      padding-bottom: 15px;
+    }
+
+    th, td {
+      vertical-align: middle;
+
+      &.qty {
+        text-align: left !important;
+      }
+    }
+
+    td {
+      &.qty {
+        div.qty {
+          display: flex;
+        }
+
+        .remove-product {
+          display: inline-flex;
+          align-items: center;
+
+          span {
+            border: @briqpay-border;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            text-align: center;
+            font-size: 26px;
+            cursor: pointer;
+            margin-right: 40px;
+            display: block;
+            line-height: 26px;
+            font-weight: 200;
+          }
+        }
+
+        span.qty {
+          display: flex;
+          color: @briqpay-color-black;
+
+          .input-number-increment,
+          .input-number-decrement,
+          input {
+            height: 60px;
+            width: 60px;
+            text-align: center;
+            border: @briqpay-border;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 60px;
+            font-weight: 500;
+            box-sizing: border-box;
+            @media only screen and (max-width: @screen__m) {
+              height: 38px;
+              width: 42px;
+              line-height: 38px;
+              font-size: 12px;
+              font-weight: 400;
+            }
+          }
+
+          input {
+            &:not([disabled]):focus {
+              box-shadow: none;
+            }
+            border-left: 0 !important;
+            border-right: 0 !important;
+          }
+
+          .input-number-increment,
+          .input-number-decrement {
+            font-size: 24px;
+            font-weight: 400;
+            @media only screen and (max-width: @screen__m) {
+              font-size: 18px;
+            }
+          }
+        }
+      }
+
+      &.subtotal {
+        text-align: right;
+
+        .remove-product {
+          position: absolute;
+          right: 30px;
+          bottom: 30px;
+          color: @briqpay-color-border;
+          font-weight: 600;
+          cursor: pointer;
+
+          &:after {
+            content: url("../images/trash.svg");
+            padding-left: 10px;
+            display: inline-block;
+          }
+        }
+
+        .price {
+          font-size: 16px;
+          font-weight: 600;
+          color: @briqpay-color-black;
+          @media only screen and (max-width: @screen__m) {
+            font-size: 12px;
+            color: @briqpay-color-dark;
+          }
+        }
+      }
+    }
+
+    .briqpay-checkout-col {
+      .product-item-info {
+        .item-options {
+          dl {
+            margin-top: 20px;
+          }
+
+          dt {
+            clear: left;
+            float: left;
+            margin: 0 10px 5px 0;
+            font-weight: 400 !important;
+
+            &:after {
+              content: ': ';
+            }
+          }
+
+          dd {
+            display: inline-block;
+            float: left;
+            margin: 0 0 5px;
+          }
+
+          dt, dd {
+            @media only screen and (max-width: @screen__m) {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .product-item-name {
+          font-size: 16px;
+          font-weight: 700;
+          color: @briqpay-color-black;
+          display: block;
+          @media only screen and (max-width: @screen__m) {
+            font-size: 12px;
+            font-weight: 600;
+            display: inline;
+            &:after {
+              content: ',';
+            }
+          }
+        }
+        .product-item-description {
+          font-size: 16px;
+          color: @briqpay-color-black;
+          max-width: 330px;
+          line-height: 26px;
+          display: block;
+          @media only screen and (max-width: @screen__m) {
+            font-size: 12px;
+            line-height: 20px;
+            display: inline;
+          }
+        }
+      }
+    }
+
+    .col.price {
+      .currency {
+        padding-left: 3px;
+
+        &:before {
+          content: '(';
+        }
+
+        &:after {
+          content: ')';
+        }
+      }
+    }
+  }
+}
+
+//
+//  Crosssell
+//  _____________________________________________
+#briqpay_checkoutCrosssell {
+  padding-bottom: 80px;
+  .slick-list {
+    width: 100%;
+    @media only screen and (max-width: @screen__m) {
+      padding-right: 20%;
+    }
+  }
+  .block.briqpay-crosssell {
+    width: 100%;
+    padding: 0;
+
+    .block-title {
+      .briqpay-heading;
+    }
+
+    .briqpay-products-grid {
+      margin: 0;
+      .product-items {
+        width: 100%;
+        margin: 0;
+        overflow: visible;
+
+        .product-item {
+          display: inline-block;
+          text-align: center;
+          background: @briqpay-color-white;
+          width: 25%;
+          padding: 0 20px;
+          @media only screen and (max-width: @screen__m) {
+            margin-bottom: 0;
+          }
+
+          .price-box {
+            margin: 15px 0 10px;
+
+            .price-box {
+              margin: 0;
+            }
+          }
+
+          .product-item-info {
+            width: 100%;
+
+            .product-item-name > a,
+            button,
+            .price-box,
+            .price-container .price,
+            .product-brand-name {
+              color: @briqpay-color-dark;
+              font-size: 16px;
+              font-weight: 400;
+              @media only screen and (max-width: @screen__m) {
+                font-size: 12px;
+              }
+            }
+
+            .price-box, .price-container .price {
+              font-size: 18px;
+              font-weight: 700;
+              .price-to {
+                display: none;
+              }
+              @media only screen and (max-width: @screen__m) {
+                font-size: 14px;
+                margin: 0;
+                p {
+                  margin: 0;
+                }
+              }
+              .price-label {
+                display: none !important;
+              }
+            }
+
+            .product-brand-name {
+              display: block;
+              font-weight: 600;
+            }
+
+            .product-item-name {
+              display: block;
+              height: 48px;
+              overflow: hidden;
+              @media only screen and (max-width: @screen__m) {
+                height: 38px;
+              }
+            }
+          }
+
+          .product-image-container {
+            width: 270px !important;
+            .product-image-wrapper {
+              height: auto;
+              padding-bottom: 0 !important;
+              .product-image-photo {
+                position: relative;
+              }
+            }
+          }
+
+          .product-item-details {
+            padding-bottom: 20px;
+            padding-left: 5px;
+            padding-right: 5px;
+            text-align: left;
+            @media only screen and (max-width: @screen__m) {
+              padding-left: 0;
+              padding-right: 0;
+              max-width: 270px;
+              margin: 0 auto;
+            }
+
+            button.tocart {
+              font-size: 14px;
+              font-weight: 700;
+              color: @briqpay-color-blue;
+              background: none;
+              box-shadow: none;
+              padding: 0;
+              text-transform: none;
+              border-color: transparent;
+              margin: 20px 0 10px;
+              line-height: 20px;
+              @media only screen and (max-width: @screen__m) {
+                font-size: 12px;
+                margin: 0;
+              }
+              &:after {
+                content: "+";
+              }
+            }
+
+            .briqpay-product-info-btm {
+              @media only screen and (max-width: @screen__m) {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#comment {
+  max-width: 660px;
+  margin: 0 auto 25px;
+
+  #checkout-comment {
+    padding: 10px 20px;
+    background: rgba(217, 217, 217, 0.2);
+    border-radius: 7px;
+
+    textarea {
+      border: none;
+    }
+
+    .fieldset.comment {
+      display: none;
+    }
+
+    .actions-toolbar > .primary {
+      width: 100%;
+      margin: 10px auto;
+    }
+
+    button {
+      .briqpay-btn;
+      width: 100%;
+      height: 50px;
+      font-size: 18px;
+    }
+
+  }
+}
+
+.briqpay-checkout-shipping {
+  padding-bottom: 25px;
+  max-width: 660px;
+  margin: 0 auto 25px;
+  @media only screen and (max-width: @screen__m) {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  input,
+  select {
+    margin-bottom: 0;
+  }
+
+  input {
+    &.postcode {
+      position: relative;
+      border-top: 0 !important;
+      border-top-right-radius: 0 !important;
+      border-top-left-radius: 0 !important;
+    }
+  }
+
+  .checkout-title h4 {
+    max-width: 100%;
+    border: 0;
+    margin-bottom: 0;
+  }
+
+  .briqpay-checkout-section-content {
+    width: 100%;
+  }
+
+  #briqpay-checkout_shipping_method .briqpay-checkout-radio-row {
+    width: 100%;
+    margin: 0;
+    padding: 25px 20px;
+    border-top: @briqpay-border;
+    @media only screen and (max-width: @screen__m) {
+      padding: 15px 0;
+    }
+
+    &:last-child {
+      border-bottom: @briqpay-border;
+    }
+
+    > span {
+      display: flex;
+    }
+
+    label {
+      font-size: 18px;
+      font-weight: 700;
+      color: @briqpay-color-dark;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 12px;
+      }
+      .price {
+        font-weight: 600;
+      }
+    }
+  }
+
+  #shipping-method-button {
+    height: 50px;
+    position: relative;
+    top: -1px;
+    text-transform: none;
+    font-size: 18px;
+  }
+}
+
+button:not(.primary).primary {
+  .briqpay-btn;
+  height: 40px;
+  font-size: 14px;
+  padding: 10px 50px;
+  text-transform: uppercase;
+}
+
+.shipping-price {
+  .briqpay-heading;
+  float: right;
+  text-align: right;
+}
+
+//  Totals
+//  _____________________________________________
+#briqpay-checkout_cart_totals {
+  color: @briqpay-color-blue;
+  flex: 1;
+
+  th, td {
+    font-size: 16px;
+    color: @briqpay-color-dark;
+  }
+
+  th {
+    font-weight: 400;
+  }
+
+  td {
+    font-weight: 600;
+  }
+
+  .grand.totals {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+    right: 0;
+    bottom: -70px;
+    padding: 10px 0 10px 120px;
+    box-sizing: border-box;
+
+    @media only screen and (max-width: @screen__m) {
+      display: table-row;
+      padding: 10px;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      height: 1px;
+      background: @briqpay-color-border;
+      width: 200%;
+      left: -100%;
+      bottom: 0;
+    }
+
+    th, td {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    td {
+      padding-right: 30px;
+      text-transform: uppercase;
+      @media only screen and (max-width: @screen__m) {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+.checkout-title {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+
+  h4 {
+    border-bottom: @briqpay-border;
+    padding-bottom: 20px;
+    .briqpay-heading;
+  }
+}
+
+#checkout_coupon {
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    display: block;
+  }
+}
+
+.iframe-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, .6);
+  z-index: 9999;
+}
+
+//
+//  Desktop
+//  _____________________________________________
+@media only screen and (min-width: @screen__m) {
+  .order_inside {
+    padding: 10px 40px;
+  }
+  /*#briqpay_cart_extra {
+    flex: 1.5;
+  }*/
+
+  #discount-coupon-form {
+    .fieldset {
+      padding: 0 30px;
+    }
+  }
+
+  .success-save:after{
+    content: '\2713';
+    float: right;
+  }
+
+  .table-wrapper {
+    margin-bottom: 70px;
+  }
+
+  #briqpay_checkoutSidebar {
+    max-width: 1130px;
+    margin: 0 auto 220px;
+  }
+
+  .briqpay-product-info-btm {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  table {
+    &.checkout-review {
+      th {
+        &.item-img {
+          span {
+            display: none;
+          }
+        }
+      }
+
+      th, td {
+        vertical-align: middle;
+
+        &.qty,
+        &.price,
+        &.subtotal {
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+        &.price {
+          text-align: right;
+        }
+
+        &.qty {
+          div.qty {
+            justify-content: flex-start;
+          }
+        }
+
+        &.item-img {
+          padding-right: 0;
+          padding-left: 30px;
+          width: @calc-width;
+          max-width: @calc-width;
+        }
+
+        &.item-desc {
+          padding-right: 0;
+          padding-left: 0;
+        }
+
+        & {
+          border-bottom: @briqpay-border;
+        }
+
+      }
+
+      td {
+        padding-top: 30px;
+        padding-bottom: 30px;
+        vertical-align: top;
+
+        &.subtotal {
+          text-align: right !important;
+          position: relative;
+        }
+      }
+
+      .briqpay-checkout-col {
+        .product-item-info {
+          width: 90%;
+        }
+      }
+    }
+  }
+
+  //  Totals
+  //  _____________________________________________
+  #briqpay-checkout_cart_totals {
+    text-align: right;
+    border-bottom: @briqpay-border;
+    padding: 35px 30px 35px 120px;
+    order: 3;
+    width: 50%;
+
+    table {
+      tfoot {
+        th {
+          text-align: left;
+          &:after {
+            content: ':';
+          }
+        }
+        td {
+          text-align: right;
+        }
+
+        tr:last-of-type {
+          th, td {
+            padding-bottom: 10px;
+          }
+        }
+
+        td, th {
+          padding: 10px 0 0;
+        }
+      }
+    }
+  }
+
+  //   Shipping
+  //  _____________________________________________
+
+  .briqpay-checkout-extra__left {
+    flex: 1;
+  }
+
+  .briqpay-checkout-extra__right {
+    flex: 2;
+  }
+
+  .briqpay-checkout-block {
+    &.discount {
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  // ----- Success Page
+  .briqpay_checkout-order-success {
+    .page-title {
+      .briqpay-heading;
+      font-size: 38px;
+      color: @briqpay-color-blue;
+      border: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+
+      span:before {
+        content: '';
+        background: transparent url("../images/check-btn.svg") no-repeat 50% 50%;
+        display: block;
+        height: 60px;
+        margin: 15px 0;
+      }
+    }
+
+    .order_inside {
+      padding: 10px 30px;
+    }
+
+    .briqpay-checkout-order__items {
+      padding: 0 0 25px;
+
+      table {
+        th, td {
+          padding: 25px 30px;
+        }
+      }
+    }
+  }
+
+  .briqpay-checkout-section-shipping {
+    margin: 0 30px;
+  }
+}
+
+.briqpay_checkout-order-success {
+  .briqpay-checkout-grand-total.amount {
+    .briqpay-heading;
+    display: block;
+    max-width: 100%;
+    text-align: center;
+    color: @briqpay-color-blue;
+    border: 0;
+    margin: 0;
+    @media only screen and (max-width: @screen__m) {
+      font-size: 24px;
+    }
+  }
+
+  .notes-container {
+    padding-bottom: 40px;
+    text-align: center;
+
+    .note {
+      display: block;
+      font-size: 16px;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .logo-container {
+    text-align: center;
+    padding: 40px 0;
+    @media only screen and (max-width: @screen__m) {
+      max-width: 140px;
+      padding: 20px 0;
+      margin: 0 auto;
+    }
+  }
+}
+
+#briqpay_comment #briqpay-checkout-comment {
+  margin: 0 auto 140px;
+  max-width: 660px;
+  min-height: 70px;
+  position: relative;
+  @media only screen and (max-width: @screen__m) {
+    max-width: 100%;
+    margin-bottom: 50px;
+  }
+
+  .briqpay-comment-title {
+    border: @briqpay-border-2;
+    border-radius: 5px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    .title-container {
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      @media only screen and (max-width: @screen__m) {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  .fieldset.comment {
+    width: 100%;
+    textarea {
+      font-size: 16px;
+      font-weight: 500;
+      resize: none;
+      border: 0;
+      padding: 20px;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 12px;
+        padding: 10px;
+      }
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    .actions-toolbar {
+      position: absolute;
+      bottom: -65px;
+      @media only screen and (max-width: @screen__m) {
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        button.action.apply {
+          width: 100%;
+          min-height: 40px;
+        }
+      }
+    }
+  }
+}
+
+//
+//  Mobile
+//  _____________________________________________
+
+@media only screen and (max-width: @screen__m) {
+
+  .columns {
+    display: block;
+  }
+
+  #briqpay_checkoutSidebar {
+    padding: 20px 0;
+
+    .briqpay-checkout-block {
+      &.discount {
+        #discount-coupon-form {
+          .fieldset {
+            .actions-toolbar {
+              right: 0;
+            }
+          }
+        }
+      }
+    }
+
+    #briqpay-checkout_cart {
+      border-top: none;
+    }
+
+    .briqpay-checkout-section-content {
+      .table-wrapper.order-items {
+        max-width: 100%;
+        margin: 0;
+      }
+    }
+
+    table.checkout-review {
+      tbody {
+        tr {
+          display: flex;
+          flex-wrap: wrap;
+          border-bottom: @briqpay-border;
+          position: relative;
+        }
+      }
+
+      th {
+        padding: 10px 0;
+        border-top: @briqpay-border;
+        border-bottom: @briqpay-border;
+        font-size: 14px;
+
+        &.qty,
+        &.item-img {
+          display: none;
+        }
+
+        &.price {
+          text-align: right;
+          position: absolute;
+          right: 0;
+          border: 0;
+        }
+      }
+
+      td {
+        display: block;
+        float: left;
+        padding: 20px 0;
+
+        &.item-img,
+        &.item-desc,
+        &.subtotal {
+          order: 1;
+        }
+
+        &.item-desc {
+          width: 60%;
+          .product-item-details {
+            .product-item-info {
+              width: 100%;
+            }
+          }
+        }
+
+        &.item-img {
+          width: auto;
+          padding-right: 15px;
+          .product-item-image {
+            text-align: center;
+          }
+        }
+
+        &.subtotal {
+          width: auto;
+          margin-left: auto;
+          > span[class^="price"] {
+            position: absolute;
+            bottom: 20px;
+            right: 0;
+          }
+        }
+
+        &.qty {
+          padding-top: 0;
+          padding-left: 115px;
+          order: 2;
+          margin-top: -10px;
+          .remove-product {
+            span {
+              margin-right: 20px;
+            }
+          }
+        }
+
+        .remove-product {
+          top: 0;
+          right: 0;
+          position: relative;
+          span {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  #briqpay_cart_extra {
+    order: 3;
+    width: 100%;
+  }
+
+  #briqpay-checkout_cart_totals {
+    order: 2;
+
+    table {
+      tfoot {
+        border-bottom: @briqpay-border;
+
+        tr {
+          th, td {
+            font-size: 12px;
+            padding: 5px 0;
+          }
+          th {
+            font-weight: 400;
+            &:after {
+              content: ':';
+            }
+          }
+          td {
+            font-weight: 600;
+            text-align: right;
+
+          }
+          &.totals-tax {
+            th, td {
+              padding-bottom: 20px;
+            }
+          }
+          &.grand.totals {
+            border-top: @briqpay-border;
+            th, td {
+              font-size: 14px;
+              font-weight: 700;
+              padding: 10px 0;
+            }
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .briqpay-checkout-extra__left,
+  .briqpay-checkout-extra__right {
+    width: 100%;
+    display: inline-block;
+    margin-bottom: 15px;
+  }
+
+  .go-to {
+    width: 100% !important;
+    float: none;
+  }
+
+  // ----- Success Page
+  .briqpay_checkout-order-success {
+    #briqpay_checkoutSidebar {
+      padding-right: 0;
+      padding-left: 0;
+    }
+
+    .page-title {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 0;
+      max-width: 70%;
+      span:before {
+        content: '';
+        background: transparent url("../images/check-btn.svg") no-repeat 50% 50%;
+        background-size: contain;
+        display: block;
+        height: 40px;
+        margin: 15px 0;
+      }
+    }
+
+    .briqpay-checkout-thankyou-order-details.order_details {
+      li {
+        display: block;
+      }
+    }
+
+    .briqpay-checkout-order__items {
+      margin-top: 0 !important;
+      padding: 20px 0 0 0;
+    }
+  }
+}
+
+@media only screen and (min-width: @screen__l) {
+  .briqpay-checkout-extra {
+    display: flex;
+  }
+
+  .go-to {
+    float: right;
+  }
+}
+
+@media only screen and (max-width: @screen__s) {
+  #briqpay_checkoutSidebar table.checkout-review td.item-desc {
+    max-width: 160px;
+  }
+}
+
+@media only screen and (max-width: @screen__xs) {
+  #briqpay_checkoutSidebar table.checkout-review td.item-desc {
+    max-width: 130px;
+  }
+}
+
+// --- Success Page
+.briqpay_checkout-order-success {
+
+  .columns {
+    letter-spacing: 0.5px;
+  }
+
+  .checkout-success {
+    h1 {
+      color: @briqpay-color-black;
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+
+  .order_inside {
+    border-bottom: @briqpay-border;
+    border-top: @briqpay-border;
+  }
+
+  #briqpay_checkoutSidebar {
+    max-width: 1130px;
+    margin: 0 auto;
+    @media only screen and (max-width: @screen__m) {
+      padding-top: 0;
+    }
+  }
+
+  .briqpay-checkout-thankyou-order-details.order_details {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 15px 0 15px;
+    padding: 0;
+    font-size: 20px;
+
+    @media only screen and (max-width: @screen__m) {
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    li {
+      float: none;
+      margin-bottom: 0;
+      text-align: left;
+      font-weight: 700;
+      color: @briqpay-color-dark;
+
+      @media only screen and (max-width: @screen__m) {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding-bottom: 15px;
+        &:last-child {
+          padding-bottom: 0;
+        }
+        p {
+          margin: 0;
+        }
+      }
+
+      strong {
+        width: 100%;
+        display: block;
+        font-size: 18px;
+        font-weight: 600;
+        color: @briqpay-color-blue;
+        @media only screen and (max-width: @screen__m) {
+          font-size: 12px;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  .briqpay-checkout-order__items {
+    margin: 0 0 20px;
+    position: relative;
+
+    strong {
+      .briqpay-heading;
+      display: block;
+      border: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      max-width: 100%;
+      text-align: center;
+      @media only screen and (max-width: @screen__m) {
+        margin-top: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+
+      thead {
+        border-top: @briqpay-border;
+      }
+
+      tr {
+        border-bottom: @briqpay-border;
+        &:last-child td.col-item {
+          font-size: 20px;
+          font-weight: 700;
+          color: @briqpay-color-dark;
+          @media only screen and (max-width: @screen__m) {
+            font-size: 12px;
+          }
+        }
+      }
+
+      th, td {
+        @media only screen and (max-width: @screen__m) {
+          padding: 15px 0;
+        }
+      }
+
+      th {
+        font-size: 20px;
+        font-weight: 700;
+        @media only screen and (max-width: @screen__m) {
+          font-size: 12px;
+        }
+
+        &.col-subtotal {
+          text-align: right;
+        }
+      }
+
+      td {
+        color: @briqpay-color-blue;
+        font-size: 18px;
+        font-weight: 600;
+        @media only screen and (max-width: @screen__m) {
+          font-size: 12px;
+        }
+
+        .count {
+          color: @briqpay-color-dark-grey;
+        }
+
+        &.col-amount {
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  #briqpay_checkoutSidebar {
+    .briqpay-primary {
+      box-shadow: none;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      display: block;
+      max-width: 300px;
+      margin: 0 auto 100px;
+      min-height: 55px;
+      line-height: 55px;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 14px;
+        min-height: 45px;
+        line-height: 45px;
+        max-width: 100%;
+      }
+
+      &, &:hover {
+        color: @briqpay-color-white !important;
+      }
+    }
+
+    .briqpay-primary-wrapper {
+      text-align: center;
+    }
+  }
+}
+.briqpay-img-container {
+  width: 100%;
+  margin: 35px auto;
+  text-align: center;
+}
+
+// --- Unifaun related CSS
+
+.briqpay-checkout-radio-row {
+  label[for^="nwtunifaun_custom"] {
+    flex-wrap: wrap;
+  }
+}
+
+#nwt_unifaun_form {
+  flex-basis: 100%;
+  padding-top: 10px;
+  .nwt_unifaun_form_agent,
+  #nwt_unifaun_form_cellphone {
+    label {
+      &:before, &:after {
+        display: none !important;
+      }
+    }
+    .nwt_unifaun_select_agent {
+      border-radius: 7px !important;
+    }
+    .nwt_unifaun_postcode {
+      @media only screen and (max-width: 500px) {
+        width: 50% !important;
+      }
+    }
+    label[for="nwt_unifaun_postcode"] {
+      width: 25% !important;
+      @media only screen and (max-width: 500px) {
+        width: 36% !important;
+      }
+    }
+    button.nwtunifaun-choose-agent {
+      margin-left: 10px;
+      @media only screen and (max-width: @screen__m) {
+        width: 90% !important;
+        margin-left: 0 !important;
+        margin-top: 5px;
+      }
+    }
+  }
+  #nwt_unifaun_form_cellphone {
+    br {
+      display: none;
+    }
+  }
+  button {
+    .briqpay-btn;
+    height: 50px;
+    font-size: 18px;
+    padding: 10px 50px;
+  }
+
+}
+
+.briqpay-checkout-wrapper {
+  #checkout-shipping {
+    max-width: 660px;
+    margin-bottom: 0;
+    label {
+      margin: 0;
+    }
+    .checkout-title {
+      color: @briqpay-color-dark;
+      font-weight: 700;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 16px;
+      }
+    }
+    .briqpay-checkout-section-content-title,
+    .briqpay-checkout-section-shipping-title {
+      .checkout-title {
+        padding-top: 0;
+        border-bottom: @briqpay-border;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+      }
+    }
+    .briqpay-checkout-section-content-title {
+      padding-top: 40px;
+    }
+    #shipping-method-loader {
+      .postcode {
+        width: calc(50% - 10px);
+        border: 2px solid @briqpay-color-border-2 !important;
+        min-height: 75px;
+        padding-left: 30px;
+        font-weight: 500;
+        font-size: 16px;
+        @media only screen and (max-width: @screen__m) {
+          min-height: 40px;
+          height: 40px;
+          padding: 0 0 0 10px;
+          font-size: 12px;
+        }
+      }
+      .selectric-wrapper {
+        width: calc(50% - 10px);
+        color: @briqpay-color-dark;
+        font-weight: 500;
+        .selectric {
+          max-height: 75px;
+          border: 2px solid @briqpay-color-border-2;
+          border-radius: 5px;
+          @media only screen and (max-width: @screen__m) {
+            max-height: 40px;
+          }
+          .label {
+            height: 71px;
+            line-height: 71px;
+            color: @briqpay-color-dark;
+            @media only screen and (max-width: @screen__m) {
+              height: 40px;
+              line-height: 40px;
+              font-size: 12px;
+              margin: 0 10px;
+            }
+          }
+          .button {
+            height: 65px;
+            @media only screen and (max-width: @screen__m) {
+              height: auto;
+            }
+            &:after {
+              content: url("../images/down-arrow.svg");
+              transition: all .2s;
+              @media only screen and (max-width: @screen__m) {
+                top: 5px;
+                transform: scale(.8);
+              }
+            }
+          }
+        }
+        &.selectric-open .selectric .button:after {
+          transform: rotate(180deg);
+          @media only screen and (max-width: @screen__m) {
+            transform: rotate(180deg) scale(.8);
+          }
+        }
+        .selectric-items {
+          top: calc(100% - 5px);
+          z-index: 1;
+          .selectric-scroll {
+            border: 2px solid @briqpay-color-border-2;
+            border-top-color: @briqpay-color-white;
+          }
+          li {
+            display: flex;
+            align-items: center;
+            padding: 12px 12px 12px 35px;
+            @media only screen and (max-width: @screen__m) {
+              font-size: 12px;
+              padding: 10px;
+            }
+            &:hover,
+            &.selected {
+              background: @briqpay-color-light-grey;
+            }
+            &:first-child {
+              padding-top: 25px;
+              @media only screen and (max-width: @screen__m) {
+                padding-top: 15px;
+              }
+            }
+            &:last-child {
+              padding-bottom: 25px;
+              @media only screen and (max-width: @screen__m) {
+                padding-bottom: 15px;
+              }
+            }
+            &:before {
+              content: '';
+              background-position: center center;
+              background-repeat: no-repeat;
+              background-size: cover;
+              height: 25px;
+              width: 35px;
+              position: relative;
+              left: 0;
+              margin-right: 10px;
+              display: inline-block;
+              @media only screen and (max-width: @screen__m) {
+                height: 15px;
+                width: 25px;
+              }
+            }
+            &.SE:before {
+              background-image: url("../images/flags/SE.svg");
+            }
+            &.DK:before {
+              background-image: url("../images/flags/DK.svg");
+            }
+            &.EN:before {
+              background-image: url("../images/flags/EN.svg");
+            }
+            &.FI:before {
+              background-image: url("../images/flags/FI.svg");
+            }
+            &.NO:before {
+              background-image: url("../images/flags/NO.svg");
+            }
+          }
+        }
+      }
+    }
+    #shipping-method-button {
+      display: none;
+    }
+  }
+
+  #udcwidget-holder .unifaun-checkout-root {
+    input[type=checkbox] {
+      .checkbox;
+      top: auto !important;
+    }
+    input[type=radio] {
+      padding-left: 0;
+      height: 50px;
+      margin-right: 20px !important;
+      min-width: 0;
+      width: auto;
+      max-width: 35px;
+      &:checked:after {
+        display: none;
+      }
+    }
+    .selectric-scroll {
+      border: 0;
+      li:before {
+        display: none !important;
+      }
+    }
+    .unifaun-checkout-top-addons {
+      padding: 20px 0 0 0;
+      .unifaun-checkout-addon-label {
+        display: flex;
+        align-items: center;
+      }
+    }
+    input[type=checkbox]:checked:after {
+      background: transparent url(../images/checkmark.svg) no-repeat 50% 50%;
+    }
+  }
+}

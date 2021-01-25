@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Briqpay\Checkout\Rest\Authentication">
+        <arguments>
+            <argument name="session" xsi:type="object">Magento\Customer\Model\Session</argument>
+        </arguments>
+    </type>
+
+    <type name="Briqpay\Checkout\Rest\Authentification\CacheAuthentication">
+        <arguments>
+            <argument name="authentication" xsi:type="object">Briqpay\Checkout\Rest\Authentification\HttpAuthentication</argument>
+        </arguments>
+    </type>
+
+    <preference for="Briqpay\Checkout\Rest\Service\AuthentificationInterface" type="Briqpay\Checkout\Rest\Authentification\CacheAuthentication" />
+</config>
+

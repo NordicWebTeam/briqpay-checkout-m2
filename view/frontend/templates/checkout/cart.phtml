@@ -1,0 +1,45 @@
+<?php
+// briqpay-checkout_cart id is mandatory (it's used into ajax update blocks part)
+?>
+<div id="briqpay-checkout_cart" class="table-wrapper order-items">
+    <table id="details-table" class="checkout-review" cellspacing="0" cellpadding="0" border="0">
+        <thead>
+        <tr>
+            <th class="col item-img" scope="col">
+                <span><?= /* @escapeNotVerified */
+                    __('Item') ?></span>
+            </th>
+            <th class="col item-desc" scope="col">
+                <span><?= /* @escapeNotVerified */
+                    __('Description') ?></span>
+            </th>
+            <th class="col qty" scope="col">
+                <span><?= /* @escapeNotVerified */
+                    __('Quantity') ?></span>
+            </th>
+            <th class="col price" scope="col">
+                <span><?= /* @escapeNotVerified */
+                    __('Price') ?></span>
+            </th>
+        </tr>
+        </thead>
+        <tbody class="checkout-cart checkout-item">
+            <?php foreach ($block->getItems() as $item): ?>
+                <?= $block->getItemHtml($item) ?>
+            <?php endforeach ?>
+        </tbody>
+    </table>
+    <div id="briqpay_cart_extra">
+        <?php echo $block->getChildHtml('coupon'); ?>
+        <?php echo $block->getChildHtml('newsletter'); ?>
+    </div>
+    <div id="briqpay-checkout_cart_totals">
+        <table cellspacing="0" cellpadding="0" border="0">
+            <tfoot>
+            <?= $block->getChildHtml('totals'); ?>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+

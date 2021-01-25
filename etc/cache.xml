@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Cache/etc/cache.xsd">
+    <type name="briqpay_cache_authentifiaction" translate="label,description" instance="Briqpay\Checkout\Rest\Authentification\Cache\AuthentificationCache">
+        <label>Briqpay Authentifiaction Cache</label>
+        <description>HTTP Authentifiaction token cache.</description>
+    </type>
+</config>

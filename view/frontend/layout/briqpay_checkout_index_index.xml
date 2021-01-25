@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Kassan</title>
+        <css src="Briqpay_Checkout::css/briqpay.css"/>
+    </head>
+
+    <!-- Init price renderers -->
+    <update handle="checkout_item_price_renderers"/>
+
+    <body>
+        <move element="breadcrumbs" destination="columns.top" after="page.main.title"/>
+
+        <referenceContainer name="page.wrapper">
+            <referenceBlock name="breadcrumbs" remove="true"/>
+        </referenceContainer>
+
+        <referenceContainer name="content">
+            <block class="Briqpay\Checkout\Block\Wrapper" name="briqpay_checkout_design_cfg" as="design_cfg"
+                   template="Briqpay_Checkout::design_config.phtml">
+                <container name="briqpay_checkoutSidebar" as="checkoutSidebar" label="checkout Sidebar" htmlTag="div" htmlId="briqpay_checkoutSidebar">
+                    <block class="Briqpay\Checkout\Block\Checkout\Sidebar" name="checkout.sidebar"
+                           as="sidebar" template="Briqpay_Checkout::checkout/sidebar.phtml" cacheable="false">
+
+                        <!-- Shopping Cart -->
+                        <block class="Briqpay\Checkout\Block\Checkout\Cart" name="briqpay_checkout.cart" as="cart"
+                                   template="Briqpay_Checkout::checkout/cart.phtml">
+
+                            <block class="Magento\Framework\View\Element\RendererList"
+                                   name="checkout.onepage.review.item.renderers" as="renderer.list">
+                                <!-- Configurable renderer-->
+                                <block class="Magento\ConfigurableProduct\Block\Cart\Item\Renderer\Configurable"
+                                       as="configurable"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml">
+                                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions"
+                                           name="checkout.cart.item.renderers.configurable.actions" as="actions">
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit"
+                                               name="checkout.cart.item.renderers.configurable.actions.edit"
+                                               template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove"
+                                               name="checkout.cart.item.renderers.configurable.actions.remove"
+                                               template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+                                    </block>
+                                </block>
+
+                                <!-- Simple renderer-->
+                                <block class="Magento\Checkout\Block\Cart\Item\Renderer" as="simple"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml">
+                                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions"
+                                           name="checkout.cart.item.renderers.simple.actions" as="actions">
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit"
+                                               name="checkout.cart.item.renderers.simple.actions.edit"
+                                               template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove"
+                                               name="checkout.cart.item.renderers.simple.actions.remove"
+                                               template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+                                    </block>
+                                </block>
+
+                                <!-- Bundle renderer-->
+                                <block class="Magento\Bundle\Block\Checkout\Cart\Item\Renderer" as="bundle"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml">
+                                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions"
+                                           name="checkout.cart.item.renderers.bundle.actions" as="actions">
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit"
+                                               name="checkout.cart.item.renderers.bundle.actions.edit"
+                                               template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove"
+                                               name="checkout.cart.item.renderers.bundle.actions.remove"
+                                               template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+                                    </block>
+                                </block>
+
+                                <!-- Virtual renderer-->
+                                <block class="Magento\Checkout\Block\Cart\Item\Renderer" as="virtual"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml">
+                                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions"
+                                           name="checkout.cart.item.renderers.virtual.actions" as="actions">
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit"
+                                               name="checkout.cart.item.renderers.virtual.actions.edit"
+                                               template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove"
+                                               name="checkout.cart.item.renderers.virtual.actions.remove"
+                                               template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+                                    </block>
+                                </block>
+
+                                <block class="Magento\Downloadable\Block\Checkout\Cart\Item\Renderer"
+                                       name="checkout.cart.item.renderers.downloadable" as="downloadable"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml">
+
+                                    <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions"
+                                           name="checkout.cart.item.renderers.downloadable.actions" as="actions">
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Edit"
+                                               name="checkout.cart.item.renderers.downloadable.actions.edit"
+                                               template="Magento_Checkout::cart/item/renderer/actions/edit.phtml"/>
+                                        <block class="Magento\Checkout\Block\Cart\Item\Renderer\Actions\Remove"
+                                               name="checkout.cart.item.renderers.downloadable.actions.remove"
+                                               template="Magento_Checkout::cart/item/renderer/actions/remove.phtml"/>
+                                    </block>
+                                </block>
+
+                                <!-- Grouped renderer-->
+                                <block class="Magento\Bundle\Block\Checkout\Cart\Item\Renderer" as="grouped"
+                                       template="Briqpay_Checkout::checkout/cart/item/item.phtml"/>
+                            </block>
+
+                            <!-- Apply Discount Code -->
+                            <!-- Not working as it is, block needs to be replaced -->
+                            <block class="Briqpay\Checkout\Block\Checkout\Coupon" name="briqpay_checkout.coupon" as="coupon"
+                                   template="Briqpay_Checkout::checkout/cart/coupon.phtml"
+                            />
+
+                            <!-- Newsletter -->
+                            <!-- Not working as it is, block needs to be replaced -->
+                            <block class="Magento\Framework\View\Element\Template" name="briqpay_checkout.newsletter" as="newsletter"
+                                   template="Briqpay_Checkout::checkout/subscribe.phtml"
+                            />
+
+                            <block class="Magento\Checkout\Block\Cart\Totals" name="briqpay_checkout.cart.totals"
+                                   as="totals" template="Briqpay_Checkout::checkout/cart/totals.phtml"/>
+                        </block>
+                    </block>
+                </container>
+
+                <container name="briqpay_crosssell" as="briqpay_crosssell" label="briqpay_Crosssell" htmlTag="div" htmlId="briqpay_checkoutCrosssell">
+                    <block class="Briqpay\Checkout\Block\Checkout\Cart\Crosssell"
+                           name="checkout.cart.crosssell"
+                           as="briqpayCrosssell"
+                           template="Briqpay_Checkout::product/list/items.phtml"
+                           after="-"
+                    >
+                        <arguments>
+                            <argument name="type" xsi:type="string">crosssell</argument>
+                        </arguments>
+                    </block>
+                </container>
+
+                <!-- Shipping Method -->
+                <block class="Briqpay\Checkout\Block\Checkout\Shipping" name="briqpay_checkout.shipping" as="shipping"
+                       template="Briqpay_Checkout::checkout/shipping.phtml">
+
+                    <block class="Briqpay\Checkout\Block\Checkout\Shipping" name="briqpay_checkout.shipping_method"
+                           as="shipping_method" template="Briqpay_Checkout::checkout/shipping/method.phtml"/>
+                    <block class="Briqpay\Checkout\Block\Checkout\Shipping" name="briqpay_checkout.shipping_address"
+                           as="shipping_address" template="Briqpay_Checkout::checkout/shipping/address.phtml"/>
+                </block>
+
+                <!-- Leave a comment -->
+                <block class="Briqpay\Checkout\Block\Checkout\Comment" name="briqpay.checkout.comment" as="comment"
+                       template="Briqpay_Checkout::checkout/comment.phtml"
+                />
+
+                <container name="briqpay_widget" as="briqpay_widget" label="briqpay_Widget" htmlTag="div" htmlId="briqpay_checkoutWidget">
+                    <!-- Briqpay widget-->
+                    <block class="Briqpay\Checkout\Block\Checkout\CheckoutWidget" name="checkout.widget" as="widget"
+                           template="Briqpay_Checkout::checkout/widget.phtml" />
+                </container>
+            </block>
+        </referenceContainer>
+    </body>
+
+</page>

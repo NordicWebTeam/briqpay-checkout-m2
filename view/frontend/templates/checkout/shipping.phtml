@@ -1,0 +1,25 @@
+<?php
+// @codingStandardsIgnoreFile
+/** @var \Briqpay\Checkout\Block\Checkout\Shipping $block */
+?>
+
+<?php if ($block->getShippingAddress()): ?>
+<div class="briqpay-checkout-shipping briqpay-checkout-section mobile-show" id="checkout-shipping">
+    <div class="checkout-title" data-role="title">
+        <h4 id="briqpay-checkout-review-heading" role="heading" aria-level="2">
+            <?= $block->escapeHtml(__('Shipping Method')) ?>
+        </h4>
+    </div>
+    <div class="briqpay-checkout-section-content" data-role="content"
+         aria-labelledby="briqpay-checkout-review-heading">
+        <form method="post" id="shipping-method-form"
+              action="<?= $block->escapeUrl($block->getShippingMethodSubmitUrl()); ?>"
+              class="form">
+            <?= $block->getChildHtml('shipping_method'); ?>
+        </form>
+        <?php if ($addrUrl = $block->getShippingAddressSubmitUrl()): ?>
+            <?= $block->getChildHtml('shipping_address'); ?>
+        <?php endif; ?>
+    </div>
+</div>
+<?php endif; ?>
