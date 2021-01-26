@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Briqpay_Checkout::briqpay" title="AVARDA" module="Briqpay_Checkout" sortOrder="100"
+        <add id="Briqpay_Checkout::briqpay" title="Briqpay" module="Briqpay_Checkout" sortOrder="100"
              resource="Briqpay_Checkout::system_config"/>
         <add id="Briqpay_Checkout::briqpay_checkout" title="Checkout Configuration" module="Briqpay_Checkout" sortOrder="100"
              parent="Briqpay_Checkout::briqpay" action="adminhtml/system_config/edit/section/briqpay" resource="Briqpay_Checkout::system_config"/>

@@ -15,7 +15,7 @@ class AuthentificationCache extends TagScope
     /**
      * @var string
      */
-    const CACHE_TAG = 'AVARDA_CACHE_AUTHENTIFICATION';
+    const CACHE_TAG = 'BRIQPAY_CACHE_AUTHENTIFICATION';
 
     /**
      * @var FrontendPool

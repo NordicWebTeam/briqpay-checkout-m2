@@ -6,7 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class ShippingCountries
 {
-    private const XML_AVARDA_SHIPPING_ALLOWED_COUNTRIES = 'unifaun_udc/udc/allowed_countries';
+    private const XML_BRIQPAY_SHIPPING_ALLOWED_COUNTRIES = 'unifaun_udc/udc/allowed_countries';
 
     /**
      * @var ScopeConfigInterface
@@ -39,7 +39,7 @@ class ShippingCountries
     public function getCountries(): array
     {
         $countries = [];
-        $allowedCountries = $this->scopeConfig->getValue(self::XML_AVARDA_SHIPPING_ALLOWED_COUNTRIES);
+        $allowedCountries = $this->scopeConfig->getValue(self::XML_BRIQPAY_SHIPPING_ALLOWED_COUNTRIES);
 
         if (isset($this->countyList[$allowedCountries])) {
             $countries[strtoupper($allowedCountries)] = $this->countyList[$allowedCountries];
