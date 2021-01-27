@@ -299,7 +299,7 @@ define([
         /**
          * Attempt to ajax submit order
          */
-        _ajaxSubmit: function (url, data, method, beforeAVARDAAjax, afterAVARDAAjax) {
+        _ajaxSubmit: function (url, data, method, beforeBRIQPAYAjax, afterBRIQPAYAjax) {
             if (!method) method = 'post';
             var _this = this;
             if (this.options.shippingAjaxInProgress === true) {
@@ -315,8 +315,8 @@ define([
                     _this.options.ctrkeyCheck = false;
                     _this.options.shippingAjaxInProgress = true;
                     _this._ajaxBeforeSend();
-                    if (typeof beforeAVARDAAjax === 'function') {
-                        beforeAVARDAAjax();
+                    if (typeof beforeBRIQPAYAjax === 'function') {
+                        beforeBRIQPAYAjax();
                     }
                 },
                 complete: function () {
@@ -362,8 +362,8 @@ define([
                             }
                         }
 
-                        if (typeof afterAVARDAAjax === 'function') {
-                            afterAVARDAAjax();
+                        if (typeof afterBRIQPAYAjax === 'function') {
+                            afterBRIQPAYAjax();
                         }
 
                         if (response.messages) {

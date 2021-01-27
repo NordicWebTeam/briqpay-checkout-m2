@@ -1,20 +1,17 @@
 //
 //  Variables
 //  _____________________________________________
-@briqpay-color-blue: #46aab4;
+@briqpay-color-dark: #040404;
 @briqpay-light-blue: #edf9fa;
 
 @briqpay-hover-blue: #69bcc4;
 @briqpay-color-light-grey: #F4F4F4;
-@briqpay-color-dark-grey: #999999;
+@briqpay-color-dark-grey: #8b8b8b;
 @briqpay-color-white: #FFFFFF;
-@briqpay-color-black: #444444;
-@briqpay-color-dark: #292929;
-@briqpay-color-border: #C1C1C1;
+@briqpay-color-border: #B5B5B5;
 @briqpay-border: 1px solid @briqpay-color-border;
-@briqpay-color-border-2: rgba(70, 170, 180, .35);
-@briqpay-border-2: 2px solid @briqpay-color-border-2;
-@calc-width: 205px;
+@briqpay-color-border-2: #C1C1C1;
+@briqpay-border-2: 1px solid @briqpay-color-border-2;
 @screen__xs: 320px;
 @screen__s: 420px;
 @screen__m: 768px;
@@ -26,9 +23,9 @@
 //  _____________________________________________
 
 .briqpay-btn {
-  background: @briqpay-color-blue;
+  background: @briqpay-color-dark;
   border: 0;
-  border-color: @briqpay-color-blue;
+  border-color: @briqpay-color-dark;
   color: @briqpay-color-white;
   box-shadow: none;
   border-radius: 5px !important;
@@ -52,16 +49,13 @@
 }
 
 .briqpay-heading {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: @briqpay-color-dark;
   text-align: center;
-  border-bottom: @briqpay-border;
-  padding-bottom: 20px;
-  max-width: 70%;
-  margin: 30px auto;
+  padding-bottom: 25px;
+  margin: 30px auto 0;
   @media only screen and (max-width: @screen__m) {
-    max-width: 100%;
     font-size: 16px;
     padding-bottom: 10px;
   }
@@ -77,18 +71,18 @@
 .checkbox,
 input[type=radio] {
   position: relative;
-  width: 25px;
-  min-width: 25px;
-  height: 25px;
-  top: 6px;
+  width: 21px;
+  min-width: 21px;
+  height: 21px;
+  top: 4px;
   left: 0;
   transition: all .2s ease;
   background-color: transparent;
   appearance: none;
-  border-radius: 4px;
+  border-radius: 3px;
   margin-bottom: 0 !important;
-  margin-right: 15px;
-  border: 2px solid rgba(70,170,180,.35);
+  margin-right: 5px;
+  border: 1px solid @briqpay-color-border;
   @media only screen and (max-width: @screen__m) {
     width: 20px;
     min-width: 20px;
@@ -104,8 +98,8 @@ input[type=radio] {
     content: "";
     display: inline-block;
     position: absolute;
-    width: 25px;
-    height: 25px;
+    width: 21px;
+    height: 21px;
     border-radius: 3px;
     top: 0;
     left: 0;
@@ -113,7 +107,7 @@ input[type=radio] {
     text-align: center;
     background: transparent url("../images/checkmark.svg") no-repeat 50% 50%;
     background-size: cover;
-    background-color: @briqpay-color-blue;
+    background-color: @briqpay-color-dark;
     transition: all .2s ease;
     @media only screen and (max-width: @screen__m) {
       width: 20px;
@@ -155,16 +149,16 @@ button:not(.primary) {
 
   .page-title-wrapper {
     text-align: center;
+    max-width: 1025px;
+    margin: 0 auto;
   }
 
   .page-title {
     .briqpay-heading;
-    font-size: 32px;
-    color: @briqpay-color-blue;
+    color: @briqpay-color-dark;
     border: 0;
     padding: 0;
-    margin-bottom: 10px;
-    margin-top: 40px;
+    margin-top: 150px;
 
     @media only screen and (max-width: @screen__m) {
       display: none;
@@ -176,8 +170,12 @@ button:not(.primary) {
     text-transform: uppercase;
 
     .items, a {
-      color: @briqpay-color-blue;
+      color: @briqpay-color-dark;
     }
+  }
+
+  .page-main {
+    max-width: 1440px;
   }
 }
 
@@ -189,7 +187,6 @@ button:not(.primary) {
   display: block;
 
   #briqpay-checkout_cart {
-    border-top: @briqpay-border;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
@@ -202,7 +199,7 @@ button:not(.primary) {
     }
     #briqpay_cart_extra {
       border-bottom: @briqpay-border;
-      padding: 35px 0;
+      padding: 30px 0;
       color: @briqpay-color-dark;
       width: 50%;
       @media only screen and (max-width: @screen__m) {
@@ -234,7 +231,7 @@ button:not(.primary) {
 
   input, select {
     &:not(.qty) {
-      height: 45px;
+      height: 55px;
       @media only screen and (max-width: @screen__m) {
         height: 35px;
       }
@@ -275,10 +272,19 @@ button:not(.primary) {
 
   .briqpay-checkout-block {
     &.discount {
+      .title {
+        cursor: pointer;
+        text-decoration: underline;
+        strong {
+          font-size: 16px;
+          font-weight: 600;
+        }
+      }
       #discount-coupon-form {
         .fieldset {
           position: relative;
           display: flex;
+          padding-top: 20px;
 
           .field {
             flex: 1;
@@ -295,17 +301,26 @@ button:not(.primary) {
           }
 
           .actions-toolbar {
+            & > .primary {
+              display: block !important;
+            }
             .action.apply.primary, .action.cancel.primary {
               & {
-                font-size: 14px;
-                font-weight: 600;
+                display: inline-block !important;
+                font-size: 16px;
+                font-weight: 700;
                 text-transform: initial;
-                background:  @briqpay-color-blue;
-                border-color: @briqpay-color-blue;
-                height: 45px;
-                min-width: 200px;
+                background: @briqpay-hover-blue;
+                border-color: @briqpay-hover-blue;
+                color: @briqpay-color-white;
+                height: 55px;
+                min-width: 150px;
+                padding-left: 20px;
+                padding-right: 20px;
                 margin: 0;
                 border-radius: 0;
+                transition-duration: .3s;
+                transition-property: opacity;
                 @media only screen and (max-width: @screen__m) {
                   height: 35px;
                   min-width: 135px;
@@ -314,8 +329,7 @@ button:not(.primary) {
                   padding-bottom: 0;
                 }
                 &:hover {
-                  background: @briqpay-hover-blue;
-                  border-color: @briqpay-hover-blue;
+                  opacity: .8;
                 }
               }
             }
@@ -350,19 +364,28 @@ button:not(.primary) {
   }
 
   .product-item-image {
-    max-width: 145px;
+    max-width: 200px;
+    margin-right: 15px;
+    .product-image-container {
+      width: 200px !important;
+      .product-image-photo {
+        width: 200px;
+      }
+    }
     @media only screen and (max-width: @screen__m) {
       max-width: 100px;
     }
   }
 
   .briqpay-checkout-block.newsletter {
-    padding: 0 30px;
     @media only screen and (max-width: @screen__m) {
       padding: 0;
     }
     label {
       font-size: 16px;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
       @media only screen and (max-width: @screen__m) {
         font-size: 12px;
       }
@@ -436,7 +459,7 @@ table {
     th {
       font-size: 18px;
       font-weight: 700;
-      padding-top: 25px;
+      padding-top: 15px;
       padding-bottom: 15px;
     }
 
@@ -444,7 +467,7 @@ table {
       vertical-align: middle;
 
       &.qty {
-        text-align: left !important;
+        text-align: center !important;
       }
     }
 
@@ -475,7 +498,7 @@ table {
 
         span.qty {
           display: flex;
-          color: @briqpay-color-black;
+          color: @briqpay-color-dark;
 
           .input-number-increment,
           .input-number-decrement,
@@ -522,9 +545,9 @@ table {
 
         .remove-product {
           position: absolute;
-          right: 30px;
-          bottom: 30px;
-          color: @briqpay-color-border;
+          right: 20px;
+          bottom: 40px;
+          color: @briqpay-color-dark-grey;
           font-weight: 600;
           cursor: pointer;
 
@@ -536,9 +559,9 @@ table {
         }
 
         .price {
-          font-size: 16px;
-          font-weight: 600;
-          color: @briqpay-color-black;
+          font-size: 18px;
+          font-weight: 700;
+          color: @briqpay-color-dark;
           @media only screen and (max-width: @screen__m) {
             font-size: 12px;
             color: @briqpay-color-dark;
@@ -556,7 +579,6 @@ table {
 
           dt {
             clear: left;
-            float: left;
             margin: 0 10px 5px 0;
             font-weight: 400 !important;
 
@@ -581,11 +603,11 @@ table {
         .product-item-name {
           font-size: 16px;
           font-weight: 700;
-          color: @briqpay-color-black;
+          line-height: 26px;
+          color: @briqpay-color-dark;
           display: block;
           @media only screen and (max-width: @screen__m) {
             font-size: 12px;
-            font-weight: 600;
             display: inline;
             &:after {
               content: ',';
@@ -594,10 +616,12 @@ table {
         }
         .product-item-description {
           font-size: 16px;
-          color: @briqpay-color-black;
-          max-width: 330px;
+          color: @briqpay-color-dark;
           line-height: 26px;
-          display: block;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
           @media only screen and (max-width: @screen__m) {
             font-size: 12px;
             line-height: 20px;
@@ -628,6 +652,8 @@ table {
 //  _____________________________________________
 #briqpay_checkoutCrosssell {
   padding-bottom: 80px;
+  max-width: 1280px;
+  margin: 0 auto;
   .slick-list {
     width: 100%;
     @media only screen and (max-width: @screen__m) {
@@ -654,16 +680,29 @@ table {
           text-align: center;
           background: @briqpay-color-white;
           width: 25%;
-          padding: 0 20px;
+          padding: 0 15px;
           @media only screen and (max-width: @screen__m) {
             margin-bottom: 0;
           }
 
           .price-box {
-            margin: 15px 0 10px;
+            margin: 15px 0 25px;
 
             .price-box {
               margin: 0;
+            }
+          }
+
+          .product-item-description {
+            min-height: 52px;
+            max-height: 52px;
+            p {
+              font-size: 16px;
+              line-height: 26px;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
             }
           }
 
@@ -677,7 +716,7 @@ table {
             .product-brand-name {
               color: @briqpay-color-dark;
               font-size: 16px;
-              font-weight: 400;
+              font-weight: 700;
               @media only screen and (max-width: @screen__m) {
                 font-size: 12px;
               }
@@ -688,6 +727,9 @@ table {
               font-weight: 700;
               .price-to {
                 display: none;
+              }
+              .minimal-price {
+                margin-bottom: 0;
               }
               @media only screen and (max-width: @screen__m) {
                 font-size: 14px;
@@ -708,54 +750,52 @@ table {
 
             .product-item-name {
               display: block;
-              height: 48px;
+              height: 25px;
               overflow: hidden;
-              @media only screen and (max-width: @screen__m) {
-                height: 38px;
-              }
+              margin-bottom: 0;
             }
           }
 
           .product-image-container {
-            width: 270px !important;
+            width: 100% !important;
             .product-image-wrapper {
               height: auto;
               padding-bottom: 0 !important;
               .product-image-photo {
                 position: relative;
+                width: 100%;
               }
             }
           }
 
           .product-item-details {
             padding-bottom: 20px;
-            padding-left: 5px;
-            padding-right: 5px;
             text-align: left;
             @media only screen and (max-width: @screen__m) {
-              padding-left: 0;
-              padding-right: 0;
               max-width: 270px;
               margin: 0 auto;
             }
 
             button.tocart {
-              font-size: 14px;
+              font-size: 16px;
               font-weight: 700;
-              color: @briqpay-color-blue;
-              background: none;
-              box-shadow: none;
+              width: 100%;
+              color: @briqpay-color-white;
+              background: @briqpay-hover-blue;
               padding: 0;
               text-transform: none;
               border-color: transparent;
-              margin: 20px 0 10px;
-              line-height: 20px;
+              line-height: 55px;
+              border: 0;
+              border-radius: 0;
+              transition-duration: .3s;
+              transition-property: opacity;
+              &:hover {
+                opacity: .8;
+              }
               @media only screen and (max-width: @screen__m) {
                 font-size: 12px;
                 margin: 0;
-              }
-              &:after {
-                content: "+";
               }
             }
 
@@ -808,7 +848,6 @@ table {
 
 .briqpay-checkout-shipping {
   padding-bottom: 25px;
-  max-width: 660px;
   margin: 0 auto 25px;
   @media only screen and (max-width: @screen__m) {
     max-width: 100%;
@@ -898,7 +937,7 @@ button:not(.primary).primary {
 //  Totals
 //  _____________________________________________
 #briqpay-checkout_cart_totals {
-  color: @briqpay-color-blue;
+  color: @briqpay-color-dark;
   flex: 1;
 
   th, td {
@@ -906,12 +945,8 @@ button:not(.primary).primary {
     color: @briqpay-color-dark;
   }
 
-  th {
-    font-weight: 400;
-  }
-
   td {
-    font-weight: 600;
+    font-weight: 700;
   }
 
   .grand.totals {
@@ -920,8 +955,8 @@ button:not(.primary).primary {
     justify-content: space-between;
     width: 50%;
     right: 0;
-    bottom: -70px;
-    padding: 10px 0 10px 120px;
+    bottom: -75px;
+    padding: 25px 0 25px 75px;
     box-sizing: border-box;
 
     @media only screen and (max-width: @screen__m) {
@@ -943,13 +978,14 @@ button:not(.primary).primary {
     }
 
     th, td {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
+      padding-top: 0;
+      padding-bottom: 0;
     }
 
     td {
-      padding-right: 30px;
-      text-transform: uppercase;
+      padding-right: 20px;
       @media only screen and (max-width: @screen__m) {
         padding-right: 0;
       }
@@ -998,14 +1034,9 @@ button:not(.primary).primary {
   .order_inside {
     padding: 10px 40px;
   }
-  /*#briqpay_cart_extra {
-    flex: 1.5;
-  }*/
 
-  #discount-coupon-form {
-    .fieldset {
-      padding: 0 30px;
-    }
+  .briqpay-checkout-block {
+    padding: 0 20px;
   }
 
   .success-save:after{
@@ -1018,13 +1049,8 @@ button:not(.primary).primary {
   }
 
   #briqpay_checkoutSidebar {
-    max-width: 1130px;
-    margin: 0 auto 220px;
-  }
-
-  .briqpay-product-info-btm {
-    display: flex;
-    justify-content: space-between;
+    max-width: 865px;
+    margin: 0 auto 225px;
   }
 
   table {
@@ -1035,6 +1061,9 @@ button:not(.primary).primary {
             display: none;
           }
         }
+        &.subtotal {
+          text-align: right;
+        }
       }
 
       th, td {
@@ -1043,8 +1072,8 @@ button:not(.primary).primary {
         &.qty,
         &.price,
         &.subtotal {
-          padding-left: 30px;
-          padding-right: 30px;
+          padding-left: 20px;
+          padding-right: 20px;
         }
 
         &.price {
@@ -1059,14 +1088,18 @@ button:not(.primary).primary {
 
         &.item-img {
           padding-right: 0;
-          padding-left: 30px;
-          width: @calc-width;
-          max-width: @calc-width;
+          padding-left: 20px;
+          & > .container {
+            display: flex;
+          }
+          .product-item-details {
+            flex: 1;
+          }
         }
 
         &.item-desc {
           padding-right: 0;
-          padding-left: 0;
+          padding-left: 20px;
         }
 
         & {
@@ -1076,19 +1109,13 @@ button:not(.primary).primary {
       }
 
       td {
-        padding-top: 30px;
-        padding-bottom: 30px;
+        padding-top: 40px;
+        padding-bottom: 40px;
         vertical-align: top;
 
         &.subtotal {
           text-align: right !important;
           position: relative;
-        }
-      }
-
-      .briqpay-checkout-col {
-        .product-item-info {
-          width: 90%;
         }
       }
     }
@@ -1099,7 +1126,7 @@ button:not(.primary).primary {
   #briqpay-checkout_cart_totals {
     text-align: right;
     border-bottom: @briqpay-border;
-    padding: 35px 30px 35px 120px;
+    padding: 30px 20px 30px 75px;
     order: 3;
     width: 50%;
 
@@ -1122,7 +1149,20 @@ button:not(.primary).primary {
         }
 
         td, th {
-          padding: 10px 0 0;
+          padding: 15px 0 0;
+        }
+
+        tr {
+          &:first-child {
+            td, th {
+              padding-top: 0;
+            }
+          }
+          &.totals-tax {
+            th {
+              text-transform: capitalize;
+            }
+          }
         }
       }
     }
@@ -1143,6 +1183,8 @@ button:not(.primary).primary {
     &.discount {
       width: 100%;
       margin: 0 auto;
+      padding-right: 0;
+      padding-bottom: 25px;
     }
   }
 
@@ -1151,7 +1193,7 @@ button:not(.primary).primary {
     .page-title {
       .briqpay-heading;
       font-size: 38px;
-      color: @briqpay-color-blue;
+      color: @briqpay-color-dark;
       border: 0;
       padding-bottom: 0;
       margin-bottom: 0;
@@ -1191,7 +1233,7 @@ button:not(.primary).primary {
     display: block;
     max-width: 100%;
     text-align: center;
-    color: @briqpay-color-blue;
+    color: @briqpay-color-dark;
     border: 0;
     margin: 0;
     @media only screen and (max-width: @screen__m) {
@@ -1440,7 +1482,6 @@ button:not(.primary).primary {
           td {
             font-weight: 600;
             text-align: right;
-
           }
           &.totals-tax {
             th, td {
@@ -1541,7 +1582,7 @@ button:not(.primary).primary {
 
   .checkout-success {
     h1 {
-      color: @briqpay-color-black;
+      color: @briqpay-color-dark;
       text-align: center;
       font-weight: 600;
     }
@@ -1599,7 +1640,7 @@ button:not(.primary).primary {
         display: block;
         font-size: 18px;
         font-weight: 600;
-        color: @briqpay-color-blue;
+        color: @briqpay-color-dark;
         @media only screen and (max-width: @screen__m) {
           font-size: 12px;
           text-align: right;
@@ -1665,7 +1706,7 @@ button:not(.primary).primary {
       }
 
       td {
-        color: @briqpay-color-blue;
+        color: @briqpay-color-dark;
         font-size: 18px;
         font-weight: 600;
         @media only screen and (max-width: @screen__m) {
@@ -1775,8 +1816,8 @@ button:not(.primary).primary {
 
 .briqpay-checkout-wrapper {
   #checkout-shipping {
-    max-width: 660px;
     margin-bottom: 0;
+    max-width: 865px;
     label {
       margin: 0;
     }

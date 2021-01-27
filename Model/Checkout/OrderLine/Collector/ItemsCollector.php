@@ -38,7 +38,12 @@ class ItemsCollector implements OrderItemCollectorInterface
 
                 $itemAmount = round($item->getPrice() * $item->getQty() - $item->getDiscountAmount(), 2);
                 $taxClassId = $item->getProduct()->getCustomAttribute('tax_class_id');
-                $productRateId = $taxClassId->getValue();
+                $productRateId = '';
+
+                if ($taxClassId) { 
+                    $productRateId = $taxClassId->getValue();
+                }
+                
                 $totalTaxAmount = $this->taxCalculationService->getCalculatedRate(
                     $productRateId,
                     $quote->getCustomerId() ?: null,

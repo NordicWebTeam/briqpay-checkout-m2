@@ -75,14 +75,6 @@ switch ($type = $block->getType()) {
                                 <?= $block->getImage($_item, $image)->toHtml() ?>
                             </a>
                             <div class="product details product-item-details">
-                                <?php
-                                    $brand = $_item->getResource()->getAttribute('manufacturer')->getFrontend()->getValue($_item);
-                                ?>
-                                <?php if ($brand): ?>
-                                    <strong class="product-brand-name">
-                                        <?= $brand ?>
-                                    </strong>
-                                <?php endif; ?>
                                 <strong class="product name product-item-name">
                                     <a class="product-item-link"
                                        title="<?= $block->escapeHtml($_item->getName()) ?>"
@@ -91,6 +83,9 @@ switch ($type = $block->getType()) {
                                         <?= $block->escapeHtml($_item->getName()) ?>
                                     </a>
                                 </strong>
+                                <div class="produt description product-item-description">
+                                    <?= $_item->getShortDescription() ?>
+                                </div>
                                 <div class="briqpay-product-info-btm">
                                     <?= /* @escapeNotVerified */
                                     $block->getProductPrice($_item) ?>
@@ -105,9 +100,9 @@ switch ($type = $block->getType()) {
                                                             <input type="hidden" name="<?= /* @escapeNotVerified */ Action::PARAM_NAME_URL_ENCODED ?>" value="<?= /* @escapeNotVerified */ $postParams['data'][Action::PARAM_NAME_URL_ENCODED] ?>">
                                                             <?= $block->getBlockHtml('formkey') ?>
                                                             <button type="submit"
-                                                                    title="<?= $block->escapeHtml(__('Add to Cart')) ?>"
+                                                                    title="<?= $block->escapeHtml(__('Add to cart')) ?>"
                                                                     class="action tocart primary">
-                                                                <span><?= /* @escapeNotVerified */ __('Add to Cart') ?></span>
+                                                                <span><?= /* @escapeNotVerified */ __('Add to cart') ?></span>
                                                             </button>
                                                         </form>
                                                     <?php else: ?>
