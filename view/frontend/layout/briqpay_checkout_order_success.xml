@@ -10,10 +10,10 @@
     <body>
         <referenceContainer name="page.wrapper">
             <referenceBlock name="breadcrumbs" remove="true"/>
-            <referenceBlock name="page.main.title">
+            <referenceBlock name="page.main.title" template="Briqpay_Checkout::html/title.phtml">
                 <action method="setPageTitle">
                     <argument translate="true" name="title" xsi:type="string">
-                        Thank you for your purchase! We have received your order.
+                        Thank you for your purchase! <![CDATA[<br />]]> We have received your order.
                     </argument>
                 </action>
             </referenceBlock>

@@ -2,9 +2,8 @@
 //  Variables
 //  _____________________________________________
 @briqpay-color-dark: #040404;
-@briqpay-light-blue: #edf9fa;
 
-@briqpay-hover-blue: #69bcc4;
+@briqpay-hover-blue: #79CBC2;
 @briqpay-color-light-grey: #F4F4F4;
 @briqpay-color-dark-grey: #8b8b8b;
 @briqpay-color-white: #FFFFFF;
@@ -14,8 +13,8 @@
 @briqpay-border-2: 1px solid @briqpay-color-border-2;
 @screen__xs: 320px;
 @screen__s: 420px;
-@screen__m: 768px;
-@screen__l: 1024px;
+@screen__m: 767px;
+@screen__l: 1025px;
 
 
 //
@@ -56,7 +55,7 @@
   padding-bottom: 25px;
   margin: 30px auto 0;
   @media only screen and (max-width: @screen__m) {
-    font-size: 16px;
+    font-size: 22px;
     padding-bottom: 10px;
   }
 }
@@ -87,7 +86,6 @@ input[type=radio] {
     width: 20px;
     min-width: 20px;
     height: 20px;
-    margin-right: 10px;
   }
 
   &:checked {
@@ -160,8 +158,12 @@ button:not(.primary) {
     padding: 0;
     margin-top: 150px;
 
+    @media only screen and (max-width: @screen__m + 1) {
+      margin-top: 70px;
+    }
+
     @media only screen and (max-width: @screen__m) {
-      display: none;
+      margin-top: 40px;
     }
   }
 
@@ -272,12 +274,18 @@ button:not(.primary) {
 
   .briqpay-checkout-block {
     &.discount {
+      @media only screen and (max-width: @screen__m) {
+        padding-bottom: 20px;
+      }
       .title {
         cursor: pointer;
         text-decoration: underline;
         strong {
           font-size: 16px;
           font-weight: 600;
+          @media only screen and (max-width: @screen__m) {
+            font-size: 14px;
+          }
         }
       }
       #discount-coupon-form {
@@ -370,6 +378,9 @@ button:not(.primary) {
       width: 200px !important;
       .product-image-photo {
         width: 200px;
+        @media only screen and (min-width: @screen__m + 1) and (max-width: @screen__m + 1) {
+          max-width: 150px;
+        }
       }
     }
     @media only screen and (max-width: @screen__m) {
@@ -387,7 +398,7 @@ button:not(.primary) {
       text-decoration: underline;
       cursor: pointer;
       @media only screen and (max-width: @screen__m) {
-        font-size: 12px;
+        font-size: 14px;
       }
     }
   }
@@ -416,10 +427,6 @@ label[for="coupon-toggle"] {
   padding: 20px 0;
   text-decoration: none;
   font-size: 18px;
-
-  a {
-    color: @briqpay-light-blue;
-  }
 }
 
 .briqpay-comment-title {
@@ -465,6 +472,12 @@ table {
 
     th, td {
       vertical-align: middle;
+      & {
+        border-bottom: @briqpay-border;
+        @media only screen and (max-width: @screen__m) {
+          border-bottom: 0;
+        }
+      }
 
       &.qty {
         text-align: center !important;
@@ -513,10 +526,10 @@ table {
             font-weight: 500;
             box-sizing: border-box;
             @media only screen and (max-width: @screen__m) {
-              height: 38px;
+              height: 42px;
               width: 42px;
-              line-height: 38px;
-              font-size: 12px;
+              line-height: 40px;
+              font-size: 14px;
               font-weight: 400;
             }
           }
@@ -542,6 +555,7 @@ table {
 
       &.subtotal {
         text-align: right;
+        position: relative;
 
         .remove-product {
           position: absolute;
@@ -563,7 +577,7 @@ table {
           font-weight: 700;
           color: @briqpay-color-dark;
           @media only screen and (max-width: @screen__m) {
-            font-size: 12px;
+            font-size: 14px;
             color: @briqpay-color-dark;
           }
         }
@@ -607,11 +621,8 @@ table {
           color: @briqpay-color-dark;
           display: block;
           @media only screen and (max-width: @screen__m) {
-            font-size: 12px;
-            display: inline;
-            &:after {
-              content: ',';
-            }
+            font-size: 14px;
+            line-height: 22px;
           }
         }
         .product-item-description {
@@ -623,9 +634,8 @@ table {
           -webkit-box-orient: vertical;
           overflow: hidden;
           @media only screen and (max-width: @screen__m) {
-            font-size: 12px;
-            line-height: 20px;
-            display: inline;
+            font-size: 14px;
+            line-height: 22px;
           }
         }
       }
@@ -654,10 +664,16 @@ table {
   padding-bottom: 80px;
   max-width: 1280px;
   margin: 0 auto;
+  @media only screen and (max-width: @screen__m) {
+    padding-bottom: 30px;
+  }
   .slick-list {
     width: 100%;
     @media only screen and (max-width: @screen__m) {
-      padding-right: 20%;
+      padding-right: 15%;
+      margin-right: -15px;
+      margin-left: -15px;
+      width: auto;
     }
   }
   .block.briqpay-crosssell {
@@ -712,13 +728,19 @@ table {
             .product-item-name > a,
             button,
             .price-box,
-            .price-container .price,
-            .product-brand-name {
+            .price-container .price {
               color: @briqpay-color-dark;
               font-size: 16px;
               font-weight: 700;
               @media only screen and (max-width: @screen__m) {
                 font-size: 12px;
+              }
+            }
+
+            .product-item-name > a {
+              @media only screen and (max-width: @screen__m) {
+                font-size: 16px;
+                line-height: 26px;
               }
             }
 
@@ -732,8 +754,6 @@ table {
                 margin-bottom: 0;
               }
               @media only screen and (max-width: @screen__m) {
-                font-size: 14px;
-                margin: 0;
                 p {
                   margin: 0;
                 }
@@ -741,11 +761,6 @@ table {
               .price-label {
                 display: none !important;
               }
-            }
-
-            .product-brand-name {
-              display: block;
-              font-weight: 600;
             }
 
             .product-item-name {
@@ -772,7 +787,6 @@ table {
             padding-bottom: 20px;
             text-align: left;
             @media only screen and (max-width: @screen__m) {
-              max-width: 270px;
               margin: 0 auto;
             }
 
@@ -794,17 +808,7 @@ table {
                 opacity: .8;
               }
               @media only screen and (max-width: @screen__m) {
-                font-size: 12px;
                 margin: 0;
-              }
-            }
-
-            .briqpay-product-info-btm {
-              @media only screen and (max-width: @screen__m) {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-top: 10px;
               }
             }
           }
@@ -847,11 +851,12 @@ table {
 }
 
 .briqpay-checkout-shipping {
-  padding-bottom: 25px;
+  padding-bottom: 120px;
   margin: 0 auto 25px;
   @media only screen and (max-width: @screen__m) {
     max-width: 100%;
     margin: 0;
+    padding-bottom: 35px;
   }
 
   input,
@@ -881,7 +886,7 @@ table {
   #briqpay-checkout_shipping_method .briqpay-checkout-radio-row {
     width: 100%;
     margin: 0;
-    padding: 25px 20px;
+    padding: 20px;
     border-top: @briqpay-border;
     @media only screen and (max-width: @screen__m) {
       padding: 15px 0;
@@ -893,6 +898,7 @@ table {
 
     > span {
       display: flex;
+      align-items: center;
     }
 
     label {
@@ -901,12 +907,34 @@ table {
       color: @briqpay-color-dark;
       display: flex;
       justify-content: space-between;
-      width: 100%;
+      align-items: center;
+      width: 60%;
       @media only screen and (max-width: @screen__m) {
-        font-size: 12px;
+        font-size: 14px;
+        width: 100%;
       }
-      .price {
-        font-weight: 600;
+      .title {
+        font-weight: 400;
+        @media only screen and (max-width: @screen__m) {
+          font-weight: 700;
+        }
+      }
+      & > span {
+        width: 33.3%;
+      }
+    }
+
+    input[type="radio"] {
+      width: 33px;
+      min-width: 33px;
+      height: 33px;
+      border-radius: 50%;
+      margin-right: 20px;
+      &:checked:after {
+        background: transparent url("../images/check-btn-thin.svg") no-repeat 50% 50%;
+        background-size: cover;
+        width: 35px;
+        height: 33px;
       }
     }
   }
@@ -938,7 +966,10 @@ button:not(.primary).primary {
 //  _____________________________________________
 #briqpay-checkout_cart_totals {
   color: @briqpay-color-dark;
+  border-bottom: @briqpay-border;
   flex: 1;
+  padding: 30px 20px 30px 75px;
+  width: 50%;
 
   th, td {
     font-size: 16px;
@@ -1031,9 +1062,6 @@ button:not(.primary).primary {
 //  Desktop
 //  _____________________________________________
 @media only screen and (min-width: @screen__m) {
-  .order_inside {
-    padding: 10px 40px;
-  }
 
   .briqpay-checkout-block {
     padding: 0 20px;
@@ -1049,7 +1077,6 @@ button:not(.primary).primary {
   }
 
   #briqpay_checkoutSidebar {
-    max-width: 865px;
     margin: 0 auto 225px;
   }
 
@@ -1101,11 +1128,6 @@ button:not(.primary).primary {
           padding-right: 0;
           padding-left: 20px;
         }
-
-        & {
-          border-bottom: @briqpay-border;
-        }
-
       }
 
       td {
@@ -1115,7 +1137,6 @@ button:not(.primary).primary {
 
         &.subtotal {
           text-align: right !important;
-          position: relative;
         }
       }
     }
@@ -1125,10 +1146,7 @@ button:not(.primary).primary {
   //  _____________________________________________
   #briqpay-checkout_cart_totals {
     text-align: right;
-    border-bottom: @briqpay-border;
-    padding: 30px 20px 30px 75px;
     order: 3;
-    width: 50%;
 
     table {
       tfoot {
@@ -1192,23 +1210,23 @@ button:not(.primary).primary {
   .briqpay_checkout-order-success {
     .page-title {
       .briqpay-heading;
-      font-size: 38px;
-      color: @briqpay-color-dark;
+      line-height: 43px;
       border: 0;
       padding-bottom: 0;
       margin-bottom: 0;
+      margin-top: 70px;
 
       span:before {
         content: '';
         background: transparent url("../images/check-btn.svg") no-repeat 50% 50%;
         display: block;
         height: 60px;
-        margin: 15px 0;
+        margin: 30px 0;
       }
     }
 
     .order_inside {
-      padding: 10px 30px;
+      padding: 25px 20px;
     }
 
     .briqpay-checkout-order__items {
@@ -1216,7 +1234,7 @@ button:not(.primary).primary {
 
       table {
         th, td {
-          padding: 25px 30px;
+          padding: 30px 20px;
         }
       }
     }
@@ -1230,10 +1248,11 @@ button:not(.primary).primary {
 .briqpay_checkout-order-success {
   .briqpay-checkout-grand-total.amount {
     .briqpay-heading;
+    font-size: 28px;
     display: block;
     max-width: 100%;
     text-align: center;
-    color: @briqpay-color-dark;
+    color: @briqpay-hover-blue;
     border: 0;
     margin: 0;
     @media only screen and (max-width: @screen__m) {
@@ -1242,25 +1261,34 @@ button:not(.primary).primary {
   }
 
   .notes-container {
-    padding-bottom: 40px;
+    padding-bottom: 50px;
     text-align: center;
-
+    @media only screen and (max-width: @screen__m) {
+      padding-bottom: 30px;
+    }
     .note {
       display: block;
-      font-size: 16px;
+      font-size: 18px;
+      line-height: 28px;
       @media only screen and (max-width: @screen__m) {
         font-size: 14px;
+        line-height: 22px;
       }
     }
   }
 
   .logo-container {
     text-align: center;
-    padding: 40px 0;
+    padding: 65px 0;
     @media only screen and (max-width: @screen__m) {
-      max-width: 140px;
       padding: 20px 0;
       margin: 0 auto;
+    }
+    .logo {
+      font-size: 38px;
+      @media only screen and (max-width: @screen__m) {
+        font-size: 26px;
+      }
     }
   }
 }
@@ -1340,8 +1368,6 @@ button:not(.primary).primary {
   }
 
   #briqpay_checkoutSidebar {
-    padding: 20px 0;
-
     .briqpay-checkout-block {
       &.discount {
         #discount-coupon-form {
@@ -1377,7 +1403,6 @@ button:not(.primary).primary {
 
       th {
         padding: 10px 0;
-        border-top: @briqpay-border;
         border-bottom: @briqpay-border;
         font-size: 14px;
 
@@ -1386,7 +1411,7 @@ button:not(.primary).primary {
           display: none;
         }
 
-        &.price {
+        &.subtotal {
           text-align: right;
           position: absolute;
           right: 0;
@@ -1400,7 +1425,6 @@ button:not(.primary).primary {
         padding: 20px 0;
 
         &.item-img,
-        &.item-desc,
         &.subtotal {
           order: 1;
         }
@@ -1415,8 +1439,14 @@ button:not(.primary).primary {
         }
 
         &.item-img {
-          width: auto;
+          width: 90%;
           padding-right: 15px;
+          & > .container {
+            display: flex;
+            .product-item-details {
+              flex: 1;
+            }
+          }
           .product-item-image {
             text-align: center;
           }
@@ -1425,6 +1455,7 @@ button:not(.primary).primary {
         &.subtotal {
           width: auto;
           margin-left: auto;
+          position: static;
           > span[class^="price"] {
             position: absolute;
             bottom: 20px;
@@ -1463,6 +1494,9 @@ button:not(.primary).primary {
 
   #briqpay-checkout_cart_totals {
     order: 2;
+    border-bottom: 0;
+    width: 100%;
+    padding: 20px 0 35px;
 
     table {
       tfoot {
@@ -1470,13 +1504,13 @@ button:not(.primary).primary {
 
         tr {
           th, td {
-            font-size: 12px;
-            padding: 5px 0;
+            font-size: 14px;
+            padding: 10px 0;
           }
           th {
-            font-weight: 400;
             &:after {
               content: ':';
+              margin-left: -4px;
             }
           }
           td {
@@ -1484,16 +1518,16 @@ button:not(.primary).primary {
             text-align: right;
           }
           &.totals-tax {
-            th, td {
-              padding-bottom: 20px;
+            th {
+              text-transform: capitalize;
             }
           }
           &.grand.totals {
             border-top: @briqpay-border;
             th, td {
-              font-size: 14px;
+              font-size: 16px;
               font-weight: 700;
-              padding: 10px 0;
+              padding: 20px 0;
             }
             &:after {
               display: none;
@@ -1525,15 +1559,15 @@ button:not(.primary).primary {
 
     .page-title {
       display: block;
-      font-size: 20px;
+      line-height: 31px;
+      padding-bottom: 0;
       margin-bottom: 0;
-      max-width: 70%;
       span:before {
         content: '';
         background: transparent url("../images/check-btn.svg") no-repeat 50% 50%;
         background-size: contain;
         display: block;
-        height: 40px;
+        height: 45px;
         margin: 15px 0;
       }
     }
@@ -1542,11 +1576,6 @@ button:not(.primary).primary {
       li {
         display: block;
       }
-    }
-
-    .briqpay-checkout-order__items {
-      margin-top: 0 !important;
-      padding: 20px 0 0 0;
     }
   }
 }
@@ -1558,6 +1587,12 @@ button:not(.primary).primary {
 
   .go-to {
     float: right;
+  }
+  
+  #briqpay_checkoutSidebar,
+  .briqpay-checkout-wrapper #checkout-shipping,
+  #briqpay_checkoutWidget {
+    max-width: 865px;
   }
 }
 
@@ -1594,7 +1629,6 @@ button:not(.primary).primary {
   }
 
   #briqpay_checkoutSidebar {
-    max-width: 1130px;
     margin: 0 auto;
     @media only screen and (max-width: @screen__m) {
       padding-top: 0;
@@ -1611,7 +1645,7 @@ button:not(.primary).primary {
     font-size: 20px;
 
     @media only screen and (max-width: @screen__m) {
-      font-size: 12px;
+      font-size: 14px;
       flex-wrap: wrap;
     }
 
@@ -1639,11 +1673,17 @@ button:not(.primary).primary {
         width: 100%;
         display: block;
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 400;
         color: @briqpay-color-dark;
+        padding-top: 10px;
         @media only screen and (max-width: @screen__m) {
-          font-size: 12px;
+          font-size: 14px;
           text-align: right;
+          width: 50%;
+          padding-top: 0;
+        }
+        p {
+          margin-bottom: 0;
         }
       }
     }
@@ -1657,12 +1697,12 @@ button:not(.primary).primary {
       .briqpay-heading;
       display: block;
       border: 0;
+      margin-top: 0;
       margin-bottom: 0;
       padding-bottom: 0;
       max-width: 100%;
       text-align: center;
       @media only screen and (max-width: @screen__m) {
-        margin-top: 0;
         padding-bottom: 0;
       }
     }
@@ -1677,19 +1717,18 @@ button:not(.primary).primary {
 
       tr {
         border-bottom: @briqpay-border;
-        &:last-child td.col-item {
+        &:last-child > * {
           font-size: 20px;
           font-weight: 700;
-          color: @briqpay-color-dark;
           @media only screen and (max-width: @screen__m) {
-            font-size: 12px;
+            font-size: 16px;
           }
         }
       }
 
       th, td {
         @media only screen and (max-width: @screen__m) {
-          padding: 15px 0;
+          padding: 20px 0;
         }
       }
 
@@ -1697,7 +1736,7 @@ button:not(.primary).primary {
         font-size: 20px;
         font-weight: 700;
         @media only screen and (max-width: @screen__m) {
-          font-size: 12px;
+          font-size: 16px;
         }
 
         &.col-subtotal {
@@ -1708,9 +1747,9 @@ button:not(.primary).primary {
       td {
         color: @briqpay-color-dark;
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 700;
         @media only screen and (max-width: @screen__m) {
-          font-size: 12px;
+          font-size: 14px;
         }
 
         .count {
@@ -1719,6 +1758,10 @@ button:not(.primary).primary {
 
         &.col-amount {
           text-align: right;
+        }
+
+        &.product > span:first-child {
+          text-decoration: underline;
         }
       }
     }
@@ -1729,22 +1772,24 @@ button:not(.primary).primary {
       box-shadow: none;
       text-align: center;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       text-decoration: none;
       display: block;
-      max-width: 300px;
+      max-width: 335px;
       margin: 0 auto 100px;
       min-height: 55px;
       line-height: 55px;
+      background: @briqpay-hover-blue;
+      color: @briqpay-color-white;
+      border-radius: 0 !important;
       @media only screen and (max-width: @screen__m) {
-        font-size: 14px;
-        min-height: 45px;
-        line-height: 45px;
+        min-height: 50px;
+        line-height: 50px;
         max-width: 100%;
       }
-
-      &, &:hover {
-        color: @briqpay-color-white !important;
+      &:hover {
+        opacity: .8;
+        background: @briqpay-hover-blue;
       }
     }
 
@@ -1817,7 +1862,6 @@ button:not(.primary).primary {
 .briqpay-checkout-wrapper {
   #checkout-shipping {
     margin-bottom: 0;
-    max-width: 865px;
     label {
       margin: 0;
     }
@@ -2001,5 +2045,12 @@ button:not(.primary).primary {
     input[type=checkbox]:checked:after {
       background: transparent url(../images/checkmark.svg) no-repeat 50% 50%;
     }
+  }
+}
+
+#briqpay_checkoutWidget {
+  margin: 0 auto;
+  .checkout-title h4 {
+    border-bottom: 0;
   }
 }
