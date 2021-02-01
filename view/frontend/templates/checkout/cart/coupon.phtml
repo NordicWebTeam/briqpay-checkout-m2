@@ -3,31 +3,40 @@
 // @codingStandardsIgnoreFile
 /** @var $block Briqpay\Checkout\Block\Checkout\Coupon */
 ?>
-<div id="briqpay-checkout_coupon" class="briqpay-checkout-block discount">
-    <form id="discount-coupon-form"
-          action="<?= /* @escapeNotVerified */ $block->getCouponSubmitUrl() ?>"
-          method="post"
-          >
-        <div class="fieldset coupon<?= strlen($block->getCouponCode()) ? ' applied' : ''?>">
-            <input type="hidden" name="remove" id="remove-coupon" value="<?php echo strlen($block->getCouponCode()) ? 1 : 0;?>" />
-            <div class="field">
-                <div class="control">
-                    <input type="text" class="briqpay-checkout-show-on-focus input-text" id="coupon_code" name="coupon_code" value="<?php echo $block->escapeHtml($block->getCouponCode()) ?>" placeholder="<?php echo $block->escapeHtml(__('Enter discount code'));?>" />
+<div id="briqpay-checkout_coupon" class="briqpay-checkout-block discount"
+    data-mage-init='{"collapsible":{"active": <?= strlen($block->getCouponCode()) ? 'true' : 'false' ?>, "openedState": "active", "saveState": false,
+                     "animate": {"duration": 300, "easing": "easeOutCubic"}}}'>
+    <div class="title" data-role="title">
+        <strong id="block-discount-heading" role="heading" aria-level="2">
+            <?= $block->escapeHtml(__('Do you have a discount code?')) ?>
+        </strong>
+    </div>
+    <div class="content" data-role="content" aria-labelledby="block-discount-heading">
+        <form id="discount-coupon-form"
+            action="<?= /* @escapeNotVerified */ $block->getCouponSubmitUrl() ?>"
+            method="post"
+            >
+            <div class="fieldset coupon<?= strlen($block->getCouponCode()) ? ' applied' : ''?>">
+                <input type="hidden" name="remove" id="remove-coupon" value="<?php echo strlen($block->getCouponCode()) ? 1 : 0;?>" />
+                <div class="field">
+                    <div class="control">
+                        <input type="text" class="briqpay-checkout-show-on-focus input-text" id="coupon_code" name="coupon_code" value="<?php echo $block->escapeHtml($block->getCouponCode()) ?>" placeholder="<?php echo $block->escapeHtml(__('Enter discount code'));?>" />
+                    </div>
+                </div>
+                <div class="actions-toolbar">
+                    <?php if (!strlen($block->getCouponCode())): ?>
+                        <div class="primary">
+                            <button class="action apply primary" type="submit" value="<?php /* @escapeNotVerified */ echo __('Activate code') ?>">
+                                <span><?= /* @escapeNotVerified */ __('Activate code') ?></span>
+                            </button>
+                        </div>
+                    <?php else: ?>
+                        <div class="secondary">
+                            <button  type="submit" class="action cancel primary" value="<?php /* @escapeNotVerified */ echo __('Cancel Coupon') ?>"><span><?php /* @escapeNotVerified */ echo __('Cancel Coupon') ?></span></button>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
-            <div class="actions-toolbar">
-                <?php if (!strlen($block->getCouponCode())): ?>
-                    <div class="primary">
-                        <button class="action apply primary" type="submit" value="<?php /* @escapeNotVerified */ echo __('Apply Discount') ?>">
-                            <span><?= /* @escapeNotVerified */ __('Apply Discount') ?></span>
-                        </button>
-                    </div>
-                <?php else: ?>
-                    <div class="secondary">
-                        <button  type="submit" class="action cancel primary" value="<?php /* @escapeNotVerified */ echo __('Cancel Coupon') ?>"><span><?php /* @escapeNotVerified */ echo __('Cancel Coupon') ?></span></button>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>

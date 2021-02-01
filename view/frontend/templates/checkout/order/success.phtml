@@ -21,6 +21,9 @@ $realId = $block->getRealOrderId();
                 <span class="note">
                     <?= __("Price including VAT"); ?>
                 </span>
+                <span class="note">
+                    <?= __("You have chosen to pay by invoice."); ?>
+                </span>
             </div>
 
             <div class="order_inside">
@@ -29,9 +32,9 @@ $realId = $block->getRealOrderId();
                         <?= __('Order number:') ?>
                         <strong>
                             <?php if ($block->getCanViewOrder()) : ?>
-                                <p><?= __('#: %1.', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($block->getOrderId()))) ?></p>
+                                <p><?= __('%1', sprintf('<a href="%s" class="order-number"><strong>%s</strong></a>', $block->escapeHtml($block->getViewOrderUrl()), $block->escapeHtml($block->getOrderId()))) ?></p>
                             <?php else : ?>
-                                <p><?= __('#: %1', $block->escapeHtml($block->getOrderId())) ?></p>
+                                <p><?= __('%1', $block->escapeHtml($block->getOrderId())) ?></p>
                             <?php endif; ?>
                         </strong>
                     </li>
@@ -52,13 +55,13 @@ $realId = $block->getRealOrderId();
                         </strong>
                     </li>
                     <li class="briqpay-checkout-order-overview__payment-method method">
-                        <?= __('Payment Method:') ?> <strong><?= __('Briqpay Checkout') ?></strong>
+                        <?= __('Payment Method: ') ?> <strong><?= __('Briqpay Checkout') ?></strong>
                     </li>
                 </ul>
             </div>
 
             <div class="logo-container">
-                <img src="<?= $block->getViewFileUrl('Briqpay_Checkout::images/logo-checkout.png'); ?>" alt="logo">
+                <img src="<?= $block->getViewFileUrl('Briqpay_Checkout::images/logo-dark.png'); ?>" alt="logo">
             </div>
 
             <?php if ($orderItems) : ?>
@@ -74,7 +77,7 @@ $realId = $block->getRealOrderId();
                     <tbody>
                     <?php foreach ($orderItems as $orderItem) : ?>
                         <tr>
-                            <td class="col-item"><?= $orderItem->getData('name') . ' <span class="count"> X ' . round($orderItem->getData('qty_ordered')) . ' </span >' ?></td>
+                            <td class="col-item product"><?= '<span>' . $orderItem->getData('name') . '</span>' . ' <span class="count"> x' . round($orderItem->getData('qty_ordered')) . ' </span >' ?></td>
                             <td class="col-amount"><?= $orderData->formatPrice($orderItem->getData('row_total_incl_tax')) ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -86,14 +89,14 @@ $realId = $block->getRealOrderId();
                     <?php endif; ?>
                     <tr>
                         <td class="col-item"><?= __('Shipping:') ?></td>
-                        <td class="col-amount"><?= $orderData->formatPrice($orderData->getData('shipping_amount')) . '<span class="count">(' . $orderData->getData('shipping_description') . ')</span >' ?></td>
+                        <td class="col-amount"><?= $orderData->formatPrice($orderData->getData('shipping_amount')) . ' <span class="count">(' . $orderData->getData('shipping_description') . ')</span >' ?></td>
                     </tr>
                     <tr>
-                        <td class="col-item"><?= __('Payment Method:') ?></td>
+                        <td class="col-item"><?= __('Payment Method: ') ?></td>
                         <td class="col-amount"><?= __('Briqpay Checkout') ?></td>
                     </tr>
                     <tr>
-                        <td class="col-item"><?= __('Total:') ?></td>
+                        <td class="col-item"><?= __('Total') . ':' ?></td>
                         <td class="col-amount"><?= $orderData->formatPrice($orderData->getData('grand_total')) ?></td>
                     </tr>
                     </tbody>

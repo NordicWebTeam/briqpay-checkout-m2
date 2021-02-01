@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
-        <title>Kassan</title>
+        <title>Varukorgen</title>
         <css src="Briqpay_Checkout::css/briqpay.css"/>
     </head>
 
@@ -150,6 +150,7 @@
                 <!-- Leave a comment -->
                 <block class="Briqpay\Checkout\Block\Checkout\Comment" name="briqpay.checkout.comment" as="comment"
                        template="Briqpay_Checkout::checkout/comment.phtml"
+                       ifconfig="briqpay/layout/display_comment"
                 />
 
                 <container name="briqpay_widget" as="briqpay_widget" label="briqpay_Widget" htmlTag="div" htmlId="briqpay_checkoutWidget">
