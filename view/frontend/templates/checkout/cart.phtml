@@ -3,22 +3,6 @@
 ?>
 <div id="briqpay-checkout_cart" class="table-wrapper order-items">
     <table id="details-table" class="checkout-review" cellspacing="0" cellpadding="0" border="0">
-        <thead>
-        <tr>
-            <th class="col item-desc" scope="col">
-                <span><?= /* @escapeNotVerified */
-                    __('Product') ?></span>
-            </th>
-            <th class="col qty" scope="col">
-                <span><?= /* @escapeNotVerified */
-                    __('Quantity') ?></span>
-            </th>
-            <th class="col subtotal" scope="col">
-                <span><?= /* @escapeNotVerified */
-                    __('Subtotal') ?></span>
-            </th>
-        </tr>
-        </thead>
         <tbody class="checkout-cart checkout-item">
             <?php foreach ($block->getItems() as $item): ?>
                 <?= $block->getItemHtml($item) ?>
