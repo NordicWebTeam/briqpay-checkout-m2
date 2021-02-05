@@ -107,15 +107,13 @@
                             </block>
 
                             <!-- Apply Discount Code -->
-                            <!-- Not working as it is, block needs to be replaced -->
                             <block class="Briqpay\Checkout\Block\Checkout\Coupon" name="briqpay_checkout.coupon" as="coupon"
                                    template="Briqpay_Checkout::checkout/cart/coupon.phtml"
                             />
 
                             <!-- Newsletter -->
-                            <!-- Not working as it is, block needs to be replaced -->
                             <block class="Magento\Framework\View\Element\Template" name="briqpay_checkout.newsletter" as="newsletter"
-                                   template="Briqpay_Checkout::checkout/subscribe.phtml"
+                                   template="Briqpay_Checkout::checkout/subscribe.phtml" ifconfig="briqpay/layout/display_newsletter"
                             />
 
                             <block class="Magento\Checkout\Block\Cart\Totals" name="briqpay_checkout.cart.totals"
