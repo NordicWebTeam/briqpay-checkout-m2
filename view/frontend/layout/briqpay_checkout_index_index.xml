@@ -109,6 +109,7 @@
                             <!-- Apply Discount Code -->
                             <block class="Briqpay\Checkout\Block\Checkout\Coupon" name="briqpay_checkout.coupon" as="coupon"
                                    template="Briqpay_Checkout::checkout/cart/coupon.phtml"
+                                   ifconfig="briqpay/layout/display_coupon"
                             />
 
                             <!-- Newsletter -->
