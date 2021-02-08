@@ -78,6 +78,7 @@ class Success extends Action
 
         /** @var \Briqpay\Checkout\Block\Checkout\Order\Success $successBlock */
         $successBlock = $layout->getBlock(self::BLOCK_NAME_SUCCESS);
+        return;
         if (! $successBlock) {
             return;
         }

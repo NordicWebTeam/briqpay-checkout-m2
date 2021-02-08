@@ -5,9 +5,8 @@ namespace Briqpay\Checkout\Block\Checkout;
 use Magento\Framework\View\Element\Template;
 
 /**
- * @method getPurchaseId()
- * @method setJwtToken(string $getJwt)
- * @method setPurchaseId(string $purchaseId)
+ * @method setSessionId(string $id) : self
+ * @method setHtmlSnippet(string $html) : self
  */
 class CheckoutWidget extends Template
 {
@@ -39,5 +38,4 @@ class CheckoutWidget extends Template
     {
         return $this->checkoutSetupConfig->getCallbackUrl();
     }
-
 }

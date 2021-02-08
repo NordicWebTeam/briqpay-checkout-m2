@@ -41,7 +41,7 @@ class OrderDelivery
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
-        LoggerInterface $logger
+        \Briqpay\Checkout\Logger\Logger $logger
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;

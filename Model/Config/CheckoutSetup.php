@@ -19,7 +19,7 @@ class CheckoutSetup
     private const XML_PATH_CHECKOUT_DEFAULT_COUNTRY = 'briqpay/checkout_config/default_country';
     private const XML_PATH_CHECKOUT_REGISTER_ON_CHECKOUT = 'briqpay/checkout_config/register_on_checkout';
     private const XML_PATH_CHECKOUT_DIFFERENT_DELIVERY_ADDRESS = 'briqpay/checkout_config/different_delivery_address';
-    private const XML_PATH_CHECKOUT_URL_TERMS = 'briqpay/checkout_config/terms_url';
+
     private const XML_PATH_CHECKOUT_URL_INTEGRITY = 'briqpay/checkout_config/integrity_url';
     private const XML_PATH_CHECKOUT_EMAIL_SUBSCRIPTION_CHECKED = 'briqpay/checkout_config/email_newsletter_subscription_checked';
     private const XML_PATH_CHECKOUT_SMS_SUBSCRIPTION_CHECKED = 'briqpay/checkout_config/sms_newsletter_subscription_checked';
@@ -143,13 +143,7 @@ class CheckoutSetup
         return $this->getCheckboxState($flag);
     }
 
-    /**
-     * @return string
-     */
-    public function getTermsAndConditionsUrl()
-    {
-        return $this->urlBuilder->getUrl($this->scopeConfig->getValue(self::XML_PATH_CHECKOUT_URL_TERMS, ScopeInterface::SCOPE_STORE));
-    }
+
 
     /**
      * @return string

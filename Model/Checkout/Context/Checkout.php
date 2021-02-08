@@ -3,6 +3,7 @@
 namespace Briqpay\Checkout\Model\Checkout\Context;
 
 use Briqpay\Checkout\Logger\Logger;
+use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Quote\QuoteManagement;
 use Briqpay\Checkout\Rest\Service\AuthenticationFactory;
 use Briqpay\Checkout\Rest\Service\InitializePayment;
@@ -22,10 +23,6 @@ class Checkout
      */
     private $authenticationFactory;
 
-    /**
-     * @var Session
-     */
-    private $checkoutSession;
 
     /**
      * @var QuoteManagement
@@ -68,33 +65,40 @@ class Checkout
     private $quoteRepository;
 
     /**
+     * @var SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
      * CheckoutContext constructor.
      *
      * @param \Briqpay\Checkout\Model\Checkout\PaymentManagement $paymentManagement
      * @param QuoteManagement $quoteManagement
-     * @param Session $checkoutSession
+     * @param \Briqpay\Checkout\Model\Quote\UpdateCartServiceFactory $updateCartServiceFactory
+     * @param \Magento\Quote\Model\QuoteRepository $quoteRepository
      * @param CustomerSession $customerSession
-     * @param Logger $logger
+     * @param SessionManagement $sessionManagement
+     * @param \Psr\Log\LoggerInterface $logger
      * @param array $validators
      */
     public function __construct(
         \Briqpay\Checkout\Model\Checkout\PaymentManagement $paymentManagement,
         QuoteManagement $quoteManagement,
-        Session $checkoutSession,
         \Briqpay\Checkout\Model\Quote\UpdateCartServiceFactory $updateCartServiceFactory,
         \Magento\Quote\Model\QuoteRepository $quoteRepository,
         CustomerSession $customerSession,
-        Logger $logger,
+        SessionManagement $sessionManagement,
+        \Psr\Log\LoggerInterface $logger,
         $validators = []
     ) {
         $this->paymentManagement = $paymentManagement;
         $this->quoteManagement = $quoteManagement;
         $this->validators = $validators;
-        $this->checkoutSession = $checkoutSession;
         $this->customerSession = $customerSession;
         $this->logger = $logger;
         $this->updateCartServiceFactory = $updateCartServiceFactory;
         $this->quoteRepository = $quoteRepository;
+        $this->sessionManagement = $sessionManagement;
     }
 
     /**
@@ -111,14 +115,6 @@ class Checkout
     public function getAuthenticationFactory(): AuthenticationFactory
     {
         return $this->authenticationFactory;
-    }
-
-    /**
-     * @return Session
-     */
-    public function getCheckoutSession(): Session
-    {
-        return $this->checkoutSession;
     }
 
     /**
@@ -156,7 +152,7 @@ class Checkout
     /**
      * @return Logger
      */
-    public function getLogger(): Logger
+    public function getLogger(): \Psr\Log\LoggerInterface
     {
         return $this->logger;
     }
@@ -183,5 +179,13 @@ class Checkout
     public function getQuoteRepository(): \Magento\Quote\Model\QuoteRepository
     {
         return $this->quoteRepository;
+    }
+
+    /**
+     * @return SessionManagement
+     */
+    public function getSessionManagement(): SessionManagement
+    {
+        return $this->sessionManagement;
     }
 }

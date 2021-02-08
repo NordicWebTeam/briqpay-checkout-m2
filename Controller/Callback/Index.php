@@ -10,11 +10,8 @@ use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Quote\Model\Quote;
-use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 
 /**
  * Class Index
@@ -69,6 +66,16 @@ class Index extends Action
     private $paymentProcessor;
 
     /**
+     * @var \Briqpay\Checkout\Rest\Service\SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
+     * @var \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
+     */
+    private $checkoutSessionManager;
+
+    /**
      * Index constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
@@ -100,52 +107,41 @@ class Index extends Action
         $this->orderRepository = $callbackContext->getOrderRepository();
         $this->quoteResponseHandler = $callbackContext->getResponseHandler();
         $this->paymentProcessor = $callbackContext->getPaymentProcessor();
-    }
-
-    public function getTestOrder()
-    {
-        $orderCollection = \Magento\Framework\App\ObjectManager::getInstance()->get(CollectionFactory::class)->create();
-        return $orderCollection
-            ->addFieldToFilter('entity_id', ['eq' => 73])
-            ->getFirstItem();
+        $this->sessionManagement = $callbackContext->getSessionManagement();
+        $this->checkoutSessionManager = $callbackContext->getCheckoutSessionManager();
     }
 
     /**
-     * @return ResponseInterface|ResultInterface|Page
-     * @throws \Briqpay\Checkout\Rest\Authentification\AdapterException
-     * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     * @throws \Magento\Framework\Exception\AuthenticationException
-     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return ResponseInterface
      */
     public function execute()
     {
-        try {
-            $quote = $this->initQuote();
-        } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage('We can not instantiate your payment request. Please try again.');
+        $sessionId = $this->checkoutSessionManager->getSessionId();
+        if (! $sessionId) {
+            $this->messageManager->addErrorMessage('Session is not found, please check again.');
             return $this->_redirect('briqpay');
         }
 
         $paymentStatus = $this->getPaymentStatus();
-        if (!$this->isPaymentSuccessful($paymentStatus)) {
+        if ($paymentStatus['state'] !== 'purchasecomplete') {
             $this->messageManager->addErrorMessage('Please verify your payment data.');
             return $this->_redirect('briqpay');
         }
 
         try {
+            $quote = $this->checkoutSessionManager->getQuote();
             $this->quoteManager->setDataFromResponse($quote, $paymentStatus);
             $this->prepareShippingRates($quote);
-            $this->quoteResponseHandler->handlePaymentStatus($quote, $paymentStatus);
+//            $this->quoteResponseHandler->handlePaymentStatus($quote, $paymentStatus);
 
-            /** @var \Magento\Sales\Model\Order $order */
             $order = $this->cartManager->submit($quote);
             $this->checkoutSession
                 ->setLastQuoteId($quote->getId())
                 ->setLastSuccessQuoteId($quote->getId())
                 ->clearHelperData();
 
-            $this->paymentProcessor->processPayment($order->getPayment());
-            $this->dispatchPostEvents($order, $quote);
+//            $this->paymentProcessor->processPayment($order->getPayment());
+            //$this->dispatchPostEvents($order, $quote);
 
             /**
              * a flag to set that there will be redirect to third party after confirmation
@@ -227,17 +223,15 @@ class Index extends Action
     }
 
     /**
-     * @throws \Briqpay\Checkout\Rest\Authentification\AdapterException
+     * @return GetPaymentStatusResponse
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     * @throws \Magento\Framework\Exception\AuthenticationException
      */
-    private function getPaymentStatus() : GetPaymentStatusResponse
+    private function getPaymentStatus() : array
     {
-        $purchaseId = $this->getPurchaseId();
-        $this->authService->authenticate($this->getQuote()->getStoreId());
-        $authToken = $this->authService->getToken();
-
-        return $this->paymentStatusService->getStatus($purchaseId, $authToken);
+        return $this->sessionManagement->readSession(
+            $this->checkoutSessionManager->getSessionId(),
+            $this->checkoutSessionManager->getSessionToken()
+        );
     }
 
     /**

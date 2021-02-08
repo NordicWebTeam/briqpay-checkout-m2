@@ -106,13 +106,12 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    public function setDataFromResponse(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse) : void
+    public function setDataFromResponse(Quote $quote, array $paymentStatusResponse) : void
     {
         $this->setCustomerEmail($quote, $paymentStatusResponse);
         $this->setShippingData($quote, $paymentStatusResponse);
-        $this->setBillingData($quote, $paymentStatusResponse);
+//        $this->setBillingData($quote, $paymentStatusResponse);
         $this->setCustomerData($quote);
-        $quote->setBriqpayCustomerToken($paymentStatusResponse->getCustomerToken());
 
         $payment = $quote->getPayment();
         if (!$payment->getMethod() || $payment->getMethod() != Briqpay::CODE) {
@@ -120,7 +119,7 @@ class QuoteManagement
         }
 
         $paymentData = new DataObject([
-            QuoteSchema::PURCHASE_ID => $paymentStatusResponse->getPurchaseId(),
+            QuoteSchema::PURCHASE_ID => $paymentStatusResponse['sessionid'],
             'country_id'             => $quote->getShippingAddress()->getCountryId(),
         ]);
 
@@ -147,9 +146,9 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    private function setCustomerEmail(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse) : void
+    private function setCustomerEmail(Quote $quote, array $paymentStatusResponse) : void
     {
-        if ($email = $paymentStatusResponse->getEmail()) {
+        if ($email = $paymentStatusResponse['billingaddress']['email']) {
             $quote->setCustomerEmail($email);
         }
     }
@@ -158,30 +157,35 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    private function setShippingData(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse) : void
+    private function setShippingData(Quote $quote, array $paymentStatusResponse) : void
     {
         $shippingAddress = $quote->getShippingAddress();
-        $shippingData = $paymentStatusResponse->getShippingAddress();
+        $shippingData = $paymentStatusResponse['billingaddress'];
 
         // Using for fallback
-        $billingData = $paymentStatusResponse->getBillingAddress();
-        $userData = $paymentStatusResponse->getUserInputData();
+       // $userData = $paymentStatusResponse->getUserInputData();
 
-        $street = $shippingData['address1'] ?? null . $shippingData['address2'] ?? null;
+//        $street = $shippingData['address1'] ?? null . $shippingData['address2'] ?? null;
         $data = [
-            'firstname' => $shippingData['firstName'] ?? ($billingData['firstName'] ?? null),
-            'lastname' => $shippingData['lastName'] ?? ($billingData['lastName'] ?? null),
-            'telephone' => $shippingData['firstName'] ?? ($userData['phone'] ?? null),
-            'email' => $userData['email'] ?? null,
-            'street' => $street,
+            'firstname' => $shippingData['firstname'],
+            'lastname' => $shippingData['lastname'],
+            'telephone' => $shippingData['cellno'],
+            'email' => $shippingData['email'],
+            'street' => $shippingData['streetaddress'],
             'city' => $shippingData['city'] ?? null,
             'postcode' => $shippingData['zip'] ?? ($userData['zip'] ?? null),
-            'country_id' => $shippingData['country'] ?? null
+            'country_id' => $paymentStatusResponse['country']
         ];
 
         $shippingAddress->addData($data);
         $shippingAddress->setShouldIgnoreValidation(true);
         $shippingAddress->save();
+
+        $billing = $quote->getBillingAddress();
+        $billing->addData($data);
+        $billing->setShouldIgnoreValidation(true);
+        $billing->save();
+
     }
 
     /**

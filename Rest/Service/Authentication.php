@@ -83,21 +83,6 @@ class Authentication implements AuthentificationInterface
     }
 
     /**
-     * Get auth token expiry
-     *
-     * @return string
-     * @throws AdapterException
-     */
-    public function getTokenExpiry() : string
-    {
-        if (is_null($this->authentificationResponse)) {
-            throw new AdapterException('Authentificaion token is not established. Please authentificate first.');
-        }
-
-        return $this->authentificationResponse->getTokenExpirationUtc();
-    }
-
-    /**
      * Authenticate action
      *
      * @param null $storeId

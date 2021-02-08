@@ -56,6 +56,11 @@ class BriqpayCheckout
     private $quoteRepository;
 
     /**
+     * @var CheckoutSession\SessionManagement
+     */
+    private $checkoutManagement;
+
+    /**
      * BriqpayCheckout constructor.
      *
      * @param CheckoutContext $checkoutContext
@@ -63,11 +68,11 @@ class BriqpayCheckout
     public function __construct(CheckoutContext $checkoutContext)
     {
         $this->paymentManagement = $checkoutContext->getPaymentManagement();
-        $this->checkoutSession = $checkoutContext->getCheckoutSession();
         $this->customerSession = $checkoutContext->getCustomerSession();
         $this->quoteRepository = $checkoutContext->getQuoteRepository();
         $this->updateCartServiceFactory = $checkoutContext->getUpdateCartServiceFactory();
-        $this->quote = $checkoutContext->getCheckoutSession()->getQuote();
+        $this->quote = $checkoutContext->getSessionManagement()->getQuote();
+        $this->checkoutManagement = $checkoutContext->getSessionManagement();
         $this->quoteManagementService = $checkoutContext->getQuoteManagement();
         $this->logger = $checkoutContext->getLogger();
         $this->validators = $checkoutContext->getValidators();
@@ -80,7 +85,7 @@ class BriqpayCheckout
     {
         $this->instantiateQuote();
 
-        $purchaseId = $this->getPurchaseIdIfValid();
+        $purchaseId = null;
         $initPaymentBag = $purchaseId
             ? $this->updatePayment($purchaseId)
             : $this->instantiateNewPayment();
@@ -89,24 +94,6 @@ class BriqpayCheckout
         $this->validate();
 
         return $initPaymentBag;
-    }
-
-    /**
-     * @return null if expired
-     * @return mixed
-     */
-    private function getPurchaseIdIfValid()
-    {
-        $purchaseId = $this->checkoutSession->getData(AttributeSchema::PURCHASE_ID);
-        $expiredUtc = $this->checkoutSession->getData(AttributeSchema::EXPIRED_UTC);
-        if (! $purchaseId || !$expiredUtc) {
-            return null;
-        }
-
-        $expiredUtcDate = \DateTime::createFromFormat('Y-m-d\TH:i:s+', $expiredUtc);
-        $currentDate = new \DateTime(gmdate('Y-m-d\TH:i:s.u'));
-
-        return $currentDate < $expiredUtcDate ? $purchaseId : null;
     }
 
 
@@ -133,8 +120,6 @@ class BriqpayCheckout
     }
 
     /**
-     * @param null $purchaseId
-     *
      * @return InitializePaymentResponse
      * @throws CheckoutException
      */
@@ -149,7 +134,7 @@ class BriqpayCheckout
             return $initRequest;
         } catch (\Exception $e) {
             $this->logger->error($e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage());
-            throw new CheckoutException('Can not load checkout at this time. Please try again later');
+            throw new CheckoutException($e->getMessage());
         }
     }
 
@@ -198,11 +183,8 @@ class BriqpayCheckout
      */
     private function setSessionData(InitializePaymentResponse $initResponse)
     {
-        if ($initResponse->getPurchaseId() != $this->checkoutSession->getData(AttributeSchema::PURCHASE_ID)) {
-            $this->checkoutSession->setData(AttributeSchema::PURCHASE_ID, $initResponse->getPurchaseId());
-            $this->checkoutSession->setData(AttributeSchema::JWT, $initResponse->getJwt());
-            $this->checkoutSession->setData(AttributeSchema::EXPIRED_UTC, $initResponse->getExpiredUtc());
-        }
+        $this->checkoutManagement->setSessionId($initResponse->getSessionId());
+        $this->checkoutManagement->setSessionToken($initResponse->getToken());
     }
 
     /**
@@ -221,7 +203,6 @@ class BriqpayCheckout
         $data = [
             'purchaseId' => $session->getBriqpayPurchaseId(),
             'expiredUtc' => $session->getBriqpayExpiredUtc(),
-            'jwt' => $session->getBriqpayJwt(),
         ];
 
         return new \Briqpay\Checkout\Rest\Response\InitializePaymentResponse(

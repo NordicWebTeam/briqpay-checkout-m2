@@ -7,8 +7,8 @@ use Magento\Store\Model\ScopeInterface;
 
 class ApiConfig
 {
-    private const AUTH_STAGE_BASE_URL = 'https://avdonl-s-checkout.briqpay.org';
-    private const AUTH_PRODUCTION_BASE_URL = 'https://avdonl-p-checkout.briqpay.org';
+    private const AUTH_STAGE_BASE_URL               = 'https://playground-api.briqpay.com';
+    private const AUTH_PRODUCTION_BASE_URL          = 'https://api.briqpay.com';
 
     private const XML_PATH_CONNECTION_ENABLE        = 'briqpay/connection/enabled';
     private const XML_PATH_CONNECTION_TEST_MODE     = 'briqpay/connection/test_mode';
@@ -45,6 +45,7 @@ class ApiConfig
      */
     public function isTestMode() : bool
     {
+        return true;
         return $this->scopeConfig->isSetFlag(self::XML_PATH_CONNECTION_TEST_MODE, ScopeInterface::SCOPE_STORE);
     }
 

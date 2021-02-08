@@ -37,8 +37,10 @@ class PaymentManagement
     }
 
     /**
+     * Instantiate Checkout and get purchase ID & JWT
+     *
      * @param Quote $quote
-     *app/code/Briqpay/Checkout/Model/Checkout/PaymentManagement.php:41
+     *
      * @return \Briqpay\Checkout\Rest\Response\InitializePaymentResponse
      * @throws \Briqpay\Checkout\Rest\Authentification\AdapterException
      * @throws \Briqpay\Checkout\Rest\Exception\InitializePaymentException
@@ -52,10 +54,7 @@ class PaymentManagement
         $accessToken = $this->authService->getToken();
 
         $initPayment = $this->initPaymentService->initPayment($quote, $accessToken);
-        $quote->setBriqpayPurchaseId($initPayment->getPurchaseId());
-        $quote->setBriqpayQuoteSignature($this->hasher->getQuoteSignature($quote));
 
-        // Instantiate Checkout and get purchase id & JWT
         return $initPayment;
     }
 }

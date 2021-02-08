@@ -50,7 +50,7 @@ class GetPaymentStatus
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        LoggerInterface $logger
+        \Briqpay\Checkout\Logger\Logger $logger
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
@@ -60,23 +60,21 @@ class GetPaymentStatus
     }
 
     /**
-     * @param $purchaseId
+     * @param $sessionId
      * @param $accessToken
      *
      * @return GetPaymentStatusResponse
      * @throws AdapterException
      */
-    public function getStatus($purchaseId, $accessToken) : GetPaymentStatusResponse
+    public function getStatus($sessionId, $accessToken) : GetPaymentStatusResponse
     {
         if (!$accessToken) {
             throw new AdapterException('Missing access token');
         }
 
-        $uri = sprintf(
-            '%s/api/partner/payments/%s',
-            $this->endpoint,
-            $purchaseId
-        );
+        $uri = sprintf('%s/checkout/v1/readsession', $this->endpoint);
+        $body = json_encode(['sessionid' => $sessionId]);
+
         $headers = [
             'Cache-Control' => 'no-cache',
             'Content-Type'  => 'application/json',
@@ -84,7 +82,7 @@ class GetPaymentStatus
         ];
 
         try {
-            $rawResponse = $this->restClient->get($uri, [], $headers);
+            $rawResponse = $this->restClient->post($uri, $body, $headers);
             $paymentStatusResponse = $this->schemaParser->parse($rawResponse, GetPaymentStatusResponse::class);
             $this->logger->log(LogLevel::DEBUG, $rawResponse);
 

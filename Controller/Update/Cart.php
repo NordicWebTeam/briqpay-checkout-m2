@@ -70,7 +70,6 @@ class Cart extends \Magento\Checkout\Controller\Action
         try {
             $this->briqpayCheckout->updateItems($checkoutSession->getBriqpayPurchaseId(), $checkoutSession->getQuote());
         } catch (\Exception $e) {
-            echo $e->getMessage();exit;
             $this->getResponse()->setBody(json_encode([
                 'messages' => __('Can not update cart.')
             ]));

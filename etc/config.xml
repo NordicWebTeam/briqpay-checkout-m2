@@ -3,10 +3,11 @@
     <default>
         <payment>
             <briqpay>
-                <active>1</active>
+                <active>0</active>
                 <model>Briqpay\Checkout\Model\Payment\Briqpay</model>
                 <order_status>pending</order_status>
                 <title>Briqpay Checkout</title>
+                <can_capture>1</can_capture>
                 <can_capture>1</can_capture>
                 <can_cancel>1</can_cancel>
                 <can_void>1</can_void>
@@ -15,5 +16,10 @@
                 <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
             </briqpay>
         </payment>
+        <briqpay>
+            <connection>
+                <test_mode>1</test_mode>
+            </connection>
+        </briqpay>
     </default>
 </config>

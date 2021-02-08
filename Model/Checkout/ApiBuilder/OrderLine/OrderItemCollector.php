@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Briqpay\Checkout\Model\Checkout\OrderLine;
+namespace Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine;
 
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\ApiBuilder;
 

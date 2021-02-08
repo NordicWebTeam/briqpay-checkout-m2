@@ -6,6 +6,7 @@ use Briqpay\Checkout\Api\PaymentManagementInterface;
 use Briqpay\Checkout\Rest\Adapter\GetPaymentStatus;
 use Briqpay\Checkout\Rest\Exception\PaymentStatusException;
 use Briqpay\Checkout\Rest\Service\Authentication;
+use Briqpay\Checkout\Rest\Service\SessionManagement;
 
 class PaymentManager implements PaymentManagementInterface
 {
@@ -20,6 +21,11 @@ class PaymentManager implements PaymentManagementInterface
     private $getPaymentStatusService;
 
     /**
+     * @var SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
      * PaymentManager constructor.
      *
      * @param Authentication $authenticationService
@@ -27,10 +33,10 @@ class PaymentManager implements PaymentManagementInterface
      */
     public function __construct(
         Authentication $authenticationService,
-        GetPaymentStatus $getPaymentStatusService
+        SessionManagement $sessionManagement
     ) {
         $this->authenticationService = $authenticationService;
-        $this->getPaymentStatusService = $getPaymentStatusService;
+        $this->sessionManagement = $sessionManagement;
     }
 
     /**
@@ -42,7 +48,6 @@ class PaymentManager implements PaymentManagementInterface
     public function getPaymentStatus($purchaseId): \Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse
     {
         try {
-            $this->authenticationService->authenticate();
             $authToken = $this->authenticationService->getToken();
 
             return $this->getPaymentStatusService->getStatus($purchaseId, $authToken);
