@@ -34,24 +34,24 @@ class InitializePaymentResponse implements ResponseInterface
     /**
      * @return mixed
      */
-    public function getPurchaseId()
+    public function getSessionId()
     {
-        return $this->data->getData('purchaseId');
+        return $this->data->getData('sessionid');
     }
 
     /**
      * @return mixed
      */
-    public function getJwt()
+    public function getSnippet()
     {
-        return $this->data->getData('jwt');
+        return $this->data->getData('snippet');
     }
 
     /**
      * @return mixed
      */
-    public function getExpiredUtc()
+    public function getToken()
     {
-        return $this->data->getData('expiredUtc');
+        return $this->data->getData('token');
     }
 }

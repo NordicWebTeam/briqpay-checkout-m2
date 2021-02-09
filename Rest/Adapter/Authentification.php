@@ -8,7 +8,6 @@ use Briqpay\Checkout\Rest\Request\AuthRequest;
 use Briqpay\Checkout\Rest\Response\AuthentificationResponse;
 use Briqpay\Checkout\Rest\RestClient;
 use Briqpay\Checkout\Rest\Schema\Parser;
-use Magento\Framework\DataObject;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -51,7 +50,7 @@ class Authentification
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        LoggerInterface $logger
+        \Briqpay\Checkout\Logger\Logger $logger
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
@@ -67,27 +66,18 @@ class Authentification
      */
     public function startSession(AuthRequest $request) : AuthentificationResponse
     {
-        return new \Briqpay\Checkout\Rest\Response\AuthentificationResponse(new DataObject([
-            'tokenExpirationUtc' => '123',
-            'token' => 'TOKEN',
-        ]));
+        $uri = sprintf('%s/auth', $this->endpoint);
+        $this->logger->log(
+            LogLevel::INFO,
+            sprintf("%s", $uri)
+        );
 
-        $uri = sprintf('%s/api/partner/tokens', $this->endpoint);
-        $requestBody = $request->getRequestBody();
-
-        $headers = [
-            'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-        ];
-
-
-        $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));
         try {
-            $rawResponse = $this->restClient->post($uri, $requestBody, $headers);
-            $this->logger->log(LogLevel::DEBUG, $rawResponse);
-
+            $rawResponse = $this->restClient->get($uri, [], $request->getAuthHeaders());
+            $this->logger->log(LogLevel::INFO, "Auth Response: $rawResponse");
             $response = $this->schemaParser->parse($rawResponse, AuthentificationResponse::class);
         } catch (\Exception $e) {
+            $this->logger->log(LogLevel::ERROR, "Exception response : {$e->getMessage()}");
             throw AdapterException::create($e);
         }
 

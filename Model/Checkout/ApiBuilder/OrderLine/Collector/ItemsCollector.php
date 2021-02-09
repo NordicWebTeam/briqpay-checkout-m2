@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Briqpay\Checkout\Model\Checkout\OrderLine\Collector;
+namespace Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector;
 
-use Briqpay\Checkout\Model\Checkout\OrderLine\OrderItemCollectorInterface;
-use Briqpay\Checkout\Model\Checkout\OrderLine\OrderLineCollectorsAgreggator;
+use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\CreatePaymentSession;
+use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderItemCollectorInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 
@@ -25,40 +25,40 @@ class ItemsCollector implements OrderItemCollectorInterface
     /**
      * @inheritDoc
      */
-    public function collect(OrderLineCollectorsAgreggator $orderLineAggregator, $subject)
+    public function collect(CreatePaymentSession $paymentSession, $subject)
     {
         if ($subject instanceof Quote) {
             $quote = $subject;
             $items = $quote->getAllVisibleItems();
 
+            $orderAmount = 0;
             foreach ($items as $item) {
                 if ($this->shouldSkipByProductType($item)) {
                     continue;
                 }
 
-                $itemAmount = round($item->getPrice() * $item->getQty() - $item->getDiscountAmount(), 2);
                 $taxClassId = $item->getProduct()->getCustomAttribute('tax_class_id');
-                $productRateId = '';
-
-                if ($taxClassId) { 
-                    $productRateId = $taxClassId->getValue();
-                }
-                
-                $totalTaxAmount = $this->taxCalculationService->getCalculatedRate(
+                $productRateId = $taxClassId->getValue();
+                $taxRate = $this->taxCalculationService->getCalculatedRate(
                     $productRateId,
                     $quote->getCustomerId() ?: null,
                     $quote->getStoreId()
                 );
 
-                $orderLineAggregator->addOrderLine([
-                    'description' => substr($item->getName(),0, 64),
-                    'amount'      => $itemAmount + $item->getTaxAmount(),
-                    'taxAmount'   => $item->getTaxAmount(),
-                    'taxCode'     => ($item->getTaxPercent() > 0) ? $item->getTaxPercent() : ($item->getBaseTaxAmount() / $item->getBaseRowTotal() * 100),
-                    'notes'       => ''
+                $orderAmount += $item->getRowTotal();
+                $paymentSession->addCartItem([
+                    'producttype' => 'physical',
+                    'reference'   => substr($item->getSku(), 0, 64),
+                    'name'        => substr($item->getName(), 0, 64),
+                    'quantity'    => (int) 1,
+                    'quantityunit'=> "pc",
+                    'unitprice'   => 4500,
+                    'discount'    => $item->getDiscountAmount() * 100,
+                    'taxrate'     => 25 * 100,
                 ]);
             }
         }
+        $paymentSession->setAmount(4500);
     }
 
     /**

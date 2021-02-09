@@ -113,7 +113,7 @@ class Index extends Action
     public function execute()
     {
         $quote = $this->checkoutSession->getQuote();
-//        $this->quoteValidator->validateBeforeSubmit($this->checkoutSession->getQuote());
+        $this->quoteValidator->validateBeforeSubmit($this->checkoutSession->getQuote());
         $paymentStatus = $this->getPaymentStatus();
         echo '<pre>' . print_r($paymentStatus->getData(), true). '</pre>';
         exit;

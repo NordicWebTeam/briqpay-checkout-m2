@@ -55,14 +55,15 @@ class Index extends Action
         try {
             $paymentData = $this->checkout->initCheckout();
         } catch (CheckoutException $e) {
+            echo $e->getMessage();
             $this->messageManager->addErrorMessage($e->getMessage());
-            $this->_redirect('checkout/cart');
+            //$this->_redirect('checkout/cart');
             return;
         }
 
         return $this->getCheckoutLayout(
-            $paymentData->getJwt(),
-            $paymentData->getPurchaseId()
+            $paymentData->getSnippet(),
+            $paymentData->getSessionId()
         );
     }
 
@@ -72,15 +73,15 @@ class Index extends Action
      *
      * @return \Magento\Framework\View\Result\Page
      */
-    private function getCheckoutLayout($jwtToken, $purchaseId)
+    private function getCheckoutLayout($htmlSnippet, $sessionId)
     {
         $checkoutLayout = $this->createLayoutPage();
 
         /** @var $briqpayCheckoutBlock CheckoutWidget */
         $briqpayCheckoutBlock = $checkoutLayout->getLayout()->getBlock('checkout.widget');
         $briqpayCheckoutBlock
-            ->setJwtToken($jwtToken)
-            ->setPurchaseId($purchaseId);
+            ->setHtmlSnippet($htmlSnippet)
+            ->setSessionId($sessionId);
 
         return $checkoutLayout;
     }

@@ -62,6 +62,16 @@ class Callback
     private $paymentProcessor;
 
     /**
+     * @var \Briqpay\Checkout\Rest\Service\SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
+     * @var \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
+     */
+    private $checkoutSessionManager;
+
+    /**
      * Callback constructor.
      *
      * @param \Magento\Framework\View\Result\PageFactory $pageFactory
@@ -85,7 +95,9 @@ class Callback
         CartManagementInterface $cartManager,
         OrderRepositoryInterface $orderRepository,
         \Briqpay\Checkout\Model\Payment\ResponseHandler $responseHandler,
-        \Briqpay\Checkout\Model\Service\PaymentProcessor $paymentProcessor
+        \Briqpay\Checkout\Model\Service\PaymentProcessor $paymentProcessor,
+        \Briqpay\Checkout\Rest\Service\SessionManagement $sessionManagement,
+        \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement $checkoutSessionManager
     ) {
         $this->pageFactory = $pageFactory;
         $this->authService = $authService;
@@ -97,6 +109,8 @@ class Callback
         $this->orderRepository = $orderRepository;
         $this->responseHandler = $responseHandler;
         $this->paymentProcessor = $paymentProcessor;
+        $this->sessionManagement = $sessionManagement;
+        $this->checkoutSessionManager = $checkoutSessionManager;
     }
 
     /**
@@ -177,5 +191,21 @@ class Callback
     public function getPaymentProcessor(): \Briqpay\Checkout\Model\Service\PaymentProcessor
     {
         return $this->paymentProcessor;
+    }
+
+    /**
+     * @return \Briqpay\Checkout\Rest\Service\SessionManagement
+     */
+    public function getSessionManagement(): \Briqpay\Checkout\Rest\Service\SessionManagement
+    {
+        return $this->sessionManagement;
+    }
+
+    /**
+     * @return \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
+     */
+    public function getCheckoutSessionManager() : \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
+    {
+        return $this->checkoutSessionManager;
     }
 }

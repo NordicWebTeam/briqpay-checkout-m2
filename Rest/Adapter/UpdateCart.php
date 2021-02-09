@@ -5,7 +5,6 @@ namespace Briqpay\Checkout\Rest\Adapter;
 use Briqpay\Checkout\Model\Config\ApiConfig;
 use Briqpay\Checkout\Rest\Exception\AdapterException;
 use Briqpay\Checkout\Rest\Exception\UpdateCartException;
-use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
 use Briqpay\Checkout\Rest\RestClient;
 use Briqpay\Checkout\Rest\Schema\Parser;
 use Psr\Log\LoggerInterface;
@@ -48,7 +47,7 @@ class UpdateCart
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
-        LoggerInterface $logger
+        \Briqpay\Checkout\Logger\Logger $logger
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;

@@ -7,12 +7,7 @@ class AuthRequest
     /**
      * @var string
      */
-    private $clientId;
-
-    /**
-     * @var string
-     */
-    private $clientSecret;
+    private $authHeader;
 
     /**
      * AuthRequest constructor.
@@ -22,20 +17,16 @@ class AuthRequest
      */
     public function __construct($clientId = '', $clientSecret = '')
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
+        $this->authHeader = sprintf("Basic %s", base64_encode("$clientId:$clientSecret"));
     }
 
     /**
-     * @return string
+     *
      */
-    public function getRequestBody()
+    public function getAuthHeaders()
     {
-        $params = [
-            'clientId'      => $this->clientId,
-            'clientSecret'  => $this->clientSecret
+        return [
+            'Authorization' => $this->authHeader
         ];
-
-        return json_encode($params);
     }
 }

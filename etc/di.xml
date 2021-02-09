@@ -78,7 +78,7 @@
         </arguments>
     </type>
 
-    <preference for="Briqpay\Checkout\Rest\Service\AuthentificationInterface" type="Briqpay\Checkout\Rest\Authentification\HttpAuthentication" />
+    <preference for="Briqpay\Checkout\Rest\Service\AuthentificationInterface" type="Briqpay\Checkout\Rest\Authentification\CacheAuthentication" />
 
     <type name="Magento\Checkout\Block\Onepage\Link">
         <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Block\Checkout\Url" sortOrder="10" disabled="false"/>
@@ -100,7 +100,14 @@
         <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Block\Checkout\Url" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Loggers setting-->
     <type name="Briqpay\Checkout\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+
+    <type name="Briqpay\Checkout\Logger\ErrorHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
@@ -108,18 +115,20 @@
 
     <type name="Briqpay\Checkout\Logger\Logger">
         <arguments>
-            <argument name="name" xsi:type="string">briqpay.log</argument>
+            <argument name="name" xsi:type="string">briqpay</argument>
             <argument name="handlers" xsi:type="array">
-                <item name="system" xsi:type="object">Briqpay\Checkout\Logger\Handler</item>
+                <item name="error" xsi:type="object">Briqpay\Checkout\Logger\ErrorHandler</item>
+                <item name="info" xsi:type="object">Briqpay\Checkout\Logger\Handler</item>
             </argument>
         </arguments>
     </type>
 
-    <type name="Briqpay\Checkout\Model\Checkout\OrderLine\OrderLineCollectorsAgreggator">
+    <type name="Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderLineCollectorsAgreggator">
         <arguments>
             <argument name="orderItemsCollectors" xsi:type="array">
-                <item name="itemsCollector" xsi:type="object">Briqpay\Checkout\Model\Checkout\OrderLine\Collector\ItemsCollector</item>
-                <item name="shippingCollector" xsi:type="object">Briqpay\Checkout\Model\Checkout\OrderLine\Collector\ShippingCollector</item>
+                <item name="itemsCollector" xsi:type="object">Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector\ItemsCollector</item>
+                <item name="paymentFields"  xsi:type="object">Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector\PaymentFields</item>
+                <item name="shippingCollector" xsi:type="object">Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector\ShippingCollector</item>
             </argument>
         </arguments>
     </type>

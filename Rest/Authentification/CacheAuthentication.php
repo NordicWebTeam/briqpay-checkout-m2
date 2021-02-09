@@ -17,7 +17,7 @@ class CacheAuthentication implements AuthentificationInterface
      *
      * @var int
      */
-    const CACHE_EXPIRATION_TIME = 3600;
+    const CACHE_EXPIRATION_TIME = 5;
 
     /**
      * @var AuthentificationInterface
@@ -75,21 +75,6 @@ class CacheAuthentication implements AuthentificationInterface
     }
 
     /**
-     * Get session token expiry
-     *
-     * @return string|void
-     */
-    public function getTokenExpiry() : string
-    {
-        if ($sessionCache = $this->cacheInstance->load(AuthentificationCache::TYPE_IDENTIFIER)) {
-            $sessionCache = json_decode($sessionCache, true);
-            return $sessionCache['token_expiry'];
-        }
-
-        return $this->authentication->getTokenExpiry();
-    }
-
-    /**
      * @param $cacheIdentifier
      * @param $expirationTime
      *
@@ -99,8 +84,7 @@ class CacheAuthentication implements AuthentificationInterface
     {
         $this->cacheInstance->save(
             json_encode([
-                'session'      => $this->authentication->getToken(),
-                'token_expiry' => $this->authentication->getTokenExpiry()
+                'session' => $this->authentication->getToken()
             ]),
             $cacheIdentifier,
             [$cacheIdentifier],

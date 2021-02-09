@@ -35,14 +35,17 @@ class AuthRequestFactory
     }
 
     /**
-     * Create class instance with specified parameters
-     *
      * @param array $data
      *
+     * @throw InvalidArgumentException
      * @return AuthRequest
      */
     public function create(array $data = []): AuthRequest
     {
+        if (empty($data['clientId']) || empty($data['clientSecret'])) {
+            throw new \InvalidArgumentException('Missing auth credentials');
+        }
+
         return $this->objectManager->create($this->instanceName, $data);
     }
 }
