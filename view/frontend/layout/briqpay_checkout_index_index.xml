@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
-        <title>Kassan</title>
+        <title>Varukorgen</title>
         <css src="Briqpay_Checkout::css/briqpay.css"/>
     </head>
 
@@ -107,15 +107,14 @@
                             </block>
 
                             <!-- Apply Discount Code -->
-                            <!-- Not working as it is, block needs to be replaced -->
                             <block class="Briqpay\Checkout\Block\Checkout\Coupon" name="briqpay_checkout.coupon" as="coupon"
                                    template="Briqpay_Checkout::checkout/cart/coupon.phtml"
+                                   ifconfig="briqpay/layout/display_coupon"
                             />
 
                             <!-- Newsletter -->
-                            <!-- Not working as it is, block needs to be replaced -->
                             <block class="Magento\Framework\View\Element\Template" name="briqpay_checkout.newsletter" as="newsletter"
-                                   template="Briqpay_Checkout::checkout/subscribe.phtml"
+                                   template="Briqpay_Checkout::checkout/subscribe.phtml" ifconfig="briqpay/layout/display_newsletter"
                             />
 
                             <block class="Magento\Checkout\Block\Cart\Totals" name="briqpay_checkout.cart.totals"
@@ -130,6 +129,7 @@
                            as="briqpayCrosssell"
                            template="Briqpay_Checkout::product/list/items.phtml"
                            after="-"
+                           ifconfig="briqpay/layout/display_crosssell"
                     >
                         <arguments>
                             <argument name="type" xsi:type="string">crosssell</argument>
@@ -150,6 +150,7 @@
                 <!-- Leave a comment -->
                 <block class="Briqpay\Checkout\Block\Checkout\Comment" name="briqpay.checkout.comment" as="comment"
                        template="Briqpay_Checkout::checkout/comment.phtml"
+                       ifconfig="briqpay/layout/display_comment"
                 />
 
                 <container name="briqpay_widget" as="briqpay_widget" label="briqpay_Widget" htmlTag="div" htmlId="briqpay_checkoutWidget">

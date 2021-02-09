@@ -55,7 +55,6 @@ class Index extends Action
         try {
             $paymentData = $this->checkout->initCheckout();
         } catch (CheckoutException $e) {
-            echo $e->getMessage();
             $this->messageManager->addErrorMessage($e->getMessage());
             //$this->_redirect('checkout/cart');
             return;

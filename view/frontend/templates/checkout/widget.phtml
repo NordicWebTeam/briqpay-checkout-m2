@@ -4,6 +4,12 @@
 
 use Briqpay\Checkout\Block\Checkout\CheckoutWidget;
 ?>
+
+<div class="checkout-title">
+    <h4 role="heading" aria-level="2">
+        <?= __('Complete your order') ?>
+    </h4>
+</div>
 <div id="checkout-form">
-    <?= $block->getHtmlSnippet(); ?>
+    <?= $block->getCheckoutSnippet(); ?>
 </div>

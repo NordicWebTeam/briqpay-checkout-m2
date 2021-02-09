@@ -206,7 +206,7 @@ class Shipping extends \Magento\Framework\View\Element\Template
      * @param string $inclTaxFormat
      * @return string
      */
-    public function renderShippingRateOption($rate, $format = '%s - %s%s', $inclTaxFormat = ' (%s %s)')
+    public function renderShippingRateOption($rate, $format = '%s%s <span class="title">%s</span> <span class="title">%s</span>', $inclTaxFormat = ' (%s %s)')
     {
         $renderedInclTax = '';
         if ($rate->getErrorMessage()) {
@@ -222,10 +222,11 @@ class Shipping extends \Magento\Framework\View\Element\Template
                 $renderedInclTax = sprintf($inclTaxFormat, $this->escapeHtml(__('Incl. Tax')), $incl);
             }
         }
-        $title = $rate->getMethodTitle() ?: $rate->getCarrierTitle();
+        $title = $rate->getMethodTitle();
+        $carrierTitle = $rate->getCarrierTitle();
         $title = $title ?: $rate->getCode();
 
-        return sprintf($format, $this->escapeHtml($title), $price, $renderedInclTax);
+        return sprintf($format, $price, $renderedInclTax, $this->escapeHtml($title), $this->escapeHtml($carrierTitle));
     }
 
     /**
