@@ -38,4 +38,12 @@ class CheckoutWidget extends Template
     {
         return $this->checkoutSetupConfig->getCallbackUrl();
     }
+
+    /**
+     * @return string
+     */
+    public function getCheckoutSnippet()
+    {
+        return $this->getData('html_snippet');
+    }
 }
