@@ -4,6 +4,7 @@ namespace Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector;
 
 use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\CreatePaymentSession;
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderItemCollectorInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 
@@ -37,24 +38,17 @@ class ItemsCollector implements OrderItemCollectorInterface
                     continue;
                 }
 
-                $taxClassId = $item->getProduct()->getCustomAttribute('tax_class_id');
-                $productRateId = $taxClassId->getValue();
-                $taxRate = $this->taxCalculationService->getCalculatedRate(
-                    $productRateId,
-                    $quote->getCustomerId() ?: null,
-                    $quote->getStoreId()
-                );
-
+                $taxRate = $this->getTaxRate($item->getProduct());
                 $orderAmount += $item->getRowTotal();
                 $paymentSession->addCartItem([
                     'producttype' => 'physical',
-                    'reference'   => substr($item->getSku(), 0, 64),
-                    'name'        => substr($item->getName(), 0, 64),
-                    'quantity'    => (int) 1,
-                    'quantityunit'=> "pc",
-                    'unitprice'   => 4500,
-                    'discount'    => $item->getDiscountAmount() * 100,
-                    'taxrate'     => 25 * 100,
+                    'reference' => substr($item->getSku(), 0, 64),
+                    'name' => substr($item->getName(), 0, 64),
+                    'quantity' => (int)1,
+                    'quantityunit' => "pc",
+                    'unitprice' => 4500,
+                    'discount' => $item->getDiscountAmount() * 100,
+                    'taxrate' => $taxRate * 100,
                 ]);
             }
         }
@@ -62,9 +56,31 @@ class ItemsCollector implements OrderItemCollectorInterface
     }
 
     /**
+     * @param Product $product
+     *
+     * @return float
+     */
+    private function getTaxRate(Product $product): float
+    {
+        $taxClassId = $product->getCustomAttribute('tax_class_id');
+        if (!$taxClassId) {
+            return 0;
+        }
+
+        $productRateId = $taxClassId->getValue();
+        $taxRate = $this->taxCalculationService->getCalculatedRate(
+            $productRateId,
+            $quote->getCustomerId() ?: null,
+            $quote->getStoreId()
+        );
+
+        return $taxRate ?: 0;
+    }
+
+    /**
      * @param Item $item
      */
-    private function shouldSkipByProductType(Item $item) : bool
+    private function shouldSkipByProductType(Item $item): bool
     {
         // Skip if bundle product with a dynamic price type
         if (\Magento\Catalog\Model\Product\Type::TYPE_BUNDLE == $item->getProductType()
