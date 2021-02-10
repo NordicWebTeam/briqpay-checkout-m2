@@ -42,7 +42,7 @@ class SessionManagement
      */
     public function getSessionToken()
     {
-        return $this->checkoutSession->getBriqpaySessionToken()
+        return $this->checkoutSession->getBriqpaySessionToken();
     }
 
     /**
@@ -52,6 +52,6 @@ class SessionManagement
      */
     public function setSessionToken($token)
     {
-        return $this->checkoutSession->setBriqpaySessionToken($token)
+        return $this->checkoutSession->setBriqpaySessionToken($token);
     }
 }
