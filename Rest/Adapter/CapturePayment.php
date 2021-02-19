@@ -9,7 +9,7 @@ use Briqpay\Checkout\Rest\Schema\Parser;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class OrderDelivery
+class CapturePayment
 {
     /**
      * @var string
@@ -57,30 +57,19 @@ class OrderDelivery
      *
      * @throws OrderDeliveryException
      */
-    public function orderDelivery($accessToken, $purchaseId, $items = [], $orderReference = '', $tranId = '', $trackingCode = '') : void
+    public function capture($authToken, $sessionId, $amount, $cart = []): void
     {
-        return;
-        if (!$purchaseId) {
-            throw new OrderDeliveryException('Missing purchase id');
-        }
-
-        $uri = sprintf(
-            '%s/api/partner/payments/%s/order',
-            $this->endpoint,
-            $purchaseId
-        );
-
+        $uri = "{$this->endpoint}/order-management/v1/capture-order";
         $requestBody = \json_encode([
-            'items' => $items,
-            'OrderReference' => $orderReference,
-            'TranId' => $tranId,
-            'TrackingCode' => $trackingCode
+            'sessionid' => $sessionId,
+            'amount' => (int)$amount,
+            'cart' => $cart
         ]);
 
         $headers = [
             'Cache-Control' => 'no-cache',
             'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $accessToken)
+            'Authorization' => "Bearer $authToken"
         ];
 
         $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));

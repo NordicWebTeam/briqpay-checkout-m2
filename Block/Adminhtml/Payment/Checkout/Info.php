@@ -2,7 +2,6 @@
 
 namespace Briqpay\Checkout\Block\Adminhtml\Payment\Checkout;
 
-
 class Info extends \Magento\Payment\Block\Info
 {
     /**
@@ -22,10 +21,10 @@ class Info extends \Magento\Payment\Block\Info
     /**
      * @return mixed|string
      */
-    public function getBriqpayPaymentMethod()
+    public function getPaymentMethod()
     {
         try {
-            return $this->getInfo()->getAdditionalInformation('briqpay_method');
+            return $this->getInfo()->getAdditionalInformation('pspname');
         } catch (\Exception $e) {
             return "";
         }
@@ -34,10 +33,10 @@ class Info extends \Magento\Payment\Block\Info
     /**
      * @return mixed|string
      */
-    public function getBriqpayPurchaseId()
+    public function getReservationId()
     {
         try {
-            return $this->getInfo()->getAdditionalInformation('briqpay_purchase_id');
+            return $this->getInfo()->getAdditionalInformation('reservationid');
         } catch (\Exception $e) {
             return "";
         }

@@ -3,6 +3,7 @@
 namespace Briqpay\Checkout\Rest\Adapter;
 
 use Briqpay\Checkout\Model\Config\ApiConfig;
+use Briqpay\Checkout\Rest\Exception\OrderDeliveryException;
 use Briqpay\Checkout\Rest\Exception\RefundException;
 use Briqpay\Checkout\Rest\RestClient;
 use Psr\Log\LoggerInterface;
@@ -49,23 +50,24 @@ class RefundAdapter
      *
      * @throws RefundException
      */
-    public function refund($accessToken, $purchaseId, $orderReference, $transactionId, $amount) : void
+    public function refund($authToken, $sessionId, $amount, $cart): void
     {
-        return;
         $uri = sprintf(
-            '%s/api/partner/payments/%s/refund',
-            $this->endpoint,
-            $purchaseId
+            '%s/order-management/v1/refund-order',
+            $this->endpoint
         );
 
-        $requestBody = \json_encode([
-            'amount'         => $amount
-        ]);
+        $refundData = [];
+        $refundData['sessionid'] = $sessionId;
+        $refundData['amount'] = $amount;
+        $refundData['cart'] = $cart;
+
+        $requestBody = \json_encode($refundData);
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $accessToken)
+            'Content-Type' => 'application/json',
+            'Authorization' => "Bearer $authToken"
         ];
 
         $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));
@@ -73,7 +75,7 @@ class RefundAdapter
             $rawResponse = $this->restClient->post($uri, $requestBody, $headers);
             $this->logger->log(LogLevel::DEBUG, $rawResponse);
         } catch (\Exception $e) {
-            throw new RefundException('Unknown response from Briqpay: ' . $e->getMessage());
+            throw new OrderDeliveryException($e->getMessage());
         }
     }
 }

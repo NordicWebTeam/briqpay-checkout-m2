@@ -72,7 +72,7 @@
     </virtualType>
 
     <!-- Payment Method configuration -->
-    <type name="\Briqpay\Checkout\Model\Payment\Briqpay">
+    <type name="Briqpay\Checkout\Model\Payment\Briqpay">
         <arguments>
             <argument name="adapter" xsi:type="object">Briqpay\Checkout\Model\Payment\VirtualAdapter</argument>
         </arguments>

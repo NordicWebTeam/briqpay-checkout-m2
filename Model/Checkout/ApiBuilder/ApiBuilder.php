@@ -67,7 +67,6 @@ class ApiBuilder
      */
     public function generateRequest(): InitializePaymentRequest
     {
-//        print_r($this->paymentSessionDTO->toArray());exit;
         return $this->objectManager->create($this->instanceName, [
             'data' => new DataObject(
                 $this->paymentSessionDTO->toArray()

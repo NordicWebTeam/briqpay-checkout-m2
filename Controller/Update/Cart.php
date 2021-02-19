@@ -1,75 +1,88 @@
 <?php
 namespace Briqpay\Checkout\Controller\Update;
 
+use Briqpay\Checkout\Model\Checkout\BriqpayCheckout;
+use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Content\ResponseHandler;
-use Magento\Checkout\Model\Session;
+use Briqpay\Checkout\Rest\Exception\UpdateCartException;
+use Briqpay\Checkout\Rest\Request\InitializePaymentRequestFactory;
+use Briqpay\Checkout\Rest\Service\Authentication;
+use Exception;
+use Magento\Checkout\Controller\Action;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\AuthenticationException;
 
 /**
  * Class Cart
  *
  * @package Briqpay\Checkout\Controller\Update
  */
-class Cart extends \Magento\Checkout\Controller\Action
+class Cart extends Action
 {
     use ResponseHandler;
 
     /**
-     * @var \Briqpay\Checkout\Rest\Service\Authentication
+     * @var Authentication
      */
     private $authService;
 
     /**
-     * @var \Briqpay\Checkout\Rest\Request\InitializePaymentRequestFactory
+     * @var InitializePaymentRequestFactory
      */
     private $initializePaymentRequestFactory;
 
     /**
-     * @var Session
-     */
-    private $checkoutSession;
-
-    /**
-     * @var \Briqpay\Checkout\Model\Checkout\BriqpayCheckout
+     * @var BriqpayCheckout
      */
     private $briqpayCheckout;
 
     /**
+     * @var SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
      * Cart constructor.
      *
-     * @param \Magento\Framework\App\Action\Context $context
+     * @param Context $context
      * @param \Magento\Customer\Model\Session $customerSession
      * @param CustomerRepositoryInterface $customerRepository
      * @param AccountManagementInterface $accountManagement
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
+        Context $context,
         \Magento\Customer\Model\Session $customerSession,
         CustomerRepositoryInterface $customerRepository,
         AccountManagementInterface $accountManagement,
-        Session $checkoutSession,
-        \Briqpay\Checkout\Model\Checkout\BriqpayCheckout $briqpayCheckout
-    ) {
+        SessionManagement $sessionManagement,
+        BriqpayCheckout $briqpayCheckout
+    )
+    {
         parent::__construct($context, $customerSession, $customerRepository, $accountManagement);
 
-        $this->checkoutSession = $checkoutSession;
         $this->briqpayCheckout = $briqpayCheckout;
+        $this->sessionManagement = $sessionManagement;
     }
 
     /**
      * @return ResponseInterface|ResultInterface|void
-     * @throws \Magento\Framework\Exception\AuthenticationException
-     * @throws \Briqpay\Checkout\Rest\Exception\UpdateCartException
+     * @throws AuthenticationException
+     * @throws UpdateCartException
      */
     public function execute()
     {
-        $checkoutSession = $this->checkoutSession;
         try {
-            $this->briqpayCheckout->updateItems($checkoutSession->getBriqpayPurchaseId(), $checkoutSession->getQuote());
-        } catch (\Exception $e) {
+            $this->briqpayCheckout->updateItems(
+                $this->sessionManagement->getSessionId(),
+                $this->sessionManagement->getQuote(),
+                $this->sessionManagement->getSessionToken()
+            );
+
+        } catch (Exception $e) {
             $this->getResponse()->setBody(json_encode([
                 'messages' => __('Can not update cart.')
             ]));

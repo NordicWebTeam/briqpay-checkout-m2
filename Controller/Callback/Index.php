@@ -117,31 +117,31 @@ class Index extends Action
     public function execute()
     {
         $sessionId = $this->checkoutSessionManager->getSessionId();
-        if (! $sessionId) {
+        if (!$sessionId) {
             $this->messageManager->addErrorMessage('Session is not found, please check again.');
             return $this->_redirect('briqpay');
         }
 
-        $paymentStatus = $this->getPaymentStatus();
-        if ($paymentStatus['state'] !== 'purchasecomplete') {
+        $paymentResponse = $this->getPaymentStatus();
+        if ($paymentResponse->getState() !== 'purchasecomplete') {
             $this->messageManager->addErrorMessage('Please verify your payment data.');
             return $this->_redirect('briqpay');
         }
 
         try {
             $quote = $this->checkoutSessionManager->getQuote();
-            $this->quoteManager->setDataFromResponse($quote, $paymentStatus);
+            $this->quoteManager->setDataFromResponse($quote, $paymentResponse);
             $this->prepareShippingRates($quote);
-//            $this->quoteResponseHandler->handlePaymentStatus($quote, $paymentStatus);
 
+            /** @var \Magento\Sales\Model\Order $order */
             $order = $this->cartManager->submit($quote);
             $this->checkoutSession
                 ->setLastQuoteId($quote->getId())
                 ->setLastSuccessQuoteId($quote->getId())
                 ->clearHelperData();
 
-//            $this->paymentProcessor->processPayment($order->getPayment());
-            //$this->dispatchPostEvents($order, $quote);
+            $this->paymentProcessor->processPayment($order->getPayment());
+            $this->dispatchPostEvents($order, $quote);
 
             /**
              * a flag to set that there will be redirect to third party after confirmation
@@ -226,7 +226,7 @@ class Index extends Action
      * @return GetPaymentStatusResponse
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
      */
-    private function getPaymentStatus() : array
+    private function getPaymentStatus(): GetPaymentStatusResponse
     {
         return $this->sessionManagement->readSession(
             $this->checkoutSessionManager->getSessionId(),

@@ -2,8 +2,8 @@
 
 namespace Briqpay\Checkout\Controller\Update;
 
+use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Content\ResponseHandler;
-use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 
@@ -12,27 +12,21 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
     use ResponseHandler;
 
     /**
-     * @var Session
+     * @var SessionManagement
      */
-    private $checkoutSession;
+    private $sessionManagement;
 
     /**
-     * @var
+     * @var \Briqpay\Checkout\Model\Quote\UpdateCartService
      */
-    private $quote;
-
-    /**
-     * @var \Briqpay\Checkout\Model\Service\QuoteManagement
-     */
-    private $briqpayQuoteManagement;
+    private $updateCartService;
 
     /**
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Customer\Model\Session $customerSession
      * @param CustomerRepositoryInterface $customerRepository
      * @param AccountManagementInterface $accountManagement
-     * @param Session $checkoutSession
-     * @param \Briqpay\Checkout\Model\Service\QuoteManagement $briqpayQuoteManagement
+     * @param SessionManagement $sessionManagement
      *
      * @codeCoverageIgnore
      */
@@ -41,17 +35,19 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
         \Magento\Customer\Model\Session $customerSession,
         CustomerRepositoryInterface $customerRepository,
         AccountManagementInterface $accountManagement,
-        Session $checkoutSession,
-        \Briqpay\Checkout\Model\Service\QuoteManagement $briqpayQuoteManagement
-    ) {
+        \Briqpay\Checkout\Model\Quote\UpdateCartService $updateCartService,
+        SessionManagement $sessionManagement
+    )
+    {
         parent::__construct(
             $context,
             $customerSession,
             $customerRepository,
             $accountManagement
         );
-        $this->checkoutSession = $checkoutSession;
-        $this->briqpayQuoteManagement = $briqpayQuoteManagement;
+
+        $this->sessionManagement = $sessionManagement;
+        $this->updateCartService = $updateCartService;
     }
 
     /**
@@ -59,12 +55,12 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
      */
     public function execute()
     {
-        if (! $this->ajaxRequestAllowed()) {
+        if (!$this->ajaxRequestAllowed()) {
             return;
         }
 
-        $shippingMethod = $this->getRequest()->getPost('shipping_method', '');
-        $postcode = $this->getRequest()->getPost('postcode', '');
+        $shippingMethod = $this->getRequest()->getPost('shipping_method');
+        $postcode = $this->getRequest()->getPost('postcode');
         if (!$shippingMethod) {
             $this->getResponse()->setBody(json_encode([
                 'messages' => 'Please choose a valid shipping method.'
@@ -73,10 +69,15 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
         }
 
         try {
-            $quote = $this->getQuote();
-            $purchaseId = $this->getBriqpayPurchaseId();
             $this->updateShippingMethod($shippingMethod, $postcode);
-            $this->briqpayQuoteManagement->refresh($purchaseId, $quote);
+
+            $sessionId = $this->sessionManagement->getSessionId();
+            $sessionToken = $this->sessionManagement->getSessionToken();
+            $this->updateCartService->updateByQuote(
+                $sessionId,
+                $this->sessionManagement->getQuote(),
+                $sessionToken
+            );
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->messageManager->addExceptionMessage(
                 $e,
@@ -117,8 +118,8 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
             $this->ignoreAddressValidation();
             $shippingAddress->setShippingMethod($methodCode)->setCollectShippingRates(true);
             $quote->setTotalsCollectedFlag(false)
-                  ->collectTotals()
-                  ->save();
+                ->collectTotals()
+                ->save();
         }
     }
 
@@ -137,26 +138,15 @@ class SaveShippingMethod extends \Magento\Checkout\Controller\Action
     }
 
     /**
-     * @return mixed
-     */
-    private function getBriqpayPurchaseId()
-    {
-        return $this->checkoutSession->getBriqpayPurchaseId();
-    }
-
-    /**
-     * Quote object getter
+     * Public, since used in plugins
      *
-     * @return \Magento\Quote\Model\Quote
+     * @return \Magento\Quote\Api\Data\CartInterface|\Magento\Quote\Model\Quote
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getQuote()
     {
-        if ($this->quote === null) {
-            return $this->checkoutSession->getQuote();
-        }
-
-        return $this->quote;
+        return $this->sessionManagement->getQuote();
     }
 }
+

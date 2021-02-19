@@ -36,9 +36,7 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Sales\Model\Order\Config $orderConfig,
         \Magento\Framework\App\Http\Context $httpContext,
-        \Magento\Sales\Model\OrderRepository $orderRepository,
-
-
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         array $data = []
     ) {
         parent::__construct(
@@ -61,7 +59,7 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
 
     public function setPaymentStatus(GetPaymentStatusResponse $paymentResponse)
     {
-
+        $this->paymentResponse = $paymentResponse;
     }
 
     /**

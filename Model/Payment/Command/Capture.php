@@ -8,10 +8,6 @@ use Magento\Sales\Model\Order\Payment\Transaction;
 
 class Capture implements CommandInterface
 {
-    /**
-     * @var \Briqpay\Checkout\Rest\Service\OrderDelivery
-     */
-    private $orderDeliveryService;
 
     /**
      * @var \Briqpay\Checkout\Rest\Service\Authentication
@@ -19,43 +15,42 @@ class Capture implements CommandInterface
     private $authenticationService;
 
     /**
+     * @var \Briqpay\Checkout\Rest\Service\CapturePayment
+     */
+    private $capturePaymentService;
+
+    /**
      * Capture constructor.
      */
     public function __construct(
-        \Briqpay\Checkout\Rest\Service\OrderDelivery $orderDeliveryService,
+        \Briqpay\Checkout\Rest\Service\CapturePayment $capturePaymentService,
         \Briqpay\Checkout\Rest\Service\Authentication $authenticationService
-    ) {
-        $this->orderDeliveryService = $orderDeliveryService;
+    )
+    {
         $this->authenticationService = $authenticationService;
+        $this->capturePaymentService = $capturePaymentService;
     }
 
-    /**
-     * @param array $commandSubject
-     *
-     * @return \Magento\Payment\Gateway\Command\ResultInterface|void|null
-     * @throws \Briqpay\Checkout\Rest\Exception\OrderDeliveryException
-     * @throws \Magento\Framework\Exception\AuthenticationException
-     */
     public function execute(array $commandSubject)
     {
         /** @var PaymentDataObject $payment */
         $payment = $commandSubject['payment'] ?? null;
-        if (! $payment) {
+        if (!$payment) {
             return;
         }
 
-        $storeId = $payment->getOrder()->getStoreId();
-        $this->authenticationService->authenticate($storeId);
-        $transactionId = $this->orderDeliveryService->orderDelivery(
+        $sessionId = $payment->getPayment()->getAdditionalInformation()['sessionid'];
+        $this->capturePaymentService->capture(
             $payment->getOrder(),
-            $this->authenticationService->getToken()
+            $sessionId,
+            $commandSubject['amount']
         );
 
         /** @var \Magento\Sales\Model\Order\Payment $orderPayment */
         $orderPayment = $payment->getPayment();
 
-        $orderPayment->setTransactionId($transactionId);
-        $transaction = $orderPayment->addTransaction(Transaction::TYPE_AUTH);
+        //$orderPayment->setTransactionId($transactionId);
+        $transaction = $orderPayment->addTransaction(Transaction::TYPE_CAPTURE);
         $transaction->setIsClosed(true);
     }
 }

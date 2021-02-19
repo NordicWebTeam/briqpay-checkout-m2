@@ -4,24 +4,21 @@ namespace Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector;
 
 use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\CreatePaymentSession;
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderItemCollectorInterface;
-use Magento\Catalog\Model\Product;
+use Magento\Bundle\Model\Product\Price;
+use Magento\Catalog\Model\Product\Type;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\Quote\Item;
+use Magento\Quote\Model\Quote\Item as QuoteItem;
+use Magento\Sales\Model\Order\Creditmemo\Item as CreditMemoItem;
+use Magento\Sales\Model\Order\Invoice\Item as InvoiceItem;
+use Magento\Sales\Model\Order\Item as OrderItem;
 
 class ItemsCollector implements OrderItemCollectorInterface
 {
     /**
-     * @var \Magento\Tax\Api\TaxCalculationInterface
+     * Checkout item types
      */
-    private $taxCalculationService;
-
-    /**
-     * ItemsCollector constructor.
-     */
-    public function __construct(\Magento\Tax\Api\TaxCalculationInterface $taxCalculationService)
-    {
-        $this->taxCalculationService = $taxCalculationService;
-    }
+    const ITEM_TYPE_PHYSICAL = 'physical';
+    const ITEM_TYPE_VIRTUAL = 'digital';
 
     /**
      * @inheritDoc
@@ -30,65 +27,139 @@ class ItemsCollector implements OrderItemCollectorInterface
     {
         if ($subject instanceof Quote) {
             $quote = $subject;
-            $items = $quote->getAllVisibleItems();
-
             $orderAmount = 0;
-            foreach ($items as $item) {
-                if ($this->shouldSkipByProductType($item)) {
-                    continue;
-                }
-
-                $taxRate = $this->getTaxRate($item->getProduct());
-                $orderAmount += $item->getRowTotal();
-                $paymentSession->addCartItem([
-                    'producttype' => 'physical',
-                    'reference' => substr($item->getSku(), 0, 64),
-                    'name' => substr($item->getName(), 0, 64),
-                    'quantity' => (int)1,
-                    'quantityunit' => "pc",
-                    'unitprice' => 4500,
-                    'discount' => $item->getDiscountAmount() * 100,
-                    'taxrate' => $taxRate * 100,
-                ]);
+            foreach ($this->generateItems($quote->getAllItems()) as $item) {
+                $orderAmount += $item['unitprice'];
+                $paymentSession->addCartItem($item);
             }
+            $paymentSession->addAmount($orderAmount);
         }
-        $paymentSession->setAmount(4500);
+
+        if ($subject instanceof \Magento\Payment\Gateway\Data\OrderAdapterInterface) {
+            $orderAmount = 0;
+            foreach ($this->generateItems($subject->getItems()) as $item) {
+                $orderAmount += $item['unitprice'];
+                $paymentSession->addCartItem($item);
+            }
+            $paymentSession->setAmount($orderAmount);
+        }
     }
 
     /**
-     * @param Product $product
+     * @param $allItems
      *
-     * @return float
+     * @return array
      */
-    private function getTaxRate(Product $product): float
+    private function generateItems($allItems)
     {
-        $taxClassId = $product->getCustomAttribute('tax_class_id');
-        if (!$taxClassId) {
-            return 0;
+        $items = [];
+        foreach ($allItems as $item) {
+            $item = $this->getItem($item);
+
+            $parentItem = $item->getParentItem()
+                ?: ($item->getParentItemId() ? $object->getItemById($item->getParentItemId()) : null);
+
+            if ($this->shouldSkip($parentItem, $item)) {
+                continue;
+            }
+
+            $items[] = $this->processItem($item);
         }
 
-        $productRateId = $taxClassId->getValue();
-        $taxRate = $this->taxCalculationService->getCalculatedRate(
-            $productRateId,
-            $quote->getCustomerId() ?: null,
-            $quote->getStoreId()
-        );
-
-        return $taxRate ?: 0;
+        return $items;
     }
 
     /**
-     * @param Item $item
+     * @param QuoteItem|InvoiceItem|CreditMemoItem $item
+     *
+     * @return QuoteItem|OrderItem
      */
-    private function shouldSkipByProductType(Item $item): bool
+    private function getItem($item)
+    {
+        if ($item instanceof InvoiceItem || $item instanceof CreditMemoItem) {
+            $orderItem = $item->getOrderItem();
+            $orderItem->setCurrentInvoiceRefundItemQty($item->getQty());
+            return $orderItem;
+        }
+
+        return $item;
+    }
+
+    /**
+     * @param $parentItem
+     * @param $item
+     * @return bool
+     */
+    private function shouldSkip($parentItem, $item)
     {
         // Skip if bundle product with a dynamic price type
-        if (\Magento\Catalog\Model\Product\Type::TYPE_BUNDLE == $item->getProductType()
-            && \Magento\Bundle\Model\Product\Price::PRICE_TYPE_DYNAMIC == $item->getProduct()->getPriceType()
+        if (Type::TYPE_BUNDLE == $item->getProductType()
+            && Price::PRICE_TYPE_DYNAMIC == $item->getProduct()->getPriceType()
+        ) {
+            return true;
+        }
+
+        if (!$parentItem) {
+            return false;
+        }
+
+        // Skip if child product of a non bundle parent
+        if (Type::TYPE_BUNDLE != $parentItem->getProductType()) {
+            return true;
+        }
+
+        // Skip if non bundle product or if bundled product with a fixed price type
+        if (Type::TYPE_BUNDLE != $parentItem->getProductType()
+            || Price::PRICE_TYPE_FIXED == $parentItem->getProduct()->getPriceType()
         ) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param $item
+     *
+     * @return array
+     */
+    private function processItem($item)
+    {
+        return [
+            'producttype' => $item->getIsVirtual() ? self::ITEM_TYPE_VIRTUAL : self::ITEM_TYPE_PHYSICAL,
+            'reference' => substr($item->getSku(), 0, 64),
+            'name' => $item->getName(),
+            'quantity' => ceil($this->getItemQty($item)),
+            'quantityunit' => 'pc',
+            'unitprice' => $this->toApiFloat($item->getBaseRowTotalInclTax() - $item->getBaseDiscountAmount())
+                ?: $this->toApiFloat($item->getBaseRowTotalInclTax()),
+            'taxrate' => $this->toApiFloat($item->getTaxPercent()),
+            'discount' => $this->toApiFloat($item->getBaseDiscountAmount())
+        ];
+    }
+
+    /**
+     * @param QuoteItem|InvoiceItem|CreditMemoItem $item
+     *
+     * @return int
+     */
+    private function getItemQty($item)
+    {
+        $methods = ['getQty', 'getCurrentInvoiceRefundItemQty', 'getQtyOrdered'];
+        foreach ($methods as $method) {
+            if ($item->$method() !== null) {
+                return $item->$method();
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     *
+     */
+    private function toApiFloat($float)
+    {
+        return (int)round($float * 100);
     }
 }

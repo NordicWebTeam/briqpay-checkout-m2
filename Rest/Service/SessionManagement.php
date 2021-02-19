@@ -2,6 +2,8 @@
 
 namespace Briqpay\Checkout\Rest\Service;
 
+use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
+
 class SessionManagement
 {
     /**
@@ -23,12 +25,20 @@ class SessionManagement
     public function __construct(
         \Briqpay\Checkout\Rest\Service\AuthenticationFactory $initializePaymentRequestFactory,
         \Briqpay\Checkout\Rest\Adapter\ReadSession $sessionManagementService
-    ) {
+    )
+    {
         $this->initializePaymentRequestFactory = $initializePaymentRequestFactory;
         $this->sessionManagementService = $sessionManagementService;
     }
 
-    public function readSession($sessionId, $authToken)
+    /**
+     * @param $sessionId
+     * @param $authToken
+     *
+     * @return GetPaymentStatusResponse
+     * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
+     */
+    public function readSession($sessionId, $authToken): GetPaymentStatusResponse
     {
         return $this->sessionManagementService->readSession($sessionId, $authToken);
     }

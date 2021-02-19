@@ -8,8 +8,6 @@ use Magento\Sales\Model\Order\Payment;
 
 /**
  * Class PaymentProcessor
- *
- * @package Briqpay\Checkout\Model\Service
  */
 class PaymentProcessor
 {

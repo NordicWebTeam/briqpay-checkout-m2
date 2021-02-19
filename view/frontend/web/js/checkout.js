@@ -154,6 +154,9 @@ define([
                             _this._ajaxBeforeSend();
                         },
                         complete: function () {
+                            _briqpay.checkout.suspend();
+                            _briqpay.checkout.resume()
+                            _this._ajaxComplete()
                         },
                         success: function (data) {
                             if (!data.success) {
@@ -259,11 +262,11 @@ define([
         },
 
         _showBriqpayCheckout: function () {
-
+            _briqpay.checkout.resume()
         },
 
         _hideBriqpayCheckout: function () {
-
+            _briqpay.checkout.suspend()
         },
 
         _changeShippingMethod: function () {
@@ -320,6 +323,8 @@ define([
                     }
                 },
                 complete: function () {
+                    _briqpay.checkout.suspend();
+                    _briqpay.checkout.resume()
                     _this.options.shippingAjaxInProgress = false;
                     _this._ajaxComplete();
                 },

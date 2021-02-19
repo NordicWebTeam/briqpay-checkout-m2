@@ -4,10 +4,11 @@ namespace Briqpay\Checkout\Rest\Service;
 
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderLineCollectorsAgreggator;
 use Briqpay\Checkout\Model\Config\ApiConfig;
+use Briqpay\Checkout\Rest\Exception\OrderDeliveryException;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
 use Magento\Sales\Model\OrderRepository;
 
-class Refund
+class CapturePayment
 {
     /**
      * @var ApiConfig
@@ -18,6 +19,11 @@ class Refund
      * @var OrderRepository
      */
     private $orderRepository;
+
+    /**
+     * @var \Briqpay\Checkout\Rest\Adapter\CapturePayment
+     */
+    private $capturePaymentAdapter;
 
     /**
      * @var \Briqpay\Checkout\Rest\Adapter\GetAuthTokenForSession
@@ -40,11 +46,6 @@ class Refund
     private $authRequestFactory;
 
     /**
-     * @var \Briqpay\Checkout\Rest\Adapter\RefundAdapter
-     */
-    private $refundAdapter;
-
-    /**
      * OrderDelivery constructor.
      *
      * @param ApiConfig $config
@@ -52,7 +53,7 @@ class Refund
      */
     public function __construct(
         ApiConfig $config,
-        \Briqpay\Checkout\Rest\Adapter\RefundAdapter $refundAdapter,
+        \Briqpay\Checkout\Rest\Adapter\CapturePayment $capturePaymentAdapter,
         \Briqpay\Checkout\Rest\Adapter\GetAuthTokenForSession $sessionAuthTokenService,
         \Briqpay\Checkout\Rest\Service\Authentication $authenticationService,
         OrderRepository $orderRepository,
@@ -61,12 +62,12 @@ class Refund
     )
     {
         $this->config = $config;
+        $this->capturePaymentAdapter = $capturePaymentAdapter;
         $this->orderRepository = $orderRepository;
         $this->sessionAuthTokenService = $sessionAuthTokenService;
         $this->authenticationService = $authenticationService;
         $this->orderLineCollectorsAgreggator = $orderLineCollectorsAgreggator;
         $this->authRequestFactory = $authRequestFactory;
-        $this->refundAdapter = $refundAdapter;
     }
 
     /**
@@ -74,10 +75,12 @@ class Refund
      * @param $sessionId
      * @param $amount
      *
+     * @return string
+     * @throws OrderDeliveryException
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     * @throws \Briqpay\Checkout\Rest\Exception\RefundException
+     * @throws \Magento\Framework\Exception\AuthenticationException
      */
-    public function refund(OrderAdapterInterface $order, $sessionId, $amount)
+    public function capture(OrderAdapterInterface $order, $sessionId, $amount)
     {
         $authRequest = $this->authRequestFactory->create([
             'clientId' => 'b00015',
@@ -87,7 +90,7 @@ class Refund
         $token = $this->sessionAuthTokenService->generateToken($sessionId, $authRequest->getAuthHeader());
         $subjectDto = $this->orderLineCollectorsAgreggator->aggregateItems($order);
 
-        $this->refundAdapter->refund(
+        $this->capturePaymentAdapter->capture(
             $token,
             $sessionId,
             $amount * 100,
@@ -95,4 +98,11 @@ class Refund
         );
     }
 
+    /**
+     * @return string
+     */
+    private function generateGuid()
+    {
+        return bin2hex(openssl_random_pseudo_bytes(16));
+    }
 }

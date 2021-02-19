@@ -54,6 +54,7 @@ class CaptureInvoice implements PaymentActionInterface
     public function process(Payment $payment) : void
     {
         $order = $payment->getOrder();
+        $payment->authorize(true, $order->getBaseTotalDue());
         $this->invoicePayment($order);
 
         $order
