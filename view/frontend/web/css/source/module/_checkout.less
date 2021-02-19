@@ -229,9 +229,21 @@ button:not(.primary) {
 
   .load.indicator {
     position: fixed !important;
-
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: @briqpay-color-white;
+    z-index: 1000;
+    padding: 20px;
+    border: @briqpay-border;
     &:before {
+      content: '';
       background: transparent url("../images/ajax-loader.gif") no-repeat 50% 50%;
+      display: block;
+      width: auto;
+      height: 40px;
+      margin-bottom: 10px;
     }
   }
 
@@ -2348,4 +2360,8 @@ button:not(.primary).primary {
   .checkout-title h4 {
     border-bottom: 0;
   }
+}
+
+#briqpay {
+  margin: 0 auto;
 }
