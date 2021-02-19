@@ -106,11 +106,11 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    public function setDataFromResponse(Quote $quote, array $paymentStatusResponse) : void
+    public function setDataFromResponse(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse): void
     {
         $this->setCustomerEmail($quote, $paymentStatusResponse);
         $this->setShippingData($quote, $paymentStatusResponse);
-//        $this->setBillingData($quote, $paymentStatusResponse);
+        $this->setBillingData($quote, $paymentStatusResponse);
         $this->setCustomerData($quote);
 
         $payment = $quote->getPayment();
@@ -118,14 +118,11 @@ class QuoteManagement
             $payment->unsMethodInstance()->setMethod(Briqpay::CODE);
         }
 
-        $paymentData = new DataObject([
-            QuoteSchema::PURCHASE_ID => $paymentStatusResponse['sessionid'],
-            'country_id'             => $quote->getShippingAddress()->getCountryId(),
-        ]);
+        $paymentData = $paymentStatusResponse->getPurchasePaymentMethod();
+        $payment->setAdditionalInformation($paymentData->getData());
 
-        $method = $payment->getMethodInstance();
-        $method->assignData($paymentData);
-        $this->quoteRepository->save($quote);
+        $aa = 2;
+//        $this->quoteRepository->save($quote);
     }
 
     /**
@@ -146,9 +143,9 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    private function setCustomerEmail(Quote $quote, array $paymentStatusResponse) : void
+    private function setCustomerEmail(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse): void
     {
-        if ($email = $paymentStatusResponse['billingaddress']['email']) {
+        if ($email = $paymentStatusResponse->getBillingAddress()['email'] ?? false) {
             $quote->setCustomerEmail($email);
         }
     }
@@ -157,15 +154,11 @@ class QuoteManagement
      * @param Quote $quote
      * @param GetPaymentStatusResponse $paymentStatusResponse
      */
-    private function setShippingData(Quote $quote, array $paymentStatusResponse) : void
+    private function setShippingData(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse): void
     {
         $shippingAddress = $quote->getShippingAddress();
-        $shippingData = $paymentStatusResponse['billingaddress'];
+        $shippingData = $paymentStatusResponse->getBillingAddress();
 
-        // Using for fallback
-       // $userData = $paymentStatusResponse->getUserInputData();
-
-//        $street = $shippingData['address1'] ?? null . $shippingData['address2'] ?? null;
         $data = [
             'firstname' => $shippingData['firstname'],
             'lastname' => $shippingData['lastname'],
@@ -174,18 +167,12 @@ class QuoteManagement
             'street' => $shippingData['streetaddress'],
             'city' => $shippingData['city'] ?? null,
             'postcode' => $shippingData['zip'] ?? ($userData['zip'] ?? null),
-            'country_id' => $paymentStatusResponse['country']
+            'country_id' => $paymentStatusResponse->getCountry()
         ];
 
         $shippingAddress->addData($data);
         $shippingAddress->setShouldIgnoreValidation(true);
         $shippingAddress->save();
-
-        $billing = $quote->getBillingAddress();
-        $billing->addData($data);
-        $billing->setShouldIgnoreValidation(true);
-        $billing->save();
-
     }
 
     /**
@@ -194,24 +181,23 @@ class QuoteManagement
      */
     private function setBillingData(Quote $quote, GetPaymentStatusResponse $paymentStatusResponse) : void
     {
-        $billingAddress = $quote->getBillingAddress();
         $billingData = $paymentStatusResponse->getBillingAddress();
-        $userData = $paymentStatusResponse->getUserInputData();
 
-        $street = $billingData['address1'] ?? null . $billingData['address2'] ?? null;
         $data = [
-            'firstname' => $billingData['firstName'] ?? null,
-            'lastname' => $billingData['lastName'] ?? null,
-            'telephone' => $billingData['firstName'] ?? null,
-            'email' => $userData['email'] ?? null,
-            'street' => $street,
+            'firstname' => $billingData['firstname'],
+            'lastname' => $billingData['lastname'],
+            'telephone' => $billingData['cellno'],
+            'email' => $billingData['email'],
+            'street' => $billingData['streetaddress'],
             'city' => $billingData['city'] ?? null,
-            'postcode' => $billingData['zip'] ?? null,
-            'country_id' => $billingData['country'] ?? null
+            'postcode' => $billingData['zip'] ?? ($userData['zip'] ?? null),
+            'country_id' => $paymentStatusResponse->getCountry()
         ];
 
-        $billingAddress->addData($data);
-        $billingAddress->setShouldIgnoreValidation(true);
+        $billing = $quote->getBillingAddress();
+        $billing->addData($data);
+        $billing->setShouldIgnoreValidation(true);
+        $billing->save();
     }
 
     /**

@@ -22,11 +22,13 @@ class InitializePaymentRequest
     }
 
     /**
+     * @param bool $isJson
+     *
      * @return string
      */
-    public function getRequestBody()
+    public function getRequestBody($isJson = true)
     {
-        return json_encode($this->data->getData());
+        return $isJson ? json_encode($this->data->getData()) : $this->data->getData();
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace Briqpay\Checkout\Controller\Order;
 
 use Briqpay\Checkout\Rest\Exception\PaymentStatusException;
+use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
 use Magento\Checkout\Controller\Action;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
@@ -31,6 +32,16 @@ class Success extends Action
     private $checkoutSession;
 
     /**
+     * @var \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
+     */
+    private $checkoutSessionManager;
+
+    /**
+     * @var \Briqpay\Checkout\Rest\Service\SessionManagement
+     */
+    private $sessionManagement;
+
+    /**
      * Index constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
@@ -45,8 +56,10 @@ class Success extends Action
         AccountManagementInterface $accountManagement,
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Briqpay\Checkout\Model\Payment\PaymentManager $paymentManager,
-        Session $checkoutSession
-    ) {
+        \Briqpay\Checkout\Rest\Service\SessionManagement $sessionManagement,
+        \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement $checkoutSessionManager
+    )
+    {
         parent::__construct(
             $context,
             $customerSession,
@@ -55,7 +68,8 @@ class Success extends Action
         );
         $this->pageFactory = $pageFactory;
         $this->paymentManager = $paymentManager;
-        $this->checkoutSession = $checkoutSession;
+        $this->checkoutSessionManager = $checkoutSessionManager;
+        $this->sessionManagement = $sessionManagement;
     }
 
     /**
@@ -78,27 +92,28 @@ class Success extends Action
 
         /** @var \Briqpay\Checkout\Block\Checkout\Order\Success $successBlock */
         $successBlock = $layout->getBlock(self::BLOCK_NAME_SUCCESS);
-        return;
         if (! $successBlock) {
             return;
         }
 
         try {
-            $paymentResponse = $this->getPaymentResponse();
+            $paymentResponse = $this->getPaymentStatus();
             $successBlock->setPaymentResponse($paymentResponse);
         } catch (PaymentStatusException $e) {
+            echo $e->getMessage();
             // TODO: Log excepttion
         }
     }
 
     /**
-     * @return \Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse
-     * @throws \Briqpay\Checkout\Rest\Exception\PaymentStatusException
+     * @return GetPaymentStatusResponse
+     * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
      */
-    private function getPaymentResponse()
+    private function getPaymentStatus(): GetPaymentStatusResponse
     {
-        $purchaseId = $this->checkoutSession->getBriqpayPurchaseId();
-
-        return $this->paymentManager->getPaymentStatus($purchaseId);
+        return $this->sessionManagement->readSession(
+            $this->checkoutSessionManager->getSessionId(),
+            $this->checkoutSessionManager->getSessionToken()
+        );
     }
 }

@@ -13,9 +13,8 @@ use Psr\Log\LogLevel;
 /**
  * Class InitializePayment
  *
- * @package Briqpay\Checkout\Rest\Adapter
  */
-class ReadSession
+class GetAuthTokenForSession
 {
     /**
      * @var string
@@ -70,32 +69,25 @@ class ReadSession
      *
      * @throws AdapterException
      */
-    public function readSession($sessionId, $authToken): GetPaymentStatusResponse
+    public function generateToken($sessionId, $authHeader): string
     {
         if (!$sessionId) {
             throw new AdapterException('Missing session id');
         }
 
-        $uri = sprintf(
-            '%s/checkout/v1/readsession',
-            $this->endpoint
-        );
-
+        $uri = "{$this->endpoint}/auth/{$sessionId}";
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $authToken)
+            'Content-Type' => 'application/json',
+            'Authorization' => $authHeader
         ];
 
-        $data = json_encode([
-            'sessionid' => $sessionId
-        ]);
         $this->logger->log(LogLevel::INFO, sprintf("%s\n%s", $uri, $sessionId));
         try {
-            $rawResponse = $this->restClient->post($uri, $data, $headers);
+            $rawResponse = $this->restClient->get($uri, [], $headers);
             $this->logger->log(LogLevel::INFO, $rawResponse);
 
-            return $this->schemaParser->parse($rawResponse, GetPaymentStatusResponse::class);
+            return json_decode($rawResponse, true)['token'];
         } catch (\Exception $e) {
             $this->logger->log(LogLevel::ERROR, "[HTTP {$e->getCode()}] {$e->getMessage()}");
             throw AdapterException::create($e);

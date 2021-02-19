@@ -14,7 +14,7 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
 {
     const CODE = 'briqpay';
 
-    const INFO_METHOD = 'briqpay_method';
+    const INFO_METHOD = 'pspname';
 
     /**
      * @var Resolver
@@ -32,9 +32,9 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
     private $code = self::CODE;
 
     /**
-     * @var ScopeConfigInterface
+     * @var \Briqpay\Checkout\Model\Config\ApiConfig
      */
-    private $config;
+    private $apiConfig;
 
     /**
      * @param Adapter                                  $adapter
@@ -44,11 +44,11 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
     public function __construct(
         Adapter $adapter,
         Resolver $resolver,
-        ScopeConfigInterface $config
+        \Briqpay\Checkout\Model\Config\ApiConfig $apiConfig
     ) {
         $this->adapter = $adapter;
         $this->resolver = $resolver;
-        $this->config = $config;
+        $this->apiConfig = $apiConfig;
     }
 
     /**
@@ -56,7 +56,7 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
      */
     public function isActive($storeId = null)
     {
-        return true;
+        return $this->apiConfig->isEnabled($storeId);
     }
 
     /**
@@ -275,14 +275,14 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
      */
     public function authorize(InfoInterface $payment, $amount)
     {
-        $purchaseId = $payment->getAdditionalInformation()['briqpay_purchase_id'] ?? null;
-        if (! $purchaseId) {
+        $reservationId = $payment->getAdditionalInformation()['reservationid'] ?? null;
+        if (!$reservationId) {
             throw new \Magento\Payment\Gateway\Command\CommandException(
-                new \Magento\Framework\Phrase('Can\'t authorize order.')
+                new \Magento\Framework\Phrase('Can\'t authorize the order.')
             );
         }
 
-        $payment->setTransactionId($purchaseId);
+        $payment->setTransactionId($reservationId);
         $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
         $transaction->setIsClosed(false);
         $payment->addTransactionCommentsToOrder($transaction, 'Authorized Briqpay amount: ' . $amount);

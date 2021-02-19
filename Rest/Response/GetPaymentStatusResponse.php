@@ -2,11 +2,12 @@
 
 namespace Briqpay\Checkout\Rest\Response;
 
+use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\PurchasePaymentMethod;
 use Magento\Framework\DataObject;
 
 /**
- * @method getCheckoutSite()
- * @method getTotalPrice()
+ * Class GetPaymentStatusResponse
+ * @method getCountry() : ?string
  */
 class GetPaymentStatusResponse implements ResponseInterface
 {
@@ -16,6 +17,11 @@ class GetPaymentStatusResponse implements ResponseInterface
     private $data;
 
     /**
+     * @var PurchasePaymentMethod
+     */
+    private $purchasePaymentMethod;
+
+    /**
      * InitializePayment constructor.
      *
      * @param DataObject $data
@@ -23,6 +29,17 @@ class GetPaymentStatusResponse implements ResponseInterface
     public function __construct(DataObject $data)
     {
         $this->data = $data;
+        $this->purchasePaymentMethod = new PurchasePaymentMethod(
+            new DataObject($this->data->getData('purchasepaymentmethod'))
+        );
+    }
+
+    /**
+     * @return array|mixed|null
+     */
+    public function getBillingAddress()
+    {
+        return $this->data->getData('billingaddress');
     }
 
     /**
@@ -36,100 +53,42 @@ class GetPaymentStatusResponse implements ResponseInterface
     }
 
     /**
-     * @return array|null
+     * @return array|mixed|null
      */
-    public function getBillingAddress() : ?array
+    public function getSessionId()
     {
-        $paymentData = $this->getPaymentData();
-
-        return $paymentData['invoicingAddress'] ?? null;
+        return $this->data->getData('sessionid');
     }
 
     /**
-     * @return array|null
+     * @return array|mixed|null
      */
-    public function getShippingAddress() : ?array
+    public function getState()
     {
-        $paymentData = $this->getPaymentData();
-
-        return $paymentData['deliveryAddress'] ?? null;
+        return $this->data->getData('state');
     }
 
     /**
-     * @return mixed
+     * @return array|mixed|null
      */
-    public function getPurchaseId()
+    public function getPurchasePaymentMethod(): PurchasePaymentMethod
     {
-        return $this->getData('purchaseId');
+        return $this->purchasePaymentMethod;
     }
 
     /**
-     * @return mixed|null
-     */
-    public function getCustomerToken()
-    {
-        $statusData = $this->getPaymentData();
-
-        return $statusData['step']['customerToken'] ?? null;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getPaymentMode()
-    {
-        return $this->getData('mode');
-    }
-
-    /**
+     * @param $method
+     * @param $args
      *
+     * @return bool|mixed
      */
-    public function getSelectedPaymentMethod()
+    public function __call($method, $args)
     {
-        $methods = $this->getData('paymentMethods');
-
-        return $methods['selectedPayment']['type'] ?? null;
+        switch (substr($method, 0, 3)) {
+            case 'get':
+                return $this->getData(
+                    strtolower(substr($method, 3, strlen($method)))
+                );
+        }
     }
-
-    /**
-     * @return array|null
-     */
-    public function getUserInputData()
-    {
-        $paymentData = $this->getPaymentData();
-
-        return $paymentData['userInputs'] ?? null;
-    }
-
-    /**
-     * @return mixed|null
-     */
-    public function getEmail() : ?string
-    {
-        $paymentData = $this->getPaymentData();
-
-        return $paymentData['userInputs']['email'] ?? null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPaymentStatus() : ?string
-    {
-        $statusData = $this->getPaymentData();
-
-        return $statusData['step']['current'] ?? null;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPaymentData()
-    {
-        return $this->getData('mode') == 'B2C'
-            ? $this->getData('b2C')
-            : $this->getData('b2B');
-    }
-
 }

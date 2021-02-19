@@ -6,11 +6,11 @@
 <div class="order-payment-method-name"><?= $block->escapeHtml($block->getMethod()->getTitle()); ?></div>
 <table class="data-table admin__table-secondary">
     <tr>
-        <th><?= $block->escapeHtml(__('Briqpay Purchase ID')); ?>:</th>
-        <td><?= $block->escapeHtml($block->getBriqpayPurchaseId()); ?></td>
+        <th><?= $block->escapeHtml(__('Reservationid Id')); ?>:</th>
+        <td><?= $block->escapeHtml($block->getReservationId()); ?></td>
     </tr>
     <tr>
         <th><?= $block->escapeHtml(__('Briqpay Payment Method')); ?>:</th>
-        <td><?= $block->escapeHtml($block->getBriqpayPaymentMethod()); ?></td>
+        <td><?= $block->escapeHtml($block->getPaymentMethod()); ?></td>
     </tr>
 </table>

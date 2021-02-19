@@ -6,8 +6,6 @@ use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\CreatePaymentSession\Addr
 
 /**
  * Class CreatePaymentSession
- *
- * @package Briqpay\Checkout\Model\Checkout\DTO\PaymentSession
  */
 class CreatePaymentSession
 {
@@ -29,7 +27,7 @@ class CreatePaymentSession
     /**
      * @var
      */
-    private $amount;
+    private $amount = 0;
 
     /**
      * @var
@@ -137,6 +135,14 @@ class CreatePaymentSession
     public function setAmount($amount): void
     {
         $this->amount = $amount;
+    }
+
+    /**
+     * @param mixed $amount
+     */
+    public function addAmount($amount): void
+    {
+        $this->amount += $amount;
     }
 
     /**

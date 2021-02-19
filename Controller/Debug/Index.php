@@ -112,10 +112,12 @@ class Index extends Action
      */
     public function execute()
     {
-        $quote = $this->checkoutSession->getQuote();
-        $this->quoteValidator->validateBeforeSubmit($this->checkoutSession->getQuote());
-        $paymentStatus = $this->getPaymentStatus();
-        echo '<pre>' . print_r($paymentStatus->getData(), true). '</pre>';
+        $order = $this->_objectManager->create(\Magento\Sales\Model\Order::class);
+        /** @var $order \Magento\Sales\Model\Order */
+        $order->load(19);
+        $payment = $order->getPayment();
+        $payment->authorize(true, $order->getTotalDue());
+
         exit;
     }
 

@@ -70,6 +70,11 @@ class Checkout
     private $sessionManagement;
 
     /**
+     * @var \Briqpay\Checkout\Model\Config\ApiConfig
+     */
+    private $checkoutConfig;
+
+    /**
      * CheckoutContext constructor.
      *
      * @param \Briqpay\Checkout\Model\Checkout\PaymentManagement $paymentManagement
@@ -89,6 +94,7 @@ class Checkout
         CustomerSession $customerSession,
         SessionManagement $sessionManagement,
         \Psr\Log\LoggerInterface $logger,
+        \Briqpay\Checkout\Model\Config\ApiConfig $checkoutConfig,
         $validators = []
     ) {
         $this->paymentManagement = $paymentManagement;
@@ -99,6 +105,7 @@ class Checkout
         $this->updateCartServiceFactory = $updateCartServiceFactory;
         $this->quoteRepository = $quoteRepository;
         $this->sessionManagement = $sessionManagement;
+        $this->checkoutConfig = $checkoutConfig;
     }
 
     /**
@@ -187,5 +194,13 @@ class Checkout
     public function getSessionManagement(): SessionManagement
     {
         return $this->sessionManagement;
+    }
+
+    /**
+     * @return \Briqpay\Checkout\Model\Config\ApiConfig
+     */
+    public function getCheckoutConfig(): \Briqpay\Checkout\Model\Config\ApiConfig
+    {
+        return $this->checkoutConfig;
     }
 }

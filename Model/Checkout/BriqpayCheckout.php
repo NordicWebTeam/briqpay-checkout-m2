@@ -2,11 +2,11 @@
 
 namespace Briqpay\Checkout\Model\Checkout;
 
-use Briqpay\Checkout\Model\Checkout\CheckoutSession\AttributeSchema;
 use Briqpay\Checkout\Model\Checkout\Context\Checkout as CheckoutContext;
 use Briqpay\Checkout\Rest\Exception\UpdateCartException;
 use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
 use Magento\Checkout\Model\Session;
+use Magento\TestFramework\Inspection\Exception;
 
 class BriqpayCheckout
 {
@@ -61,6 +61,11 @@ class BriqpayCheckout
     private $checkoutManagement;
 
     /**
+     * @var \Briqpay\Checkout\Model\Config\ApiConfig
+     */
+    private $checkoutConfig;
+
+    /**
      * BriqpayCheckout constructor.
      *
      * @param CheckoutContext $checkoutContext
@@ -75,14 +80,21 @@ class BriqpayCheckout
         $this->checkoutManagement = $checkoutContext->getSessionManagement();
         $this->quoteManagementService = $checkoutContext->getQuoteManagement();
         $this->logger = $checkoutContext->getLogger();
+        $this->checkoutConfig = $checkoutContext->getCheckoutConfig();
         $this->validators = $checkoutContext->getValidators();
     }
 
     /**
+     * @return InitializePaymentResponse
      * @throws CheckoutException
+     * @throws UpdateCartException
      */
     public function initCheckout() : InitializePaymentResponse
     {
+        if (!$this->checkoutConfig->isEnabled($this->quote->getStoreId())) {
+            throw new \Briqpay\Checkout\Model\Checkout\CheckoutException('Briqpay checkout is not enabled');
+        }
+
         $this->instantiateQuote();
 
         $purchaseId = null;
@@ -96,13 +108,11 @@ class BriqpayCheckout
         return $initPaymentBag;
     }
 
-
     /**
      * @param $purchaseId
      *
      * @return InitializePaymentResponse
      * @throws CheckoutException
-     * @throws UpdateCartException
      */
     private function updatePayment($purchaseId)
     {
@@ -144,15 +154,15 @@ class BriqpayCheckout
      *
      * @throws UpdateCartException
      */
-    public function updateItems($purchaseId, $quote)
+    public function updateItems($sessionId, $quote, $token)
     {
-        if (!$purchaseId) {
+        if (!$sessionId) {
             throw new UpdateCartException('Missing purchase id');
         }
 
         /** @var \Briqpay\Checkout\Model\Quote\UpdateCartService $updateService */
         $updateService = $this->updateCartServiceFactory->create();
-        $updateService->updateByQuote($purchaseId, $quote);
+        $updateService->updateByQuote($sessionId, $quote, $token);
     }
 
     /**

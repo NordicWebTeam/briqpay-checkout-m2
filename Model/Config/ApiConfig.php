@@ -33,7 +33,7 @@ class ApiConfig
     /**
      * @return string
      */
-    public function getAuthBackendUrl() : string
+    public function getAuthBackendUrl(): string
     {
         return $this->isTestMode()
             ? self::AUTH_STAGE_BASE_URL
@@ -41,11 +41,20 @@ class ApiConfig
     }
 
     /**
+     * @param $storeId
+     *
      * @return bool
      */
-    public function isTestMode() : bool
+    public function isEnabled($storeId)
     {
-        return true;
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_CONNECTION_ENABLE, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTestMode(): bool
+    {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_CONNECTION_TEST_MODE, ScopeInterface::SCOPE_STORE);
     }
 

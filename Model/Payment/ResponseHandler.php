@@ -19,11 +19,12 @@ class ResponseHandler
         GetPaymentStatusResponse $paymentStatus
     ) {
         $payment = $quote->getPayment();
-        $payment->unsMethodInstance()->setMethod(\Briqpay\Checkout\Model\Payment\Briqpay::CODE);
+        $payment->unsMethodInstance();
+        $payment->setMethod(\Briqpay\Checkout\Model\Payment\Briqpay::CODE);
 
         $data = [
-            'briqpay_purchase_id'    => $paymentStatus->getPurchaseId(),
-            'briqpay_method'         => $paymentStatus->getSelectedPaymentMethod(),
+            'briqpay_session_id' => $paymentStatus->getPurchaseId(),
+            'briqpay_method' => $paymentStatus->getSelectedPaymentMethod(),
             'briqpay_payment_status' => $paymentStatus->getPaymentStatus(),
         ];
 

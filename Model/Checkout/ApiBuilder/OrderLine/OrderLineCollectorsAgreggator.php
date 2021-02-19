@@ -19,7 +19,6 @@ class OrderLineCollectorsAgreggator
         $this->orderItemsCollectors = $orderItemsCollectors;
     }
 
-
     /**
      * @param $subject
      *
@@ -31,7 +30,7 @@ class OrderLineCollectorsAgreggator
         foreach ($this->orderItemsCollectors as $collector) {
             $collector->collect($paymentSessionDTO, $subject);
         }
-//        echo json_encode($paymentSessionDTO->toArray());exit;
+        // echo json_encode($paymentSessionDTO->toArray());exit;
 
         return $paymentSessionDTO;
     }

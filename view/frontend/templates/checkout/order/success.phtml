@@ -2,6 +2,7 @@
 // @codingStandardsIgnoreFile
 /** @var $block \Briqpay\Checkout\Block\Checkout\Order\Success */
 $realId = $block->getRealOrderId();
+$paymentMethodDetails = $block->getPaymentResponse()->getPurchasePaymentMethod();
 ?>
 
 <div class="checkout-success" id="briqpay-checkout-success">
@@ -22,7 +23,7 @@ $realId = $block->getRealOrderId();
                     <?= __("Price including VAT"); ?>
                 </span>
                 <span class="note">
-                    <?= __("You have chosen to pay by invoice."); ?>
+                    <?= __("You have chosen to pay by <b>{$paymentMethodDetails->getPspName()}.</b>"); ?>
                 </span>
             </div>
 

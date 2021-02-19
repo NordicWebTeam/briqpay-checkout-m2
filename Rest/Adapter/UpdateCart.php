@@ -62,32 +62,30 @@ class UpdateCart
      *
      * @throws UpdateCartException
      */
-    public function updateItems(array $items, $purchaseId, $authToken) : void
+    public function updateItems(array $data, $purchaseId, $authToken): void
     {
-        return;
         if (!$purchaseId) {
             throw new UpdateCartException('Missing purchase id');
         }
 
         $uri = sprintf(
-            '%s/api/partner/payments/%s/items',
-            $this->endpoint,
-            $purchaseId
+            '%s/checkout/v1/sessions/update',
+            $this->endpoint
         );
 
-        $requestBody = \json_encode([
-            'items' => $items
-        ]);
+        $data['sessionid'] = $purchaseId;
+
+        $requestBody = \json_encode($data);
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
+            'Content-Type' => 'application/json',
             'Authorization' => sprintf('Bearer %s', $authToken)
         ];
 
         $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));
         try {
-            $rawResponse = $this->restClient->put($uri, $requestBody, $headers);
+            $rawResponse = $this->restClient->post($uri, $requestBody, $headers);
             $this->logger->log(LogLevel::DEBUG, $rawResponse);
         } catch (\Exception $e) {
             throw AdapterException::create($e);

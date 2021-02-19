@@ -39,22 +39,16 @@ class ActionFactory
     public function get($paymentType)
     {
         switch ($paymentType) {
-            case PaymentStatusInterface::TYPE_CARD:
-            case PaymentStatusInterface::TYPE_MASTERCARD:
-                return $this->objectManager->create(
-                    Authorize::class,
-                    [
-                        'capturePayment' => $this->paymentConfig->isAutoCapture()
-                    ]
-                );
-                break;
             case PaymentStatusInterface::TYPE_INVOICE:
-            case PaymentStatusInterface::TYPE_LOAN:
-            case PaymentStatusInterface::TYPE_SWISH:
+            case PaymentStatusInterface::TYPE_EDI_INVOICE:
                 return $this->objectManager->create(CaptureInvoice::class);
-                break;
         }
 
-        return $this->objectManager->create(NullAction::class);
+        return $this->objectManager->create(
+            Authorize::class,
+            [
+                'capturePayment' => $this->paymentConfig->isAutoCapture()
+            ]
+        );
     }
 }

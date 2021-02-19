@@ -29,4 +29,12 @@ class AuthRequest
             'Authorization' => $this->authHeader
         ];
     }
+
+    /**
+     * @return string
+     */
+    public function getAuthHeader()
+    {
+        return $this->authHeader;
+    }
 }

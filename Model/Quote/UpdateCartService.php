@@ -49,12 +49,12 @@ class UpdateCartService
     }
 
     /**
-     * @param Quote $quote
      * @param $purchaseId
+     * @param Quote $quote
      *
      * @throws \Briqpay\Checkout\Rest\Exception\UpdateCartException
      */
-    public function updateByQuote($purchaseId, Quote $quote)
+    public function updateByQuote($purchaseId, Quote $quote, $token)
     {
         try {
             $quoteSignature = $this->quoteHasher->getQuoteSignature($quote);
@@ -62,11 +62,11 @@ class UpdateCartService
                 return;
             }
 
-            $items = $this->apiBuilder->collect($quote)->getOrderLines();
-            $this->authService->authenticate($quote->getStoreId());
-            $token = $this->authService->getToken();
+            $this->apiBuilder->collect($quote);
+            $updateRequest = $this->apiBuilder->generateRequest();
+            $data = $updateRequest->getRequestBody(false);
 
-            $this->updateCart->updateItems($items, $purchaseId, $token);
+            $this->updateCart->updateItems($data, $purchaseId, $token);
             $quote->setBriqpayQuoteSignature($quoteSignature);
         } catch (\Exception $e) {
             throw new \Briqpay\Checkout\Rest\Exception\UpdateCartException(

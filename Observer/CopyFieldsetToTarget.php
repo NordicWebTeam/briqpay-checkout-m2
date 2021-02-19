@@ -45,6 +45,7 @@ class CopyFieldsetToTarget implements ObserverInterface
         \Magento\Quote\Api\Data\CartInterface $cart,
         \Magento\Sales\Api\Data\OrderInterface $order
     ) {
+        return;
         $purcahseId = $cart->getExtensionAttributes()->getBriqpayPurchaseId();
         if (! $purcahseId) {
             return;

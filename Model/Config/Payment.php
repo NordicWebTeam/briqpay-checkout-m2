@@ -8,8 +8,6 @@ use Magento\Framework\App\Helper\Context;
 
 /**
  * Class Payment
- *
- * @package Briqpay\Checkout\Model\Config
  */
 class Payment extends AbstractHelper
 {

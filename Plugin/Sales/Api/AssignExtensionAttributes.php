@@ -14,6 +14,7 @@ class AssignExtensionAttributes
         \Magento\Sales\Api\OrderRepositoryInterface $subject,
         \Magento\Sales\Api\Data\OrderInterface $order
     ) {
+        return $order;
         $order->getExtensionAttributes()->setBriqpayPurchaseId(
             $order->getBriqpayPurchaseId()
         );

@@ -43,26 +43,21 @@ class Refund implements CommandInterface
         /** @var PaymentDataObject $data */
         $data = $commandSubject['payment'] ?? null;
 
-        if (! $data || !isset($commandSubject['amount'])) {
+        if (!$data || !isset($commandSubject['amount'])) {
             $this->throwCommandException('Missing required argunments.');
         }
 
-        $purchaseId = $this->getPurchaseId($data->getPayment());
-        if (! $purchaseId) {
-            $this->throwCommandException('Missing purchase id.');
+        $payment = $data->getPayment();
+        $sessionId = $payment->getAdditionalInformation()['sessionid'];
+        if (!$sessionId) {
+            $this->throwCommandException('Missing session id.');
         }
 
         $order = $data->getOrder();
-        $payment = $data->getPayment();
-
-
         try {
-            $this->authenticationService->authenticate($order->getStoreId());
             $this->refundService->refund(
-                $this->authenticationService->getToken(),
-                $purchaseId,
-                $order->getOrderIncrementId(),
-                $payment->getAuthorizationTransaction()->getTxnId(),
+                $order,
+                $sessionId,
                 $commandSubject['amount']
             );
         } catch (\Exception $e) {
