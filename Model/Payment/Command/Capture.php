@@ -40,6 +40,10 @@ class Capture implements CommandInterface
         }
 
         $sessionId = $payment->getPayment()->getAdditionalInformation()['sessionid'];
+        if (!$sessionId) {
+            throw new \Exception('Session ID is not available for this payment.');
+        }
+
         $this->capturePaymentService->capture(
             $payment->getOrder(),
             $sessionId,

@@ -47,7 +47,6 @@ class PaymentFields implements OrderItemCollectorInterface
             "reference1" => "string",
             "reference2" => "string"
         ]);
-        $paymentSession->setOrgNr('559249-5336');
         $paymentSession->setMerchantConfig([
             "maxamount"     => true,
             "creditscoring" => false
@@ -59,18 +58,5 @@ class PaymentFields implements OrderItemCollectorInterface
             'redirecturl'   => $this->urlBuilder->getRedirectUrl()
         ]);
 
-        // Test block
-        $address = new CreatePaymentSession\Address();
-        $address->setCompanyname("Company AB");
-        $address->setFirstname("Andriy");
-        $address->setLastname("Kravets");
-        $address->setStreetaddress("Kingstreet 1 B");
-        $address->setZip("24224");
-        $address->setCity("Kingcity");
-        $address->setCellno("+46703334441");
-        $address->setEmail("youremail@mail.com");
-
-        $paymentSession->setBillingAddress($address);
-        $paymentSession->setShippingAddress($address);
     }
 }
