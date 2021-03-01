@@ -127,10 +127,6 @@ class Index extends Action
         }
 
         $paymentStatus = $this->getPaymentStatus();
-        if (!$this->isPaymentSuccessful($paymentStatus)) {
-            $this->messageManager->addErrorMessage('Please verify your payment data.');
-            return $this->_redirect('briqpay');
-        }
 
         try {
             $this->quoteManager->setDataFromResponse($quote, $paymentStatus);

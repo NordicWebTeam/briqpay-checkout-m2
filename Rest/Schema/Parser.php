@@ -32,7 +32,8 @@ class Parser
      */
     public function parse($data, $type)
     {
-        $properties = $this->handleDataObject(json_decode($data, true));
+        $dataStream = is_string($data) ? json_decode($data, true) : $data;
+        $properties = $this->handleDataObject($dataStream);
 
         return $this->objectManager->create($type, ['data' => $properties]);
     }

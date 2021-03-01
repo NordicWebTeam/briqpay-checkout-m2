@@ -30,7 +30,7 @@ class GetPaymentStatusResponse implements ResponseInterface
     {
         $this->data = $data;
         $this->purchasePaymentMethod = new PurchasePaymentMethod(
-            new DataObject($this->data->getData('purchasepaymentmethod'))
+            new DataObject($data->getData('purchasepaymentmethod') ?: [])
         );
     }
 

@@ -13,6 +13,8 @@ class OrderLineCollectorsAgreggator
 
     /**
      * OrderLineCollectorsAgregator constructor.
+     *
+     * @param array $orderItemsCollectors
      */
     public function __construct(array $orderItemsCollectors)
     {
@@ -30,7 +32,6 @@ class OrderLineCollectorsAgreggator
         foreach ($this->orderItemsCollectors as $collector) {
             $collector->collect($paymentSessionDTO, $subject);
         }
-        // echo json_encode($paymentSessionDTO->toArray());exit;
 
         return $paymentSessionDTO;
     }

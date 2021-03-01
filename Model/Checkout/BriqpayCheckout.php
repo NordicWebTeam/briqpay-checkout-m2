@@ -6,7 +6,6 @@ use Briqpay\Checkout\Model\Checkout\Context\Checkout as CheckoutContext;
 use Briqpay\Checkout\Rest\Exception\UpdateCartException;
 use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
 use Magento\Checkout\Model\Session;
-use Magento\TestFramework\Inspection\Exception;
 
 class BriqpayCheckout
 {

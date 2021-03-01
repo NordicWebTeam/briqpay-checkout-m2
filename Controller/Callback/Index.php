@@ -123,10 +123,6 @@ class Index extends Action
         }
 
         $paymentResponse = $this->getPaymentStatus();
-        if ($paymentResponse->getState() !== 'purchasecomplete') {
-            $this->messageManager->addErrorMessage('Please verify your payment data.');
-            return $this->_redirect('briqpay');
-        }
 
         try {
             $quote = $this->checkoutSessionManager->getQuote();
@@ -157,22 +153,12 @@ class Index extends Action
 
             return $this->_redirect('briqpay/order/success');
         } catch (\Exception $e) {
+
             $this->messageManager->addErrorMessage('Can not instantiate your payment request. Please try again.');
             return $this->_redirect('briqpay');
         }
     }
 
-    /**
-     * @param GetPaymentStatusResponse $paymentStatusResponse
-     *
-     * @return bool
-     */
-    private function isPaymentSuccessful(GetPaymentStatusResponse $paymentStatusResponse)
-    {
-        $statusData = $paymentStatusResponse->getPaymentData();
-
-        return ($statusData['step']['current'] ?? false) === 'Completed';
-    }
 
     /**
      * @param Quote $quote
