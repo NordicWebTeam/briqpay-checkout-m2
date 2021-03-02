@@ -80,8 +80,8 @@ class Refund
     public function refund(OrderAdapterInterface $order, $sessionId, $amount)
     {
         $authRequest = $this->authRequestFactory->create([
-            'clientId' => 'b00015',
-            'clientSecret' => '3697dd99-f750-4334-928c-f06ba8b1a0eb'
+            'clientId' => $this->config->getClientId($order->getStoreId()),
+            'clientSecret' => $this->config->getClientSecret($order->getStoreId())
         ]);
 
         $token = $this->sessionAuthTokenService->generateToken($sessionId, $authRequest->getAuthHeader());
@@ -94,5 +94,4 @@ class Refund
             $subjectDto->getCart()
         );
     }
-
 }
