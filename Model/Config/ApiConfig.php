@@ -45,7 +45,7 @@ class ApiConfig
      *
      * @return bool
      */
-    public function isEnabled($storeId)
+    public function isEnabled($storeId = null)
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_CONNECTION_ENABLE, ScopeInterface::SCOPE_STORE, $storeId);
     }

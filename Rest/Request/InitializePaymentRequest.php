@@ -24,7 +24,7 @@ class InitializePaymentRequest
     /**
      * @param bool $isJson
      *
-     * @return string
+     * @return string | array
      */
     public function getRequestBody($isJson = true)
     {

@@ -8,9 +8,24 @@
 
     <type name="Briqpay\Checkout\Rest\Authentification\CacheAuthentication">
         <arguments>
-            <argument name="authentication" xsi:type="object">Briqpay\Checkout\Rest\Authentification\HttpAuthentication</argument>
+            <argument name="authentication"
+                      xsi:type="object">Briqpay\Checkout\Rest\Authentification\HttpAuthentication
+            </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Checkout\Block\Onepage\Link">
+        <plugin name="briqpay_onapage_link" type="Briqpay\Checkout\Plugin\Url" sortOrder="10" disabled="false"/>
+    </type>
+
+    <type name="Magento\Checkout\Block\Cart\Sidebar">
+        <plugin name="briqpay_url" type="Briqpay\Checkout\Plugin\Url" sortOrder="10" disabled="false"/>
+    </type>
+
+    <type name="Magento\Checkout\Block\Cart">
+        <plugin name="briqpay_url" type="Briqpay\Checkout\Plugin\Url" sortOrder="10" disabled="false"/>
+    </type>
+
 
     <virtualType name="BriqpayConfig" type="\Magento\Payment\Gateway\Config\Config">
         <arguments>
@@ -86,14 +101,20 @@
 
     <type name="Briqpay\Checkout\Model\Checkout\Context\Checkout">
         <arguments>
-            <argument name="validators"  xsi:type="array">
+            <argument name="validators" xsi:type="array">
                 <item name="quote" xsi:type="object">\Briqpay\Checkout\Model\Checkout\Validation\QuoteValidator</item>
             </argument>
         </arguments>
     </type>
 
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
-        <plugin name="afterOrderGet" type="Briqpay\Checkout\Plugin\Sales\Api\AssignExtensionAttributes" sortOrder="10" disabled="false"/>
+        <plugin name="afterOrderGet" type="Briqpay\Checkout\Plugin\Sales\Api\AssignExtensionAttributes" sortOrder="10"
+                disabled="false"/>
+    </type>
+
+    <type name="Magento\Quote\Api\CartRepositoryInterface">
+        <plugin name="briqpay_payment_quote_repository" type="Briqpay\Checkout\Plugin\CartExtensionAttributesLoad"/>
+        <plugin name="briqpay_payment_quote_repository" type="Briqpay\Checkout\Plugin\CartExtensionAttributesLoad"/>
     </type>
 
     <type name="Magento\Checkout\Block\Cart\Sidebar">

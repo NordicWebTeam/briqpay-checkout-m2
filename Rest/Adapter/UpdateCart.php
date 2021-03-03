@@ -5,6 +5,7 @@ namespace Briqpay\Checkout\Rest\Adapter;
 use Briqpay\Checkout\Model\Config\ApiConfig;
 use Briqpay\Checkout\Rest\Exception\AdapterException;
 use Briqpay\Checkout\Rest\Exception\UpdateCartException;
+use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
 use Briqpay\Checkout\Rest\RestClient;
 use Briqpay\Checkout\Rest\Schema\Parser;
 use Psr\Log\LoggerInterface;
@@ -47,11 +48,13 @@ class UpdateCart
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
+        \Briqpay\Checkout\Rest\Schema\Parser $schemaParser,
         \Briqpay\Checkout\Logger\Logger $logger
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->logger = $logger;
+        $this->schemaParser = $schemaParser;
     }
 
     /**
@@ -87,8 +90,22 @@ class UpdateCart
         try {
             $rawResponse = $this->restClient->post($uri, $requestBody, $headers);
             $this->logger->log(LogLevel::DEBUG, $rawResponse);
+            $paymentStatusResponse = $this->schemaParser->parse($rawResponse, GetPaymentStatusResponse::class);
+            $this->validatePaymentState($paymentStatusResponse);
         } catch (\Exception $e) {
             throw AdapterException::create($e);
+        }
+    }
+
+    /**
+     * @param GetPaymentStatusResponse $paymentStatusResponse
+     *
+     * @throws UpdateCartException
+     */
+    private function validatePaymentState(GetPaymentStatusResponse $paymentStatusResponse): void
+    {
+        if ($paymentStatusResponse->isPurchaseComplete()) {
+            throw new UpdateCartException('This payment is completed.');
         }
     }
 }

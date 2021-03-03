@@ -65,9 +65,6 @@ class InitializePayment
         $this->apiBuilder->collect($quote);
         $initializePaymentRequest = $this->apiBuilder->generateRequest();
 
-        $quoteSignature = $this->quoteHasher->getQuoteSignature($quote);
-        $quote->setBriqpayQuoteSignature($quoteSignature);
-
         return $this->initializePayment->initialize($initializePaymentRequest, $accessToken);
     }
 }

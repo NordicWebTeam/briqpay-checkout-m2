@@ -32,83 +32,63 @@
                 </field>
             </group>
 
-            <group id="checkout_config" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="checkout_config" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Checkout Config</label>
+                <comment>Default country, base currency settings are fetched from store "General" scope.</comment>
 
-                <field id="mode" type="select" translate="label comment" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="0">
-                    <label>Mode</label>
-                    <source_model>Briqpay\Checkout\Model\System\Config\Source\CheckoutType</source_model>
-                    <comment>Select checkout mode.</comment>
-                </field>
-
-                <field id="language" type="select" translate="label comment" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="10">
+                <field id="language" type="select" translate="label comment" showInDefault="1" showInWebsite="1"
+                       showInStore="1" sortOrder="10">
                     <label>Language</label>
                     <source_model>Briqpay\Checkout\Model\System\Config\Source\Language</source_model>
                     <comment>Checkout language</comment>
                 </field>
 
-                <field id="allowed_countries" translate="label comment" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Allowed Payment Countries</label>
-                    <source_model>Briqpay\Checkout\Model\System\Config\Source\Country</source_model>
-                    <comment><![CDATA[Assure that selected countries are in <strong>Allow Countries</strong> list (<em>System &raquo; Configuration &raquo; General &raquo; General</em>)]]></comment>
-                </field>
-
-                <field id="default_country" translate="label comment" sortOrder="21" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Default Country</label>
-                    <source_model>Briqpay\Checkout\Model\System\Config\Source\Country</source_model>
-                    <comment>Only if multiple countries are allowed. If this is invalid, the first allowed country will be used</comment>
-                </field>
-
-                <field id="recurring_payment_checked" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Recurring payment checked</label>
+                <field id="maxamount" translate="label" type="select" showInDefault="1" showInWebsite="1"
+                       showInStore="1" sortOrder="130">
+                    <label>Briqpay "maxamount" setting</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="terms_url" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="130" >
-                    <label>Url for Terms page</label>
-                    <source_model>Magento\Cms\Model\Config\Source\Page</source_model>
+                <field id="creditscoring" translate="label" type="select" showInDefault="1" showInWebsite="1"
+                       showInStore="1" sortOrder="130">
+                    <label>Briqpay "creditscoring" setting</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="integrity_url" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1" sortOrder="130" >
+                <field id="integrity_url" translate="label" type="select" showInDefault="1" showInWebsite="1"
+                       showInStore="1" sortOrder="130">
                     <label>Url for Itegrity Conditions Url</label>
                     <source_model>Magento\Cms\Model\Config\Source\Page</source_model>
                 </field>
 
-                <field id="autocapture" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="terms_url" translate="label" type="select" showInDefault="1" showInWebsite="1"
+                       showInStore="1" sortOrder="131">
+                    <label>Url for Terms page</label>
+                    <source_model>Magento\Cms\Model\Config\Source\Page</source_model>
+                </field>
+
+                <field id="register_on_checkout" translate="label" type="select" sortOrder="140" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Register on checkout?</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+            <group id="payment" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Payment options</label>
+                <field id="autocapture" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
                     <label>Auto-capture card payments?</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>(Please make sure, that you guarantee stock status)</comment>
                 </field>
 
-                <field id="complete_status" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Send orders to Briqpay on status</label>
+                <field id="complete_status" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Capture orders on status change?</label>
                     <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
-                </field>
-
-                <field id="can_capture" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Capture/Refund payment</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>If NO, no payment operations will be done (Capture/Refund/Void) on Invoice/Creditmemo/Order</comment>
-                </field>
-
-                <field id="register_on_checkout" translate="label" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Register on checkout?</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
-                <field id="sms_newsletter_subscription_checked" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>SMS Newsletter Subscription option checked</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
-                <field id="email_newsletter_subscription_checked" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Email Newsletter Subscription option checked</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
-                <field id="different_delivery_address" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Use different delivery address</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
 

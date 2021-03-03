@@ -10,13 +10,16 @@ class CheckoutSetup
     private const PATH_CALLBACK_URI = 'briqpay/callback';
     private const PATH_WEBHOOK_URI = 'briqpay/webhook';
 
-    const CHECKBOX_STATE_CHECKED    = 'Checked';
-    const CHECKBOX_STATE_UNCHECKED  = 'Unchecked';
+    const CHECKBOX_STATE_CHECKED = 'Checked';
+    const CHECKBOX_STATE_UNCHECKED = 'Unchecked';
+
+    private const XML_PATH_CHECKOUT_DEFAULT_CURRENCY = 'currency/options/base';
 
     private const XML_PATH_CHECKOUT_LANGUAGE = 'briqpay/checkout_config/language';
+
     private const XML_PATH_CHECKOUT_ALLOWED_COUNTRIES = 'briqpay/checkout_config/allowed_countries';
-    private const XML_PATH_CHECKOUT_DEFAULT_COUNTRY = 'briqpay/checkout_config/default_country';
-    private const XML_PATH_CHECKOUT_DEFAULT_CURRENCY = 'currency/options/base';
+    private const XML_PATH_CHECKOUT_DEFAULT_COUNTRY = 'general/country/default';
+
     private const XML_PATH_CHECKOUT_REGISTER_ON_CHECKOUT = 'briqpay/checkout_config/register_on_checkout';
     private const XML_PATH_CHECKOUT_DIFFERENT_DELIVERY_ADDRESS = 'briqpay/checkout_config/different_delivery_address';
 
@@ -100,6 +103,13 @@ class CheckoutSetup
         return $this->getCheckboxState($flag);
     }
 
+    /**
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->urlBuilder->getUrl($this->scopeConfig->getValue(self::XML_PATH_CHECKOUT_URL_INTEGRITY, ScopeInterface::SCOPE_STORE));
+    }
 
     /**
      * @return string
@@ -126,11 +136,35 @@ class CheckoutSetup
     }
 
     /**
+     * @return mixed
+     */
+    public function isBriqpayMaxamount()
+    {
+        return $this->scopeConfig->getValue('briqpay/checkout_config/maxamount', ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isBriqpayCreditscoring()
+    {
+        return $this->scopeConfig->getValue('briqpay/checkout_config/creditscoring', ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
      * @return string
      */
     public function getWebhookUrl()
     {
         return $this->urlBuilder->getUrl(self::PATH_WEBHOOK_URI);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreditscoring()
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_CHECKOUT_DEFAULT_CURRENCY, ScopeInterface::SCOPE_STORE);
     }
 
     /**

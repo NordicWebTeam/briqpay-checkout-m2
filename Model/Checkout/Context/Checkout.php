@@ -5,6 +5,7 @@ namespace Briqpay\Checkout\Model\Checkout\Context;
 use Briqpay\Checkout\Logger\Logger;
 use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Quote\QuoteManagement;
+use Briqpay\Checkout\Model\Quote\SignatureHasher;
 use Briqpay\Checkout\Rest\Service\AuthenticationFactory;
 use Briqpay\Checkout\Rest\Service\InitializePayment;
 use Magento\Checkout\Model\Session;
@@ -75,6 +76,11 @@ class Checkout
     private $checkoutConfig;
 
     /**
+     * @var SignatureHasher
+     */
+    private $signatureHasher;
+
+    /**
      * CheckoutContext constructor.
      *
      * @param \Briqpay\Checkout\Model\Checkout\PaymentManagement $paymentManagement
@@ -95,6 +101,7 @@ class Checkout
         SessionManagement $sessionManagement,
         \Psr\Log\LoggerInterface $logger,
         \Briqpay\Checkout\Model\Config\ApiConfig $checkoutConfig,
+        SignatureHasher $signatureHasher,
         $validators = []
     ) {
         $this->paymentManagement = $paymentManagement;
@@ -106,6 +113,7 @@ class Checkout
         $this->quoteRepository = $quoteRepository;
         $this->sessionManagement = $sessionManagement;
         $this->checkoutConfig = $checkoutConfig;
+        $this->signatureHasher = $signatureHasher;
     }
 
     /**
@@ -202,5 +210,13 @@ class Checkout
     public function getCheckoutConfig(): \Briqpay\Checkout\Model\Config\ApiConfig
     {
         return $this->checkoutConfig;
+    }
+
+    /**
+     * @return SignatureHasher
+     */
+    public function getSignatureHasher(): SignatureHasher
+    {
+        return $this->signatureHasher;
     }
 }

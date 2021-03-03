@@ -21,14 +21,13 @@ class ResponseHandler
         $payment = $quote->getPayment();
         $payment->unsMethodInstance();
         $payment->setMethod(\Briqpay\Checkout\Model\Payment\Briqpay::CODE);
-
-        $data = [
-            'briqpay_session_id' => $paymentStatus->getPurchaseId(),
-            'briqpay_method' => $paymentStatus->getSelectedPaymentMethod(),
-            'briqpay_payment_status' => $paymentStatus->getPaymentStatus(),
-        ];
-
-        $this->setPaymentData($payment, $data);
+        $briqpayPaymentMethod = $paymentStatus->getPurchasePaymentMethod();
+        $this->setPaymentData($payment, [
+            'briqpay_session_id' => $briqpayPaymentMethod->getSessionId(),
+            'briqpay_method' => $briqpayPaymentMethod->getPspName(),
+            'briqpay_reservation_id' => $briqpayPaymentMethod->getReservationId(),
+            'briqpay_payment_status' => $paymentStatus->getState(),
+        ]);
     }
 
     /**

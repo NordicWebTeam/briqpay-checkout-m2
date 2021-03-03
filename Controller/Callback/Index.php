@@ -122,12 +122,11 @@ class Index extends Action
             return $this->_redirect('briqpay');
         }
 
-        $paymentResponse = $this->getPaymentStatus();
-
         try {
+            $paymentResponse = $this->getPaymentStatus();
             $quote = $this->checkoutSessionManager->getQuote();
+            $this->quoteResponseHandler->handlePaymentStatus($quote, $paymentResponse);
             $this->quoteManager->setDataFromResponse($quote, $paymentResponse);
-            $this->prepareShippingRates($quote);
 
             /** @var \Magento\Sales\Model\Order $order */
             $order = $this->cartManager->submit($quote);
@@ -148,14 +147,15 @@ class Index extends Action
                 ->setLastOrderId($order->getId())
                 ->setRedirectUrl($redirectUrl)
                 ->setLastRealOrderId($order->getIncrementId())
-                ->setLastOrderStatus($order->getStatus())
-                ->unsBriqpayPurchaseId();
+                ->setLastOrderStatus($order->getStatus());
+
+            $this->checkoutSessionManager->clear();
+            $this->checkoutSessionManager->setBriqpayPaymentMethod($paymentResponse->getPurchasePaymentMethod());
 
             return $this->_redirect('briqpay/order/success');
         } catch (\Exception $e) {
-
             $this->messageManager->addErrorMessage('Can not instantiate your payment request. Please try again.');
-            return $this->_redirect('briqpay');
+            return $this->_redirect('checkout/cart');
         }
     }
 

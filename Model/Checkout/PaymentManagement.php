@@ -3,13 +3,17 @@
 namespace Briqpay\Checkout\Model\Checkout;
 
 use Briqpay\Checkout\Model\Quote\SignatureHasher;
+use Briqpay\Checkout\Rest\Authentification\AdapterException;
+use Briqpay\Checkout\Rest\Exception\InitializePaymentException;
+use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
+use Briqpay\Checkout\Rest\Service\AuthentificationInterface;
 use Briqpay\Checkout\Rest\Service\InitializePayment;
 use Magento\Quote\Model\Quote;
 
 class PaymentManagement
 {
     /**
-     * @var \Briqpay\Checkout\Rest\Service\AuthentificationInterface
+     * @var AuthentificationInterface
      */
     private $authService;
 
@@ -27,10 +31,11 @@ class PaymentManagement
      * CheckoutManagement constructor.
      */
     public function __construct(
-        \Briqpay\Checkout\Rest\Service\AuthentificationInterface $authService,
-        \Briqpay\Checkout\Rest\Service\InitializePayment $initPaymentService,
+        AuthentificationInterface $authService,
+        InitializePayment $initPaymentService,
         SignatureHasher $hasher
-    ) {
+    )
+    {
         $this->authService = $authService;
         $this->initPaymentService = $initPaymentService;
         $this->hasher = $hasher;
@@ -41,18 +46,15 @@ class PaymentManagement
      *
      * @param Quote $quote
      *
-     * @return \Briqpay\Checkout\Rest\Response\InitializePaymentResponse
-     * @throws \Briqpay\Checkout\Rest\Authentification\AdapterException
-     * @throws \Briqpay\Checkout\Rest\Exception\InitializePaymentException
+     * @return InitializePaymentResponse
+     * @throws AdapterException
+     * @throws InitializePaymentException
      */
-    public function initNewPayment(Quote $quote) : \Briqpay\Checkout\Rest\Response\InitializePaymentResponse
+    public function initNewPayment(Quote $quote): InitializePaymentResponse
     {
         $websiteId = $quote->getStore()->getWebsiteId();
-
-        // Authentificate website & receive access token
         $this->authService->authenticate($websiteId);
         $accessToken = $this->authService->getToken();
-
         $initPayment = $this->initPaymentService->initPayment($quote, $accessToken);
 
         return $initPayment;

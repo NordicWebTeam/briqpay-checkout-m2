@@ -1,0 +1,8 @@
+{
+    "quote": {
+        "column": {
+            "briqpay_session_id": true,
+            "briqpay_cart_signature": true
+        }
+    }
+}

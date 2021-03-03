@@ -60,7 +60,7 @@ class QuoteManagement
     {
         $shippingAddress = $quote->getShippingAddress();
         if (! $shippingAddress->getCountryId() || $shippingAddress->getCountryId() != $this->checkoutSetupConfig->getDefaultCountry()) {
-            $targetCountry = $this->checkoutSetupConfig->getDefaultCountry();
+            $targetCountry = strtoupper($this->checkoutSetupConfig->getDefaultCountry());
             $this->changeQuoteCountry($targetCountry, $quote);
         }
 
@@ -113,16 +113,7 @@ class QuoteManagement
         $this->setBillingData($quote, $paymentStatusResponse);
         $this->setCustomerData($quote);
 
-        $payment = $quote->getPayment();
-        if (!$payment->getMethod() || $payment->getMethod() != Briqpay::CODE) {
-            $payment->unsMethodInstance()->setMethod(Briqpay::CODE);
-        }
-
-        $paymentData = $paymentStatusResponse->getPurchasePaymentMethod();
-        $payment->setAdditionalInformation($paymentData->getData());
-
-        $aa = 2;
-//        $this->quoteRepository->save($quote);
+        $this->quoteRepository->save($quote);
     }
 
     /**

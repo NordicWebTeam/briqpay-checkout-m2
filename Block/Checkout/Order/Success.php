@@ -4,11 +4,6 @@ namespace Briqpay\Checkout\Block\Checkout\Order;
 
 use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
 
-/**
- * Class Success
- *
- * @package Briqpay\Checkout\Block
- */
 class Success extends \Magento\Checkout\Block\Onepage\Success
 {
     /**
@@ -17,9 +12,9 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
     protected $orderRepository;
 
     /**
-     * @var GetPaymentStatusResponse
+     * @var
      */
-    protected $paymentResponse;
+    protected $latestPaymentMethod;
 
     /**
      * Success constructor.
@@ -57,6 +52,9 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
         return $this->_checkoutSession->getLastOrderId();
     }
 
+    /**
+     * @param GetPaymentStatusResponse $paymentResponse
+     */
     public function setPaymentStatus(GetPaymentStatusResponse $paymentResponse)
     {
         $this->paymentResponse = $paymentResponse;
@@ -86,19 +84,18 @@ class Success extends \Magento\Checkout\Block\Onepage\Success
     }
 
     /**
-     * @return GetPaymentStatusResponse
+     * @return mixed
      */
-    public function getPaymentResponse(): GetPaymentStatusResponse
+    public function getLatestPaymentMethod()
     {
-        return $this->paymentResponse;
+        return $this->latestPaymentMethod;
     }
 
     /**
-     * @param GetPaymentStatusResponse $paymentResponse
+     * @param mixed $latestPaymentMethod
      */
-    public function setPaymentResponse(GetPaymentStatusResponse $paymentResponse): void
+    public function setLatestPaymentMethod($latestPaymentMethod): void
     {
-        $this->paymentResponse = $paymentResponse;
+        $this->latestPaymentMethod = $latestPaymentMethod;
     }
 }
-

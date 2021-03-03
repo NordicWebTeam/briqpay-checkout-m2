@@ -12,6 +12,14 @@ class InitializePaymentResponse implements ResponseInterface
     private $data;
 
     /**
+     *
+     */
+    public static function createFromArray(array $data)
+    {
+        return new self(new DataObject($data));
+    }
+
+    /**
      * InitializePayment constructor.
      *
      * @param DataObject $data

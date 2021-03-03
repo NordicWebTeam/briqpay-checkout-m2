@@ -14,7 +14,7 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
 {
     const CODE = 'briqpay';
 
-    const INFO_METHOD = 'pspname';
+    const INFO_METHOD = 'briqpay_method';
 
     /**
      * @var Resolver
@@ -275,7 +275,7 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
      */
     public function authorize(InfoInterface $payment, $amount)
     {
-        $reservationId = $payment->getAdditionalInformation()['reservationid'] ?? null;
+        $reservationId = $payment->getAdditionalInformation()['briqpay_reservation_id'] ?? null;
         if (!$reservationId) {
             throw new \Magento\Payment\Gateway\Command\CommandException(
                 new \Magento\Framework\Phrase('Can\'t authorize the order.')

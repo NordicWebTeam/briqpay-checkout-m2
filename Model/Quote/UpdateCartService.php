@@ -2,6 +2,7 @@
 
 namespace Briqpay\Checkout\Model\Quote;
 
+use Briqpay\Checkout\Rest\Exception\UpdateCartException;
 use Magento\Quote\Model\Quote;
 
 class UpdateCartService
@@ -52,24 +53,18 @@ class UpdateCartService
      * @param $purchaseId
      * @param Quote $quote
      *
-     * @throws \Briqpay\Checkout\Rest\Exception\UpdateCartException
+     * @throws UpdateCartException
      */
     public function updateByQuote($purchaseId, Quote $quote, $token)
     {
         try {
-            $quoteSignature = $this->quoteHasher->getQuoteSignature($quote);
-            if ($quoteSignature == $quote->getBriqpayQuoteSignature()) {
-                return;
-            }
-
             $this->apiBuilder->collect($quote);
             $updateRequest = $this->apiBuilder->generateRequest();
             $data = $updateRequest->getRequestBody(false);
 
             $this->updateCart->updateItems($data, $purchaseId, $token);
-            $quote->setBriqpayQuoteSignature($quoteSignature);
         } catch (\Exception $e) {
-            throw new \Briqpay\Checkout\Rest\Exception\UpdateCartException(
+            throw new UpdateCartException(
                 $e->getPrevious()->getMessage(),
                 $e->getCode(),
                 $e

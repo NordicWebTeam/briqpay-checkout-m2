@@ -2,9 +2,7 @@
 namespace Briqpay\Checkout\Controller\Order;
 
 use Briqpay\Checkout\Rest\Exception\PaymentStatusException;
-use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
 use Magento\Checkout\Controller\Action;
-use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\App\ResponseInterface;
@@ -25,11 +23,6 @@ class Success extends Action
      * @var \Briqpay\Checkout\Model\Payment\PaymentManager
      */
     private $paymentManager;
-
-    /**
-     * @var Session
-     */
-    private $checkoutSession;
 
     /**
      * @var \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
@@ -97,23 +90,11 @@ class Success extends Action
         }
 
         try {
-            $paymentResponse = $this->getPaymentStatus();
-            $successBlock->setPaymentResponse($paymentResponse);
+            $paymentMethod = $this->checkoutSessionManager->getBriqpayPaymentMethod();
+            $this->checkoutSessionManager->clear();;
+            $successBlock->setLatestPaymentMethod($paymentMethod->getPspName());
         } catch (PaymentStatusException $e) {
-            echo $e->getMessage();
-            // TODO: Log excepttion
+            // No action needed
         }
-    }
-
-    /**
-     * @return GetPaymentStatusResponse
-     * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     */
-    private function getPaymentStatus(): GetPaymentStatusResponse
-    {
-        return $this->sessionManagement->readSession(
-            $this->checkoutSessionManager->getSessionId(),
-            $this->checkoutSessionManager->getSessionToken()
-        );
     }
 }

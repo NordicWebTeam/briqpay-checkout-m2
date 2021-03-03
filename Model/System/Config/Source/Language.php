@@ -14,19 +14,19 @@ class Language implements ArrayInterface
     {
         return [
             [
-                'value' => 'English',
+                'value' => 'en-gb',
                 'label' => 'English'
             ], [
-                'value' => 'Finland',
+                'value' => 'fi-fi',
                 'label' => 'Finish'
             ], [
-                'value' => 'Swedish',
+                'value' => 'se-se',
                 'label' => 'Swedish'
             ], [
-                'value' => 'Norwegian',
+                'value' => 'nb-no',
                 'label' => 'Norwegian'
             ], [
-                'value' => 'Danish',
+                'value' => 'da-dk',
                 'label' => 'Danish'
             ]
         ];

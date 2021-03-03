@@ -45,7 +45,7 @@ class InitializePayment
      * @param ApiConfig $config
      * @param RestClient $restClient
      * @param Parser $schemaParser
-     * @param LoggerInterface $logger
+     * @param \Briqpay\Checkout\Logger\Logger $logger
      */
     public function __construct(
         ApiConfig $config,

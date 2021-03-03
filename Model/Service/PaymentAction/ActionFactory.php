@@ -41,6 +41,7 @@ class ActionFactory
         switch ($paymentType) {
             case PaymentStatusInterface::TYPE_INVOICE:
             case PaymentStatusInterface::TYPE_EDI_INVOICE:
+            case PaymentStatusInterface::TYPE_EDI_FORTNOX:
                 return $this->objectManager->create(CaptureInvoice::class);
         }
 

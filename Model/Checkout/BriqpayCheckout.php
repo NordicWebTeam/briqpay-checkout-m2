@@ -3,9 +3,12 @@
 namespace Briqpay\Checkout\Model\Checkout;
 
 use Briqpay\Checkout\Model\Checkout\Context\Checkout as CheckoutContext;
+use Briqpay\Checkout\Model\Checkout\Validation\CheckoutValidatorInterface;
 use Briqpay\Checkout\Rest\Exception\UpdateCartException;
 use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
+use Briqpay\Checkout\Setup\QuoteSchema;
 use Magento\Checkout\Model\Session;
+use Magento\Quote\Api\Data\CartInterface;
 
 class BriqpayCheckout
 {
@@ -30,7 +33,7 @@ class BriqpayCheckout
     private $quoteManagementService;
 
     /**
-     * @var array
+     * @var CheckoutValidatorInterface []
      */
     private $validators;
 
@@ -65,6 +68,11 @@ class BriqpayCheckout
     private $checkoutConfig;
 
     /**
+     * @var \Briqpay\Checkout\Model\Quote\SignatureHasher
+     */
+    private $signatureHasher;
+
+    /**
      * BriqpayCheckout constructor.
      *
      * @param CheckoutContext $checkoutContext
@@ -81,47 +89,73 @@ class BriqpayCheckout
         $this->logger = $checkoutContext->getLogger();
         $this->checkoutConfig = $checkoutContext->getCheckoutConfig();
         $this->validators = $checkoutContext->getValidators();
+        $this->signatureHasher = $checkoutContext->getSignatureHasher();
     }
 
     /**
      * @return InitializePaymentResponse
      * @throws CheckoutException
-     * @throws UpdateCartException
      */
     public function initCheckout() : InitializePaymentResponse
     {
         if (!$this->checkoutConfig->isEnabled($this->quote->getStoreId())) {
-            throw new \Briqpay\Checkout\Model\Checkout\CheckoutException('Briqpay checkout is not enabled');
+            throw new CheckoutException('Briqpay checkout is not enabled');
         }
 
+        $this->validate();
         $this->instantiateQuote();
 
-        $purchaseId = null;
-        $initPaymentBag = $purchaseId
-            ? $this->updatePayment($purchaseId)
-            : $this->instantiateNewPayment();
+        // If no session id, we instantiate a new payment
+        // and save it in session.
+        if ($this->getSessionId()) {
+            $initPaymentBag = $this->instantiateNewPayment();
+            $this->setSessionData($initPaymentBag);
 
-        $this->setSessionData($initPaymentBag);
-        $this->validate();
+            return $initPaymentBag;
+        }
 
-        return $initPaymentBag;
+        // Else we do update of existing payment session
+        try {
+            $this->updatePayment(...$this->getSessionArgs());
+        } catch (CheckoutException $e) {
+            // In case if update is failed -> init new payment
+            try {
+                $initPaymentBag = $this->instantiateNewPayment();
+            } catch (CheckoutException $e) {
+                // We should clear current session
+                $this->checkoutManagement->clear();
+                throw $e;
+            }
+            $this->setSessionData($initPaymentBag);
+
+            return $initPaymentBag;
+        }
+        // Updating of the session doesn't return anything.
+        // So we can fetch InitializePaymentResponse data from previous session
+        return InitializePaymentResponse::createFromArray($this->checkoutManagement->getSessionData());
     }
 
     /**
-     * @param $purchaseId
+     * @param $sessionId
+     * @param $token
      *
-     * @return InitializePaymentResponse
      * @throws CheckoutException
      */
-    private function updatePayment($purchaseId)
+    private function updatePayment($sessionId, $token)
     {
+        $storedCartSignature = $this->quote->getBriqpayCartSignature();
+        $newSignature = $this->signatureHasher->getQuoteSignature($this->quote);
+
+        // If cart is the same, we should not update
+        if ($newSignature == $storedCartSignature) {
+            return;
+        }
+
         try {
-            $this->updateItems($purchaseId, $this->quote);
+            $this->updateItems($sessionId, $this->quote, $token);
             if ($this->quote->getIsChanged()) {
                 $this->quoteRepository->save($this->quote);
             }
-
-            return $this->getSessionResponse($purchaseId, $this->checkoutSession);
         } catch (\Exception $e) {
             $this->logger->error($e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage());
             throw new CheckoutException('Can not load checkout at this time. Please try again later');
@@ -136,6 +170,7 @@ class BriqpayCheckout
     {
         try {
             $initRequest = $this->paymentManagement->initNewPayment($this->quote);
+            $this->calculateSignature();
             if ($this->quote->getIsChanged()) {
                 $this->quoteRepository->save($this->quote);
             }
@@ -144,6 +179,23 @@ class BriqpayCheckout
         } catch (\Exception $e) {
             $this->logger->error($e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage());
             throw new CheckoutException($e->getMessage());
+        }
+    }
+
+    /**
+     * @param CartInterface $cart
+     * @param InitializePaymentResponse $initRequest
+     */
+    private function assignAttributes(CartInterface $cart, InitializePaymentResponse $initRequest)
+    {
+        if ($sessionId = $initRequest->getSessionId()) {
+            $cart->setData(QuoteSchema::SESSION_ID, $sessionId);
+            $cart->getExtensionAttributes()->setBriqpaySessionId($sessionId);
+        }
+
+        if ($sessionToken = $initRequest->getToken()) {
+            $cart->setData(QuoteSchema::SESSION_TOKEN, $sessionToken);
+            $cart->getExtensionAttributes()->setBriqpaySessionToken($sessionToken);
         }
     }
 
@@ -194,6 +246,7 @@ class BriqpayCheckout
     {
         $this->checkoutManagement->setSessionId($initResponse->getSessionId());
         $this->checkoutManagement->setSessionToken($initResponse->getToken());
+        $this->checkoutManagement->setSnippet($initResponse->getSnippet());
     }
 
     /**
@@ -206,7 +259,7 @@ class BriqpayCheckout
     private function getSessionResponse($purchaseId, Session $session)
     {
         if ($purchaseId != $session->getBriqpayPurchaseId()) {
-            throw new CheckoutException('Session id is not identcal');
+            throw new CheckoutException('Session id is not identical');
         }
 
         $data = [
@@ -217,5 +270,31 @@ class BriqpayCheckout
         return new \Briqpay\Checkout\Rest\Response\InitializePaymentResponse(
             new \Magento\Framework\DataObject($data)
         );
+    }
+
+    /**
+     * @return array
+     */
+    private function getSessionArgs()
+    {
+        return [$this->checkoutManagement->getSessionId(), $this->checkoutManagement->getSessionToken()];
+    }
+
+    /**
+     * @return string|null
+     */
+    private function getSessionId()
+    {
+        return $this->checkoutManagement->getSessionId();
+    }
+
+    /**
+     * Add cart signrature
+     */
+    private function calculateSignature()
+    {
+        $signature = $this->signatureHasher->getQuoteSignature($this->quote);
+        $this->quote->getExtensionAttributes()->setBriqpayCartSignature($signature);
+        $this->quote->setData(QuoteSchema::CART_SIGNATURE, $signature);
     }
 }
