@@ -48,7 +48,7 @@ class Refund implements CommandInterface
         }
 
         $payment = $data->getPayment();
-        $sessionId = $payment->getAdditionalInformation()['sessionid'];
+        $sessionId = $payment->getAdditionalInformation()['briqpay_session_id'];
         if (!$sessionId) {
             $this->throwCommandException('Missing session id.');
         }

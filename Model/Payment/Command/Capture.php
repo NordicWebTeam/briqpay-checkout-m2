@@ -39,7 +39,7 @@ class Capture implements CommandInterface
             return;
         }
 
-        $sessionId = $payment->getPayment()->getAdditionalInformation()['sessionid'];
+        $sessionId = $payment->getPayment()->getAdditionalInformation()['briqpay_session_id'];
         if (!$sessionId) {
             throw new \Exception('Session ID is not available for this payment.');
         }
