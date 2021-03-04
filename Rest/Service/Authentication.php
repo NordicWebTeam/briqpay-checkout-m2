@@ -33,10 +33,6 @@ class Authentication implements AuthentificationInterface
      */
     private $datetime;
 
-    /**
-     * @var AuthentificationResponse
-     */
-    private $authentificationResponse;
 
     /**
      * Authentication constructor.
@@ -60,37 +56,15 @@ class Authentication implements AuthentificationInterface
     }
 
     /**
-     * Save API auth response
-     *
-     * @return void
-     */
-    private function setAuthResponse(AuthentificationResponse $authentificationResponse) : void
-    {
-        $this->authentificationResponse = $authentificationResponse;
-    }
-
-    /**
-     * @return string
-     * @throws AuthenticationException
-     */
-    public function getToken() : string
-    {
-        if (is_null($this->authentificationResponse)) {
-            throw new \Magento\Framework\Exception\AuthenticationException('Authentificaion token is not established. Please authentificate first.');
-        }
-
-        return $this->authentificationResponse->getToken();
-    }
-
-    /**
      * Authenticate action
      *
      * @param null $storeId
      *
+     * @return string
      * @throws AuthenticationException
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
      */
-    public function authenticate($storeId = null) : void
+    public function authenticate($storeId = null): string
     {
         try {
             $authRequest = $this->authRequestFactory->create([
@@ -98,7 +72,8 @@ class Authentication implements AuthentificationInterface
                 'clientSecret' => $this->config->getClientSecret($storeId)
             ]);
             $authResponse = $this->authAdapter->startSession($authRequest);
-            $this->setAuthResponse($authResponse);
+
+            return $authResponse->getToken();
         } catch (AdapterException $e) {
             $msg = 'API connection could not be established using given credentials (%1).';
             throw new AuthenticationException(__($msg, $e->getMessage()), $e);

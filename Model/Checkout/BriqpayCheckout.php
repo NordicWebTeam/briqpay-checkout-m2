@@ -107,7 +107,7 @@ class BriqpayCheckout
 
         // If no session id, we instantiate a new payment
         // and save it in session.
-        if (true) {
+        if (!$this->getSessionId()) {
             $initPaymentBag = $this->instantiateNewPayment();
             $this->setSessionData($initPaymentBag);
 

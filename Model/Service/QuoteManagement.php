@@ -63,9 +63,6 @@ class QuoteManagement
      */
     private function authorize($websiteId) : string
     {
-        $this->authService->authenticate($websiteId);
-        $token = $this->authService->getToken();
-
-        return $token;
+        return $this->authService->authenticate($websiteId);
     }
 }

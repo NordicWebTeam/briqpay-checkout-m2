@@ -221,16 +221,6 @@ class Index extends Action
     }
 
     /**
-     * Get purchase ID
-     *
-     * @return string
-     */
-    private function getPurchaseId() : ?string
-    {
-        return $this->checkoutSession->getBriqpayPurchaseId();
-    }
-
-    /**
      * Dispatch post events
      *
      * @param $order
@@ -247,31 +237,5 @@ class Index extends Action
             'briqpay_checkout_complete',
             ['order' => $order, 'quote' => $quote]
         );
-    }
-
-    /**
-     * @return Quote
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function initQuote()
-    {
-        $quote = $this->getQuote();
-        if (! $quote->getBriqpayPurchaseId()) {
-            $quote->setBriqpayPurchaseId($this->getPurchaseId());
-            $quote->getExtensionAttributes()->setBriqpayPurchaseId($this->getPurchaseId());
-        }
-
-        return $quote;
-    }
-
-    /**
-     * @return Quote
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function getQuote() : Quote
-    {
-        return $this->checkoutSession->getQuote();
     }
 }

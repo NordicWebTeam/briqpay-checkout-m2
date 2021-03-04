@@ -7,17 +7,15 @@ use Briqpay\Checkout\Rest\Service\AuthentificationInterface;
 
 /**
  * Class CacheAuthentication
- *
- * @package Briqpay\Checkout\Rest\Authentication
  */
 class CacheAuthentication implements AuthentificationInterface
 {
     /**
-     * Cache expiration in seconds, set to 1 hour
+     * Cache expiration in seconds, set to 12 hours
      *
      * @var int
      */
-    const CACHE_EXPIRATION_TIME = 5;
+    const CACHE_EXPIRATION_TIME = 60 * 60 * 12;
 
     /**
      * @var AuthentificationInterface
@@ -50,28 +48,31 @@ class CacheAuthentication implements AuthentificationInterface
      *
      * @throws AdapterException
      */
-    public function authenticate($websiteId = null) : void
+    public function authenticate($websiteId = null): string
     {
-        if (! $this->cacheInstance->test(AuthentificationCache::TYPE_IDENTIFIER . $websiteId)) {
-            $this->authentication->authenticate($websiteId);
-            $this->cacheAuthentificationSession(AuthentificationCache::TYPE_IDENTIFIER . $websiteId, self::CACHE_EXPIRATION_TIME);
+        $cacheKey = AuthentificationCache::TYPE_IDENTIFIER . $websiteId;
+        if (!$this->cacheInstance->test($cacheKey)) {
+            $token = $this->authentication->authenticate($websiteId);
+            $this->cacheAuthentificationSession($token, $token, self::CACHE_EXPIRATION_TIME);
+            return $token;
         }
+
+        if ($token = $this->getFromCache($cacheKey)) {
+            return $token;
+        }
+
+        throw new AdapterException('Unable to authenticate');
     }
 
-    /**
-     * Get session token
-     *
-     * @return string|void
-     */
-    public function getToken() : string
+    private function getFromCache($cacheKey): ?string
     {
-        if ($sessionCache = $this->cacheInstance->load(AuthentificationCache::TYPE_IDENTIFIER)) {
+        if ($sessionCache = $this->cacheInstance->load($cacheKey)) {
             if ($decodedSessionCache = json_decode($sessionCache, true)) {
                 return $decodedSessionCache['session'];
             }
         }
 
-        return $this->authentication->getToken();
+        return null;
     }
 
     /**
@@ -80,11 +81,11 @@ class CacheAuthentication implements AuthentificationInterface
      *
      * @throws AdapterException
      */
-    private function cacheAuthentificationSession($cacheIdentifier, $expirationTime) : void
+    private function cacheAuthentificationSession($httpToken, $cacheIdentifier, $expirationTime): void
     {
         $this->cacheInstance->save(
             json_encode([
-                'session' => $this->authentication->getToken()
+                'session' => $httpToken
             ]),
             $cacheIdentifier,
             [$cacheIdentifier],

@@ -1,8 +1,8 @@
 <?php
 namespace Briqpay\Checkout\Controller\Debug;
 
+use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Checkout\Context\Callback as CallbackContext;
-use Briqpay\Checkout\Model\Payment\Briqpay;
 use Briqpay\Checkout\Rest\Adapter\GetPaymentStatus;
 use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
 use Briqpay\Checkout\Rest\Service\Authentication;
@@ -17,8 +17,6 @@ use Magento\Framework\View\Result\PageFactory;
 
 /**
  * Class Index
- *
- * @package Briqpay\Checkout\Controller\Callback
  */
 class Index extends Action
 {
@@ -63,9 +61,14 @@ class Index extends Action
     private $quoteValidator;
 
     /**
-     * @var \Briqpay\Checkout\Model\Payment\Briqpay
+     * @var SessionManagement
      */
-    private $payment;
+    private $checkoutSessionManager;
+
+    /**
+     * @var SessionManagement
+     */
+    private $sessionManagement;
 
     /**
      * Index constructor.
@@ -83,7 +86,7 @@ class Index extends Action
         AccountManagementInterface $accountManagement,
         CallbackContext $callbackContext,
         \Magento\Quote\Model\QuoteValidator $quoteValidator,
-        Briqpay $briqpay
+        \Briqpay\Checkout\Rest\Service\SessionManagement $sessionManagement
     ) {
         parent::__construct(
             $context,
@@ -100,6 +103,8 @@ class Index extends Action
         $this->quoteManager = $callbackContext->getQuoteManager();
         $this->orderRepository = $callbackContext->getOrderRepository();
         $this->quoteValidator = $quoteValidator;
+        $this->checkoutSessionManager = $callbackContext->getCheckoutSessionManager();
+        $this->sessionManagement = $sessionManagement;
     }
 
     /**
@@ -112,45 +117,21 @@ class Index extends Action
      */
     public function execute()
     {
-        $order = $this->_objectManager->create(\Magento\Sales\Model\Order::class);
-        /** @var $order \Magento\Sales\Model\Order */
-        $order->load(19);
-        $payment = $order->getPayment();
-        $payment->authorize(true, $order->getTotalDue());
-
-        exit;
+        if (!$this->checkoutSessionManager->getSessionId()) {
+            die('No session id available');
+        }
+        print_r($this->getPaymentStatus()->getData());
     }
 
     /**
-     *
-     */
-    private function payment()
-    {
-        print_r($this->payment);exit;
-    }
-
-
-    /**
-     * @throws \Briqpay\Checkout\Rest\Authentification\AdapterException
+     * @return GetPaymentStatusResponse
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     * @throws \Magento\Framework\Exception\AuthenticationException
      */
-    private function getPaymentStatus() : GetPaymentStatusResponse
+    private function getPaymentStatus(): GetPaymentStatusResponse
     {
-        $purchaseId = $this->getPurchaseId();
-        $this->authService->authenticate($this->checkoutSession->getQuote()->getStoreId());
-        $authToken = $this->authService->getToken();
-
-        return $this->paymentStatusService->getStatus($purchaseId, $authToken);
-    }
-
-    /**
-     * Get purchase ID
-     *
-     * @return string
-     */
-    private function getPurchaseId() : ?string
-    {
-        return $this->checkoutSession->getBriqpayPurchaseId();
+        return $this->sessionManagement->readSession(
+            $this->checkoutSessionManager->getSessionId(),
+            $this->checkoutSessionManager->getSessionToken()
+        );
     }
 }

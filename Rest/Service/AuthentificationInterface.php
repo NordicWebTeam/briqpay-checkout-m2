@@ -16,14 +16,5 @@ interface AuthentificationInterface
      * @return void
      * @throws AdapterException
      */
-    public function authenticate($websiteId = null) : void;
-
-    /**
-     * Read Session Token.
-     *
-     * @return string
-     * @throws AdapterException
-     */
-    public function getToken() : string;
-
+    public function authenticate($websiteId = null): string;
 }

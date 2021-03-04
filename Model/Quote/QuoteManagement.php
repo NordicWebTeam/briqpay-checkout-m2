@@ -41,14 +41,26 @@ class QuoteManagement
     /**
      * @param Quote $quote
      */
-    public function instantiate(Quote $quote) : void
+    public function instantiate(Quote $quote): void
     {
-        if (! $quote->isVirtual()) {
+        if (!$quote->isVirtual()) {
             $this->initShippingMethod($quote);
+            $this->initPayment($quote);
         }
 
         $quote->setTotalsCollectedFlag(false)->collectTotals();
         $this->quoteRepository->save($quote);
+    }
+
+    /**
+     * @param Quote $quote
+     */
+    public function initPayment(Quote $quote)
+    {
+        $payment = $quote->getPayment();
+        $payment->unsMethodInstance();
+        $payment->setMethod(\Briqpay\Checkout\Model\Payment\Briqpay::CODE);
+        $quote->setTotalsCollectedFlag(false);
     }
 
     /**
@@ -59,7 +71,9 @@ class QuoteManagement
     public function initShippingMethod(Quote $quote)
     {
         $shippingAddress = $quote->getShippingAddress();
-        if (! $shippingAddress->getCountryId() || $shippingAddress->getCountryId() != $this->checkoutSetupConfig->getDefaultCountry()) {
+        $shippingAddress->setPaymentMethod(\Briqpay\Checkout\Model\Payment\Briqpay::CODE)->setCollectShippingRates(true);
+
+        if (!$shippingAddress->getCountryId() || $shippingAddress->getCountryId() != $this->checkoutSetupConfig->getDefaultCountry()) {
             $targetCountry = strtoupper($this->checkoutSetupConfig->getDefaultCountry());
             $this->changeQuoteCountry($targetCountry, $quote);
         }
@@ -158,7 +172,7 @@ class QuoteManagement
             'street' => $shippingData['streetaddress'],
             'city' => $shippingData['city'] ?? null,
             'postcode' => $shippingData['zip'] ?? ($userData['zip'] ?? null),
-            'country_id' => $paymentStatusResponse->getCountry()
+            'country_id' => strtoupper($paymentStatusResponse->getCountry())
         ];
 
         $shippingAddress->addData($data);

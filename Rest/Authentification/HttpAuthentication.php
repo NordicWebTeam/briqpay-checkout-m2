@@ -64,44 +64,20 @@ class HttpAuthentication implements AuthentificationInterface
      *
      * @throws AuthenticationException
      */
-    public function authenticate($websiteId = null) : void
+    public function authenticate($websiteId = null): string
     {
         try {
             $authRequest = $this->authRequestFactory->create([
-                'clientId'     => $this->config->getClientId($websiteId),
+                'clientId' => $this->config->getClientId($websiteId),
                 'clientSecret' => $this->config->getClientSecret($websiteId)
             ]);
 
             $authResponse = $this->authAdapter->startSession($authRequest);
-            $this->setAuthResponse($authResponse);
+
+            return $authResponse->getToken();
         } catch (\Exception $e) {
             $msg = 'API connection could not be established using given credentials (%1).';
             throw new AuthenticationException(__($msg, $e->getMessage()), $e);
         }
-    }
-
-    /**
-     * Save API auth response
-     *
-     * @return void
-     */
-    private function setAuthResponse(AuthentificationResponse $authentificationResponse) : void
-    {
-        $this->authentificationResponse = $authentificationResponse;
-    }
-
-    /**
-     * Get auth token
-     *
-     * @return string
-     * @throws AdapterException
-     */
-    public function getToken() : string
-    {
-        if (is_null($this->authentificationResponse)) {
-            throw new AdapterException('Authentificaion token is not established. Please authentificate first.');
-        }
-
-        return $this->authentificationResponse->getToken();
     }
 }

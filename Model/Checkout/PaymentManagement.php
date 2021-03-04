@@ -53,8 +53,7 @@ class PaymentManagement
     public function initNewPayment(Quote $quote): InitializePaymentResponse
     {
         $websiteId = $quote->getStore()->getWebsiteId();
-        $this->authService->authenticate($websiteId);
-        $accessToken = $this->authService->getToken();
+        $accessToken = $this->authService->authenticate($websiteId);
         $initPayment = $this->initPaymentService->initPayment($quote, $accessToken);
 
         return $initPayment;

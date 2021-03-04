@@ -230,8 +230,7 @@ class Index extends Action
     private function getPaymentStatus() : GetPaymentStatusResponse
     {
         $purchaseId = $this->getPurchaseId();
-        $this->authService->authenticate();
-        $authToken = $this->authService->getToken();
+        $authToken = $this->authService->authenticate();
 
         return $this->paymentStatusService->getStatus($purchaseId, $authToken);
     }

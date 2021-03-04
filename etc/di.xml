@@ -47,7 +47,6 @@
         </arguments>
     </virtualType>
 
-
     <virtualType name="Briqpay\Checkout\Payment\Command\CommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">

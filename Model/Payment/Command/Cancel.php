@@ -59,9 +59,8 @@ class Cancel implements CommandInterface
 
         try {
             $storeId = $data->getOrder()->getStoreId();
-            $this->authenticationService->authenticate($storeId);
             $this->cancelAdapter->cancel(
-                $this->authenticationService->getToken(),
+                $this->authenticationService->authenticate($storeId),
                 $purchaseId,
                 'Canceled by admin'
             );

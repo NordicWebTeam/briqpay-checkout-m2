@@ -10,7 +10,7 @@ class AuthentificationCache extends TagScope
     /**
      * @var string
      */
-    const TYPE_IDENTIFIER = 'briqpay_cache_authentifiaction';
+    const TYPE_IDENTIFIER = 'briqpay_cache_authentifiaction_';
 
     /**
      * @var string
