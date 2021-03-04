@@ -124,7 +124,7 @@ class CheckoutSetup
      */
     public function getDefaultCountry()
     {
-        return $this->scopeConfig->getValue(self::XML_PATH_CHECKOUT_DEFAULT_COUNTRY, ScopeInterface::SCOPE_STORE);
+        return strtoupper($this->scopeConfig->getValue(self::XML_PATH_CHECKOUT_DEFAULT_COUNTRY, ScopeInterface::SCOPE_STORE));
     }
 
     /**

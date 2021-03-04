@@ -205,7 +205,7 @@ class QuoteManagement
             'city' => '',
             'postcode' => '',
             'region_id' => '',
-            'country_id' => $country
+            'country_id' => strtoupper($country)
         ];
 
         return $blankAddress;

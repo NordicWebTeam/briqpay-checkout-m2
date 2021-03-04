@@ -93,7 +93,8 @@
         </arguments>
     </type>
 
-    <preference for="Briqpay\Checkout\Rest\Service\AuthentificationInterface" type="Briqpay\Checkout\Rest\Authentification\CacheAuthentication" />
+    <preference for="Briqpay\Checkout\Rest\Service\AuthentificationInterface"
+                type="Briqpay\Checkout\Rest\Authentification\HttpAuthentication"/>
 
     <type name="Magento\Checkout\Block\Onepage\Link">
         <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Block\Checkout\Url" sortOrder="10" disabled="false"/>
