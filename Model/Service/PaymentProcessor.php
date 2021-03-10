@@ -31,9 +31,8 @@ class PaymentProcessor
      */
     public function processPayment(Payment $payment)
     {
-        $actionType = $payment->getAdditionalInformation()[Briqpay::INFO_METHOD];
-
-        $paymentAction = $this->actionFactory->get($actionType);
+        $isCaptured = $payment->getAdditionalInformation()['briqpay_autocapture'] ?? false;
+        $paymentAction = $this->actionFactory->get($isCaptured);
         $paymentAction->process($payment);
     }
 }

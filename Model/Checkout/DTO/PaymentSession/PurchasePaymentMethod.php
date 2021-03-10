@@ -48,7 +48,7 @@ class PurchasePaymentMethod
     /**
      * @return array|mixed|null
      */
-    public function getAutoCapture(): ?string
+    public function getAutoCapture()
     {
         return $this->data->getData('autocapture');
     }

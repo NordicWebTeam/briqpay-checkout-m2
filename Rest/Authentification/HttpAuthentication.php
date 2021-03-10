@@ -76,8 +76,8 @@ class HttpAuthentication implements AuthentificationInterface
 
             return $authResponse->getToken();
         } catch (\Exception $e) {
-            $msg = 'API connection could not be established using given credentials (%1).';
-            throw new AuthenticationException(__($msg, $e->getMessage()), $e);
+            $msg = 'API connection could not be established using given credentials.';
+            throw new AuthenticationException(__($msg));
         }
     }
 }

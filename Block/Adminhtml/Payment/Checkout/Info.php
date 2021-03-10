@@ -24,7 +24,7 @@ class Info extends \Magento\Payment\Block\Info
     public function getPaymentMethod()
     {
         try {
-            return $this->getInfo()->getAdditionalInformation('pspname');
+            return $this->getInfo()->getAdditionalInformation('briqpay_method');
         } catch (\Exception $e) {
             return "";
         }
@@ -33,10 +33,10 @@ class Info extends \Magento\Payment\Block\Info
     /**
      * @return mixed|string
      */
-    public function getReservationId()
+    public function getSessionId()
     {
         try {
-            return $this->getInfo()->getAdditionalInformation('reservationid');
+            return $this->getInfo()->getAdditionalInformation('briqpay_session_id');
         } catch (\Exception $e) {
             return "";
         }

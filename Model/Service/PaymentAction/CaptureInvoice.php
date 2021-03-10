@@ -55,7 +55,8 @@ class CaptureInvoice implements PaymentActionInterface
     {
         $order = $payment->getOrder();
         $payment->authorize(true, $order->getBaseTotalDue());
-        $this->invoicePayment($order);
+        $this->invoicePayment($order, $payment->getTransactionId());
+        $payment->capture();
 
         $order
             ->setStatus(\Magento\Sales\Model\Order::STATE_PROCESSING)
@@ -67,27 +68,22 @@ class CaptureInvoice implements PaymentActionInterface
     /**
      * @param \Magento\Sales\Model\Order $order
      */
-    private function invoicePayment(\Magento\Sales\Model\Order $order)
+    private function invoicePayment(\Magento\Sales\Model\Order $order, $transactionId)
     {
         try {
             $invoice = $this->invoiceService->prepareInvoice($order);
+            $invoice->pay();
             $invoice->register();
+            $invoice->setTransactionId($transactionId);
             $invoice->save();
-            $transactionSave = $this->transaction->addObject(
-                $invoice
-            )->addObject(
-                $invoice->getOrder()
-            );
+            $transactionSave = $this->transaction->addObject($invoice)
+                ->addObject($invoice->getOrder());
             $transactionSave->save();
+
             $this->invoiceSender->send($invoice);
-
-            $invoice->capture();
-
             $order->setIsInProcess(true);
-            //send notification code
-            $order->addStatusHistoryComment(
-                __('Notified customer about invoice #%1.', $invoice->getId())
-            )->setIsCustomerNotified(true);
+            $order->addStatusHistoryComment(__('Notified customer about invoice #%1.', $invoice->getId()))
+                ->setIsCustomerNotified(true);
         } catch (\Exception $e) {
             // We cannot terminate transaction
         }

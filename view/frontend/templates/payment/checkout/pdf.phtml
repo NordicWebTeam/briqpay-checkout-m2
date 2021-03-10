@@ -1,0 +1,7 @@
+<?php
+/**
+ * @var $block \Briqpay\Checkout\Block\Adminhtml\Payment\Checkout\Info
+ */
+?>
+<?= $block->escapeHtml(__('Briqpay Checkout Order ID: %1', $block->getInfo()->getAdditionalInformation('briqpay_checkout_id'))) ?>
+{{pdf_row_separator}}

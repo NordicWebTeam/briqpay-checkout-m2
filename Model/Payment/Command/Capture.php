@@ -44,16 +44,19 @@ class Capture implements CommandInterface
             throw new \Exception('Session ID is not available for this payment.');
         }
 
-        $this->capturePaymentService->capture(
-            $payment->getOrder(),
-            $sessionId,
-            $commandSubject['amount']
-        );
-
         /** @var \Magento\Sales\Model\Order\Payment $orderPayment */
         $orderPayment = $payment->getPayment();
 
-        //$orderPayment->setTransactionId($transactionId);
+        // Detect if payment has been captured
+        $isCaptured = $orderPayment->getAdditionalInformation()['briqpay_autocapture'] ?? null;
+        if (!$isCaptured) {
+            $this->capturePaymentService->capture(
+                $payment->getOrder(),
+                $sessionId,
+                $commandSubject['amount']
+            );
+        }
+
         $transaction = $orderPayment->addTransaction(Transaction::TYPE_CAPTURE);
         $transaction->setIsClosed(true);
     }

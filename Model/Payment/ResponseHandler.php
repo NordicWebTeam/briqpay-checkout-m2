@@ -27,6 +27,7 @@ class ResponseHandler
             'briqpay_method' => $briqpayPaymentMethod->getPspName(),
             'briqpay_reservation_id' => $briqpayPaymentMethod->getReservationId(),
             'briqpay_payment_status' => $paymentStatus->getState(),
+            'briqpay_autocapture' => $briqpayPaymentMethod->getAutoCapture()
         ]);
     }
 

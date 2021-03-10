@@ -32,24 +32,18 @@ class ActionFactory
     }
 
     /**
-     * @param $paymentType
+     * @param $isCaptured
      *
      * @return PaymentActionInterface
      */
-    public function get($paymentType)
+    public function get($isCaptured)
     {
-        switch ($paymentType) {
-            case PaymentStatusInterface::TYPE_INVOICE:
-            case PaymentStatusInterface::TYPE_EDI_INVOICE:
-            case PaymentStatusInterface::TYPE_EDI_FORTNOX:
-                return $this->objectManager->create(CaptureInvoice::class);
+        if ($isCaptured) {
+            return $this->objectManager->create(CaptureInvoice::class);
         }
 
-        return $this->objectManager->create(
-            Authorize::class,
-            [
-                'capturePayment' => $this->paymentConfig->isAutoCapture()
-            ]
-        );
+        return $this->objectManager->create(Authorize::class, [
+            'capturePayment' => $this->paymentConfig->isAutoCapture()
+        ]);
     }
 }
