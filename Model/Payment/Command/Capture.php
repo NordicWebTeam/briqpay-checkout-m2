@@ -57,7 +57,10 @@ class Capture implements CommandInterface
             );
         }
 
+        $reservationId = $orderPayment->getAdditionalInformation()['briqpay_reservation_id'] ?? null;
+
         $transaction = $orderPayment->addTransaction(Transaction::TYPE_CAPTURE);
+        $transaction->setTransactionId($reservationId);
         $transaction->setIsClosed(true);
     }
 }

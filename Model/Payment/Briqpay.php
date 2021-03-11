@@ -8,7 +8,6 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\Adapter;
 use Magento\Quote\Api\Data\CartInterface;
-use Magento\Sales\Model\Order\Payment\Transaction;
 
 class Briqpay implements \Magento\Payment\Model\MethodInterface
 {
@@ -273,7 +272,7 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
      * {@inheritdoc}
      * @throws \Magento\Payment\Gateway\Command\CommandException
      */
-    public function authorize(InfoInterface $payment, $amount)
+    public function authorize(infointerface $payment, $amount)
     {
         $reservationId = $payment->getAdditionalInformation()['briqpay_reservation_id'] ?? null;
         if (!$reservationId) {
@@ -282,11 +281,13 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
             );
         }
 
+        $order = $payment->getOrder();
+        $this->setStore($order->getStoreId());
+
+        $payment->setBaseAmountAuthorized($amount);
         $payment->setTransactionId($reservationId);
-        $transaction = $payment->addTransaction(Transaction::TYPE_AUTH);
-        $transaction->setIsClosed(false);
-        $payment->addTransactionCommentsToOrder($transaction, 'Authorized Briqpay amount: ' . $amount);
-        $transaction->save();
+        $payment->setIsTransactionClosed(false);
+        $payment->setShouldCloseParentTransaction(false);
 
         return $this;
     }
@@ -424,6 +425,6 @@ class Briqpay implements \Magento\Payment\Model\MethodInterface
      */
     public function getConfigPaymentAction()
     {
-        return $this->adapter->getConfigPaymentAction();
+        return self::ACTION_AUTHORIZE;
     }
 }
