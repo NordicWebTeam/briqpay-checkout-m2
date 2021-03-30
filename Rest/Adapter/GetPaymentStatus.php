@@ -39,24 +39,32 @@ class GetPaymentStatus
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * GetPaymentStatus constructor.
      *
      * @param ApiConfig $config
      * @param RestClient $restClient
      * @param Parser $schemaParser
-     * @param LoggerInterface $logger
+     * @param \Briqpay\Checkout\Logger\Logger $logger
+     * @param \Briqpay\Checkout\Helper\UserAgent $userAgent
      */
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->config = $config;
         $this->logger = $logger;
         $this->schemaParser = $schemaParser;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -77,8 +85,9 @@ class GetPaymentStatus
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $accessToken)
+            'Content-Type' => 'application/json',
+            'Authorization' => sprintf('Bearer %s', $accessToken),
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         try {
