@@ -42,18 +42,25 @@ class GetAuthTokenForSession
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * ReadSession constructor.
      *
      * @param ApiConfig $config
      * @param RestClient $restClient
      * @param Parser $schemaParser
      * @param \Briqpay\Checkout\Logger\Logger $logger
+     * @param \Briqpay\Checkout\Helper\UserAgent $userAgent
      */
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     )
     {
         $this->endpoint = $config->getAuthBackendUrl();
@@ -61,6 +68,7 @@ class GetAuthTokenForSession
         $this->logger = $logger;
         $this->config = $config;
         $this->schemaParser = $schemaParser;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -79,7 +87,8 @@ class GetAuthTokenForSession
         $headers = [
             'Cache-Control' => 'no-cache',
             'Content-Type' => 'application/json',
-            'Authorization' => $authHeader
+            'Authorization' => $authHeader,
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         $this->logger->log(LogLevel::INFO, sprintf("%s\n%s", $uri, $sessionId));

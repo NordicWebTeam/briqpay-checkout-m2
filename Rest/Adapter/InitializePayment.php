@@ -40,23 +40,31 @@ class InitializePayment
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * AuthAdapter constructor.
      *
      * @param ApiConfig $config
      * @param RestClient $restClient
      * @param Parser $schemaParser
      * @param \Briqpay\Checkout\Logger\Logger $logger
+     * @param \Briqpay\Checkout\Helper\UserAgent $userAgent
      */
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->schemaParser = $schemaParser;
         $this->logger = $logger;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -78,8 +86,9 @@ class InitializePayment
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $accessToken)
+            'Content-Type' => 'application/json',
+            'Authorization' => sprintf('Bearer %s', $accessToken),
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         $this->logger->log(LogLevel::INFO, sprintf("%s\n%s", $uri, $requestBody));

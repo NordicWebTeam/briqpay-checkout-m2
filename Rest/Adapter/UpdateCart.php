@@ -39,22 +39,31 @@ class UpdateCart
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * AuthAdapter constructor.
      *
      * @param ApiConfig $config
      * @param RestClient $restClient
-     * @param LoggerInterface $logger
+     * @param Parser $schemaParser
+     * @param \Briqpay\Checkout\Logger\Logger $logger
+     * @param \Briqpay\Checkout\Helper\UserAgent $userAgent
      */
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
         \Briqpay\Checkout\Rest\Schema\Parser $schemaParser,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->logger = $logger;
         $this->schemaParser = $schemaParser;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -77,13 +86,13 @@ class UpdateCart
         );
 
         $data['sessionid'] = $purchaseId;
-
         $requestBody = \json_encode($data);
 
         $headers = [
             'Cache-Control' => 'no-cache',
             'Content-Type' => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $authToken)
+            'Authorization' => sprintf('Bearer %s', $authToken),
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));

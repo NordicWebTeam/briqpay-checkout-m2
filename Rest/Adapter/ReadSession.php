@@ -43,6 +43,11 @@ class ReadSession
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * ReadSession constructor.
      *
      * @param ApiConfig $config
@@ -54,7 +59,8 @@ class ReadSession
         ApiConfig $config,
         RestClient $restClient,
         Parser $schemaParser,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     )
     {
         $this->endpoint = $config->getAuthBackendUrl();
@@ -62,6 +68,7 @@ class ReadSession
         $this->logger = $logger;
         $this->config = $config;
         $this->schemaParser = $schemaParser;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -83,8 +90,9 @@ class ReadSession
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => sprintf('Bearer %s', $authToken)
+            'Content-Type' => 'application/json',
+            'Authorization' => sprintf('Bearer %s', $authToken),
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         $data = json_encode([

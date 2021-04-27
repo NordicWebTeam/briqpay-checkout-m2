@@ -32,6 +32,11 @@ class CapturePayment
     private $schemaParser;
 
     /**
+     * @var \Briqpay\Checkout\Helper\UserAgent
+     */
+    private $userAgent;
+
+    /**
      * AuthAdapter constructor.
      *
      * @param ApiConfig $config
@@ -41,11 +46,13 @@ class CapturePayment
     public function __construct(
         ApiConfig $config,
         RestClient $restClient,
-        \Briqpay\Checkout\Logger\Logger $logger
+        \Briqpay\Checkout\Logger\Logger $logger,
+        \Briqpay\Checkout\Helper\UserAgent $userAgent
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->logger = $logger;
+        $this->userAgent = $userAgent;
     }
 
     /**
@@ -68,8 +75,9 @@ class CapturePayment
 
         $headers = [
             'Cache-Control' => 'no-cache',
-            'Content-Type'  => 'application/json',
-            'Authorization' => "Bearer $authToken"
+            'Content-Type' => 'application/json',
+            'Authorization' => "Bearer $authToken",
+            'User-Agent' => $this->userAgent->getHeader()
         ];
 
         $this->logger->log(LogLevel::DEBUG, sprintf("%s\n%s", $uri, $requestBody));
