@@ -5,11 +5,6 @@ Facts
 -----
 - version: 1.0.0
 - extension key: NWT_BriqpayCheckout
-- [extension on Magento Connect](http://www.magentocommerce.com/magento-connect/nwt)-briqpay-1234.html)
-- Magento Connect 1.0 extension key: magento-community/Briqpay_Checkout
-- Magento Connect 2.0 extension key: http://connect20.magentocommerce.com/community/Briqpay_Checkout
-- [extension on GitHub](https://github.com/nwt/Briqpay_Checkout)
-- [direct download link](http://connect.magentocommerce.com/community/get/Briqpay_Checkout-1.0.0.tgz)
 
 Description
 -----------
