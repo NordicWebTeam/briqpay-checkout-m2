@@ -116,6 +116,7 @@ define([
                                 _this._ajaxBeforeSend();
                             },
                             complete: function () {
+                                _this._ajaxComplete();
                             },
                             success: function (data) {
                                 if (!data.success) {
@@ -154,9 +155,7 @@ define([
                             _this._ajaxBeforeSend();
                         },
                         complete: function () {
-                            _briqpay.checkout.suspend();
-                            _briqpay.checkout.resume()
-                            _this._ajaxComplete()
+                            _this._ajaxComplete();
                         },
                         success: function (data) {
                             if (!data.success) {
@@ -247,7 +246,7 @@ define([
          */
         _ajaxBeforeSend: function () {
             this.options.ctrkeyCheck = false;
-            // this._hideBriqpayCheckout()
+            this._hideBriqpayCheckout();
             jQuery(this.options.waitLoadingContainer).show();
         },
 
@@ -255,6 +254,7 @@ define([
          * hide ajax loader
          */
         _ajaxComplete: function (dontHidePayment) {
+            this.options.ctrkeyCheck = true;
             this._showBriqpayCheckout();
             jQuery(this.options.waitLoadingContainer).hide();
             this.briqpayApiChanges();
@@ -262,11 +262,11 @@ define([
         },
 
         _showBriqpayCheckout: function () {
-            _briqpay.checkout.resume()
+            _briqpay.checkout.resume();
         },
 
         _hideBriqpayCheckout: function () {
-            _briqpay.checkout.suspend()
+            _briqpay.checkout.suspend();
         },
 
         _changeShippingMethod: function () {
