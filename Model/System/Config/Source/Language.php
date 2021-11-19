@@ -20,7 +20,7 @@ class Language implements ArrayInterface
                 'value' => 'fi-fi',
                 'label' => 'Finish'
             ], [
-                'value' => 'se-se',
+                'value' => 'sv-se',
                 'label' => 'Swedish'
             ], [
                 'value' => 'nb-no',
