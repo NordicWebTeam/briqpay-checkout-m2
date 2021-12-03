@@ -27,18 +27,20 @@ class ItemsCollector implements OrderItemCollectorInterface
     {
         if ($subject instanceof Quote) {
             $quote = $subject;
-            $orderAmount = 0;
             foreach ($this->generateItems($quote->getAllItems()) as $item) {
-                $orderAmount += $item['unitprice'];
                 $paymentSession->addCartItem($item);
             }
-            $paymentSession->addAmount($orderAmount);
+            $paymentSession->addAmount(
+                $this->toApiFloat(
+                    $quote->getBaseGrandTotal() - $quote->getShippingAddress()->getShippingInclTax()
+                )
+            );
         }
 
         if ($subject instanceof \Magento\Payment\Gateway\Data\OrderAdapterInterface) {
             $orderAmount = 0;
             foreach ($this->generateItems($subject->getItems()) as $item) {
-                $orderAmount += $item['unitprice'];
+                $orderAmount += $item['unitprice'] * $item['quantity'];
                 $paymentSession->addCartItem($item);
             }
             $paymentSession->setAmount($orderAmount);
@@ -119,7 +121,7 @@ class ItemsCollector implements OrderItemCollectorInterface
     }
 
     /**
-     * @param $item
+     * @param \Magento\Quote\Model\Quote\Item $item
      *
      * @return array
      */
@@ -131,10 +133,9 @@ class ItemsCollector implements OrderItemCollectorInterface
             'name' => $item->getName(),
             'quantity' => ceil($this->getItemQty($item)),
             'quantityunit' => 'pc',
-            'unitprice' => $this->toApiFloat($item->getBaseRowTotalInclTax() - $item->getBaseDiscountAmount())
-                ?: $this->toApiFloat($item->getBaseRowTotalInclTax()),
+            'unitprice' => $this->toApiFloat($item->getBasePrice()),
             'taxrate' => $this->toApiFloat($item->getTaxPercent()),
-            'discount' => $this->toApiFloat($item->getBaseDiscountAmount())
+            'discount' => $this->toApiFloat($item->getDiscountPercent())
         ];
     }
 
