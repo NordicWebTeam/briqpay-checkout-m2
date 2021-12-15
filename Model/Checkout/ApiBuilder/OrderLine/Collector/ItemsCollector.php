@@ -32,7 +32,7 @@ class ItemsCollector implements OrderItemCollectorInterface
             }
             $paymentSession->addAmount(
                 $this->toApiFloat(
-                    $quote->getBaseGrandTotal() - $quote->getShippingAddress()->getShippingInclTax()
+                    $quote->getBaseGrandTotal() - $quote->getShippingAddress()->getBaseShippingInclTax()
                 )
             );
         }
