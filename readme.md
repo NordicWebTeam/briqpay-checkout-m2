@@ -3,7 +3,7 @@ Briqpay Checkout Extension
 Magento 2 module for Briqpay Checkout
 Facts
 -----
-- version: 1.0.1
+- version: 1.0.3
 - extension key: NWT_BriqpayCheckout
 
 Description
