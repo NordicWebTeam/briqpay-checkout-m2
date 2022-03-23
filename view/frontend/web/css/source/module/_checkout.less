@@ -1130,6 +1130,10 @@ button:not(.primary).primary {
     margin: 0 auto 225px;
   }
 
+  .ingrid-checkout-block {
+    margin: -75px auto 110px;
+  }
+
   table {
     &.checkout-review {
       td {
@@ -1601,6 +1605,10 @@ button:not(.primary).primary {
   .briqpay-checkout-wrapper #checkout-shipping,
   #briqpay_checkoutWidget {
     max-width: 865px;
+  }
+
+  .ingrid-checkout-block {
+    max-width: 640px;
   }
 }
 
@@ -2364,4 +2372,10 @@ button:not(.primary).primary {
 
 #briqpay {
   margin: 0 auto;
+}
+
+.ingrid-checkout-block {
+  @media only screen and (max-width: @screen__m) {
+    margin-bottom: 60px;
+  }
 }
