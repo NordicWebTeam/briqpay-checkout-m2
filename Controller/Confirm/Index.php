@@ -1,40 +1,16 @@
 <?php
-namespace Briqpay\Checkout\Controller\Callback;
+namespace Briqpay\Checkout\Controller\Confirm;
 
 use Briqpay\Checkout\Model\Checkout\Context\Callback as CallbackContext;
-use Briqpay\Checkout\Rest\Adapter\GetPaymentStatus;
 use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
-use Briqpay\Checkout\Rest\Service\Authentication;
 use Magento\Checkout\Controller\Action;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Quote\Model\Quote;
 
-/**
- * Class Index
- *
- * @package Briqpay\Checkout\Controller\Callback
- */
 class Index extends Action
 {
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
-
-    /**
-     * @var GetPaymentStatus
-     */
-    private $paymentStatusService;
-
-    /**
-     * @var Authentication
-     */
-    private $authService;
-
     /**
      * @var Session
      */
@@ -49,11 +25,6 @@ class Index extends Action
      * @var \Briqpay\Checkout\Model\Quote\QuoteManagement
      */
     private $quoteManager;
-
-    /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    private $orderRepository;
 
     /**
      * @var \Briqpay\Checkout\Model\Payment\ResponseHandler
@@ -98,13 +69,9 @@ class Index extends Action
             $accountManagement
         );
 
-        $this->pageFactory = $callbackContext->getPageFactory();
-        $this->paymentStatusService = $callbackContext->getPaymentStatusService();
-        $this->authService = $callbackContext->getAuthService();
         $this->checkoutSession = $callbackContext->getCheckoutSession();
         $this->cartManager = $callbackContext->getCartManager();
         $this->quoteManager = $callbackContext->getQuoteManager();
-        $this->orderRepository = $callbackContext->getOrderRepository();
         $this->quoteResponseHandler = $callbackContext->getResponseHandler();
         $this->paymentProcessor = $callbackContext->getPaymentProcessor();
         $this->sessionManagement = $callbackContext->getSessionManagement();
@@ -157,55 +124,6 @@ class Index extends Action
             $this->messageManager->addErrorMessage('Can not instantiate your payment request. Please try again.');
             return $this->_redirect('checkout/cart');
         }
-    }
-
-
-    /**
-     * @param Quote $quote
-     *
-     * @return bool|string|void
-     * @throws \Exception
-     */
-    private function prepareShippingRates(Quote $quote)
-    {
-        if ($quote->isVirtual()) {
-            return;
-        }
-
-        // This is needed by shipping method with minimum amount
-        $quote->collectTotals();
-
-        $shipping = $quote->getShippingAddress()->setCollectShippingRates(true)->collectShippingRates();
-        $allRates = $shipping->getAllShippingRates();
-
-        if (!count($allRates)) {
-            return false;
-        }
-
-        $rates = [];
-        foreach ($allRates as $rate) {
-            /** @var $rate Quote\Address\Rate  **/
-            $rates[$rate->getCode()] = $rate->getCode();
-        }
-
-        // Check if selected shipping method exists
-        $method = $shipping->getShippingMethod();
-        if ($method && isset($rates[$method])) {
-            return $method;
-        }
-
-        // Check if default shipping method exists, use it then!
-        $method = 'shipping';
-        if ($method && isset($rates[$method])) {
-            $shipping->setShippingMethod($method);
-            return $method;
-        }
-
-        // Fallback, use first shipping method found
-        $rate = $allRates[0];
-        $method = $rate->getCode();
-        $shipping->setShippingMethod($method);
-        $shipping->save();
     }
 
     /**
