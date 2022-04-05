@@ -2,7 +2,19 @@
     "quote": {
         "column": {
             "briqpay_session_id": true,
-            "briqpay_cart_signature": true
+            "briqpay_cart_signature": true,
+            "briqpay_cart_token": true
+        },
+        "constraint": {
+            "QUOTE_BRIQPAY_SESSION_ID": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "briqpay_session_id": true
+        },
+        "constraint": {
+            "SALES_ORDER_BRIQPAY_SESSION_ID": true
         }
     }
 }

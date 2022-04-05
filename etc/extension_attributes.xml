@@ -14,6 +14,7 @@
 
     <extension_attributes for="Magento\Quote\Api\Data\CartInterface">
         <attribute code="briqpay_cart_signature" type="string"/>
+        <attribute code="briqpay_session_id" type="string"/>
     </extension_attributes>
 
     <extension_attributes for="\Magento\Sales\Api\Data\OrderPaymentInterface">
