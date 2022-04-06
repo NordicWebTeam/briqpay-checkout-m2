@@ -171,10 +171,7 @@ class BriqpayCheckout
         try {
             $initRequest = $this->paymentManagement->initNewPayment($this->quote);
             $this->calculateSignature();
-            if ($this->quote->getIsChanged()) {
-                $this->quoteRepository->save($this->quote);
-            }
-
+            $this->quoteRepository->save($this->quote);
             return $initRequest;
         } catch (\Exception $e) {
             $this->logger->error($e->getPrevious() ? $e->getPrevious()->getMessage() : $e->getMessage());

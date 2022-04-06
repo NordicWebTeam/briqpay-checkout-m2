@@ -10,7 +10,7 @@ class UrlBuilder
 {
     private const PATH_CALLBACK_URI = 'briqpay/callback';
 
-    private const PATH_REDIRECT_URL = 'briqpay/callback';
+    private const PATH_REDIRECT_URL = 'briqpay/confirm';
 
     private const XML_PATH_CHECKOUT_URL_TERMS = 'briqpay/checkout_config/terms_url';
 
