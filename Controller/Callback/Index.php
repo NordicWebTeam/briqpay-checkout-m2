@@ -7,6 +7,7 @@ use Magento\Framework\App\Request\Http;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Briqpay\Checkout\Rest\Adapter\ReadSession;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -125,7 +126,8 @@ class Index implements HttpGetActionInterface
     }
 
     /**
-     * Updates order state and status depending on briqpay payment state
+     * Updates order state and status depending on briqpay payment state.
+     * Authorizes payment on state 'purchasecomplete'
      *
      * @param Order $order
      * @param string $briqpayState
@@ -133,13 +135,19 @@ class Index implements HttpGetActionInterface
      */
     private function handleState(Order $order, string $briqpayState)
     {
-        $comment = 'Briqpay Payment state was ' . $briqpayState;
+        $comment = 'Received callback. Briqpay Payment state was: ' . $briqpayState;
+
         if ($briqpayState === self::PAYMENT_STATE_PURCHASE_REJECTED) {
             $order->setState(Order::STATE_HOLDED);
         }
 
         if ($briqpayState === self::PAYMENT_STATE_PURCHASE_COMPLETE) {
             $order->setState(Order::STATE_PROCESSING);
+            if ($order->getPayment()->getBaseAmountAuthorized() < $order->getBaseTotalDue()) {
+                $payment = $order->getPayment();
+                /** @var Payment $payment */
+                $payment->authorize(true, $order->getBaseTotalDue());
+            }
         }
 
         if ($briqpayState === self::PAYMENT_STATE_PAYMENT_PROCESSING &&
