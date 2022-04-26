@@ -2,7 +2,9 @@
 
 namespace Briqpay\Checkout\Model\Service\PaymentAction;
 
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
+use Magento\Sales\Model\Order\Status;
 
 class Authorize implements PaymentActionInterface
 {

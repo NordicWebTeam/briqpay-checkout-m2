@@ -37,6 +37,11 @@ class IndexTest extends TestCase
     private $order;
 
     /**
+     * @var Payment|MockObject
+     */
+    private $payment;
+
+    /**
      * @var Index
      */
     private $testSubject;
@@ -46,13 +51,13 @@ class IndexTest extends TestCase
         $this->orderRepo = $this->createMock(OrderRepository::class);
         $this->response = $this->createMock(GetPaymentStatusResponse::class);
         $this->order = $this->createMock(Order::class);
+        $this->payment = $this->createMock(Payment::class);
 
         $request = $this->createMock(Http::class);
         $jsonFactory = $this->createMock(JsonFactory::class);
         $scBuilder = $this->createMock(SearchCriteriaBuilder::class);
         $readSession = $this->createMock(ReadSession::class);
         $encryptor = $this->createMock(Encryptor::class);
-        $payment = $this->createMock(Payment::class);
 
         $request->method('getParam')->with('sessionid')->willReturn('');
         $jsonFactory->method('create')->willReturn($this->createMock(Json::class));
@@ -60,8 +65,10 @@ class IndexTest extends TestCase
         $searchCriteria = $this->createMock(SearchCriteria::class);
         $scBuilder->method('create')->willReturn($searchCriteria);
         $readSession->method('readSession')->willReturn($this->response);
-        $this->order->method('getPayment')->willReturn($payment);
+        $this->order->method('getPayment')->willReturn($this->payment);
         $this->order->method('getState')->willReturn(Order::STATE_NEW);
+        $this->order->method('getBaseTotalDue')->willReturn(99);
+        $this->payment->method('getBaseAmountAuthorized')->willReturn(0);
         $orderCollection = $this->createMock(OrderCollection::class);
         $orderCollection->method('getItems')->willReturn([$this->order]);
         $this->orderRepo->method('getList')->willReturn($orderCollection);
@@ -87,6 +94,7 @@ class IndexTest extends TestCase
         $this->response->method('getState')->willReturn(Index::PAYMENT_STATE_PAYMENT_PROCESSING);
 
         $this->order->expects($this->once())->method('setState')->with(Order::STATE_NEW);
+        $this->payment->expects($this->never())->method('authorize');
         $this->testSubject->execute();
     }
 
@@ -101,6 +109,7 @@ class IndexTest extends TestCase
         $this->response->method('getState')->willReturn(Index::PAYMENT_STATE_PURCHASE_REJECTED);
 
         $this->order->expects($this->once())->method('setState')->with(Order::STATE_HOLDED);
+        $this->payment->expects($this->never())->method('authorize');
         $this->testSubject->execute();
     }
 
@@ -115,6 +124,7 @@ class IndexTest extends TestCase
         $this->response->method('getState')->willReturn(Index::PAYMENT_STATE_PURCHASE_COMPLETE);
 
         $this->order->expects($this->once())->method('setState')->with(Order::STATE_PROCESSING);
+        $this->payment->expects($this->once())->method('authorize');
         $this->testSubject->execute();
     }
 }
