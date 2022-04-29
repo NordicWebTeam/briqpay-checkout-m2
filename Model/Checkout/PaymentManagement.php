@@ -9,6 +9,7 @@ use Briqpay\Checkout\Rest\Response\InitializePaymentResponse;
 use Briqpay\Checkout\Rest\Service\AuthentificationInterface;
 use Briqpay\Checkout\Rest\Service\InitializePayment;
 use Magento\Quote\Model\Quote;
+use Magento\Framework\Encryption\EncryptorInterface;
 
 class PaymentManagement
 {
@@ -28,17 +29,24 @@ class PaymentManagement
     private $hasher;
 
     /**
+     * @var EncryptorInterface
+     */
+    private $encryptor;
+
+    /**
      * CheckoutManagement constructor.
      */
     public function __construct(
         AuthentificationInterface $authService,
         InitializePayment $initPaymentService,
-        SignatureHasher $hasher
+        SignatureHasher $hasher,
+        EncryptorInterface $encryptor
     )
     {
         $this->authService = $authService;
         $this->initPaymentService = $initPaymentService;
         $this->hasher = $hasher;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -55,6 +63,11 @@ class PaymentManagement
         $websiteId = $quote->getStore()->getWebsiteId();
         $accessToken = $this->authService->authenticate($websiteId);
         $initPayment = $this->initPaymentService->initPayment($quote, $accessToken);
+        $quote->setBriqpaySessionId($initPayment->getSessionId());
+        $quote->getPayment()->setAdditionalInformation(
+            'briqpay_session_token',
+            $this->encryptor->encrypt($initPayment->getToken())
+        );
 
         return $initPayment;
     }

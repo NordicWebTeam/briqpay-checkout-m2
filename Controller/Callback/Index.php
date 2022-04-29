@@ -1,241 +1,163 @@
 <?php
+
 namespace Briqpay\Checkout\Controller\Callback;
 
-use Briqpay\Checkout\Model\Checkout\Context\Callback as CallbackContext;
-use Briqpay\Checkout\Rest\Adapter\GetPaymentStatus;
-use Briqpay\Checkout\Rest\Response\GetPaymentStatusResponse;
-use Briqpay\Checkout\Rest\Service\Authentication;
-use Magento\Checkout\Controller\Action;
-use Magento\Checkout\Model\Session;
-use Magento\Customer\Api\AccountManagementInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\View\Result\PageFactory;
-use Magento\Quote\Model\Quote;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\Request\Http;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Briqpay\Checkout\Rest\Adapter\ReadSession;
+use Magento\Framework\Encryption\EncryptorInterface;
 
-/**
- * Class Index
- *
- * @package Briqpay\Checkout\Controller\Callback
- */
-class Index extends Action
+class Index implements HttpGetActionInterface
 {
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
+    const PAYMENT_STATE_PURCHASE_REJECTED = 'purchaserejected';
+
+    const PAYMENT_STATE_PURCHASE_COMPLETE = 'purchasecomplete';
+
+    const PAYMENT_STATE_PAYMENT_PROCESSING = 'paymentprocessing';
 
     /**
-     * @var GetPaymentStatus
+     * @var Http
      */
-    private $paymentStatusService;
+    private $request;
 
     /**
-     * @var Authentication
+     * @var JsonFactory
      */
-    private $authService;
+    private $jsonFactory;
 
     /**
-     * @var Session
+     * @var OrderRepositoryInterface
      */
-    private $checkoutSession;
+    private $orderRepo;
 
     /**
-     * @var \Magento\Quote\Api\CartManagementInterface
+     * @var SearchCriteriaBuilder
      */
-    private $cartManager;
+    private $scBuilder;
 
     /**
-     * @var \Briqpay\Checkout\Model\Quote\QuoteManagement
+     * @var ReadSession
      */
-    private $quoteManager;
+    private $readSession;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var EncryptorInterface
      */
-    private $orderRepository;
+    private $encryptor;
 
-    /**
-     * @var \Briqpay\Checkout\Model\Payment\ResponseHandler
-     */
-    private $quoteResponseHandler;
-
-    /**
-     * @var \Briqpay\Checkout\Model\Service\PaymentProcessor
-     */
-    private $paymentProcessor;
-
-    /**
-     * @var \Briqpay\Checkout\Rest\Service\SessionManagement
-     */
-    private $sessionManagement;
-
-    /**
-     * @var \Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement
-     */
-    private $checkoutSessionManager;
-
-    /**
-     * Index constructor.
-     *
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param AccountManagementInterface $accountManagement
-     * @param Callback $callbackContext
-     */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\Session $customerSession,
-        CustomerRepositoryInterface $customerRepository,
-        AccountManagementInterface $accountManagement,
-        CallbackContext $callbackContext
+        Http $request,
+        JsonFactory $jsonFactory,
+        OrderRepositoryInterface $orderRepo,
+        SearchCriteriaBuilder $scBuilder,
+        ReadSession $readSession,
+        EncryptorInterface $encryptor
     ) {
-        parent::__construct(
-            $context,
-            $customerSession,
-            $customerRepository,
-            $accountManagement
-        );
-
-        $this->pageFactory = $callbackContext->getPageFactory();
-        $this->paymentStatusService = $callbackContext->getPaymentStatusService();
-        $this->authService = $callbackContext->getAuthService();
-        $this->checkoutSession = $callbackContext->getCheckoutSession();
-        $this->cartManager = $callbackContext->getCartManager();
-        $this->quoteManager = $callbackContext->getQuoteManager();
-        $this->orderRepository = $callbackContext->getOrderRepository();
-        $this->quoteResponseHandler = $callbackContext->getResponseHandler();
-        $this->paymentProcessor = $callbackContext->getPaymentProcessor();
-        $this->sessionManagement = $callbackContext->getSessionManagement();
-        $this->checkoutSessionManager = $callbackContext->getCheckoutSessionManager();
+        $this->request = $request;
+        $this->jsonFactory = $jsonFactory;
+        $this->orderRepo = $orderRepo;
+        $this->scBuilder = $scBuilder;
+        $this->readSession = $readSession;
+        $this->encryptor = $encryptor;
     }
 
     /**
-     * @return ResponseInterface
+     * Load order with provided sessionId
+     *
+     * @return void
      */
     public function execute()
     {
-        $sessionId = $this->checkoutSessionManager->getSessionId();
-        if (!$sessionId) {
-            $this->messageManager->addErrorMessage('Session is not found, please check again.');
-            return $this->_redirect('briqpay');
+        $result = $this->jsonFactory->create();
+        $sessionId = $this->request->getParam('sessionid');
+        $order = $this->loadOrder($sessionId);
+
+        if (null === $order) {
+            $result->setHttpResponseCode(500);
+            $result->setData([
+                'status' => 'error',
+                'message' => 'Order with provided sessionid not found'
+                
+            ]);
+            return $result;
         }
 
         try {
-            $paymentResponse = $this->getPaymentStatus();
-            $quote = $this->checkoutSessionManager->getQuote();
-            $this->quoteResponseHandler->handlePaymentStatus($quote, $paymentResponse);
-            $this->quoteManager->setDataFromResponse($quote, $paymentResponse);
-
-            /** @var \Magento\Sales\Model\Order $order */
-            $order = $this->cartManager->submit($quote);
-            $this->checkoutSession
-                ->setLastQuoteId($quote->getId())
-                ->setLastSuccessQuoteId($quote->getId())
-                ->clearHelperData();
-
-            $this->paymentProcessor->processPayment($order->getPayment());
-            $this->dispatchPostEvents($order, $quote);
-
-            /**
-             * a flag to set that there will be redirect to third party after confirmation
-             */
-            $redirectUrl = $quote->getPayment()->getOrderPlaceRedirectUrl();
-
-            $this->checkoutSession
-                ->setLastOrderId($order->getId())
-                ->setRedirectUrl($redirectUrl)
-                ->setLastRealOrderId($order->getIncrementId())
-                ->setLastOrderStatus($order->getStatus());
-
-            $this->checkoutSessionManager->clear();
-            $this->checkoutSessionManager->setBriqpayPaymentMethod($paymentResponse->getPurchasePaymentMethod());
-
-            return $this->_redirect('briqpay/order/success');
+            $token = $this->encryptor->decrypt(
+                $order->getPayment()->getAdditionalInformation()['briqpay_session_token'] ?? ''
+            );
+            $getStatusResponse = $this->readSession->readSession(
+                $sessionId,
+                $token
+            );
+            $this->handleState($order, $getStatusResponse->getState());
+            $result->setData(['status' => 'ok']);
+            return $result->setHttpResponseCode(200);
         } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage('Can not instantiate your payment request. Please try again.');
-            return $this->_redirect('checkout/cart');
+            $result->setHttpResponseCode(500);
+            $result->setData([
+                'status' => 'error',
+                'message' => sprintf(
+                    'Unable to retrieve payment state for order. Message: "%s"',
+                    $e->getMessage()
+                )
+            ]);
+            return $result;
         }
     }
 
-
     /**
-     * @param Quote $quote
+     * Load order by sessionId
      *
-     * @return bool|string|void
-     * @throws \Exception
+     * @param string $sessionId
+     * @return Order|null
      */
-    private function prepareShippingRates(Quote $quote)
+    private function loadOrder(string $sessionId): ?Order
     {
-        if ($quote->isVirtual()) {
-            return;
-        }
-
-        // This is needed by shipping method with minimum amount
-        $quote->collectTotals();
-
-        $shipping = $quote->getShippingAddress()->setCollectShippingRates(true)->collectShippingRates();
-        $allRates = $shipping->getAllShippingRates();
-
-        if (!count($allRates)) {
-            return false;
-        }
-
-        $rates = [];
-        foreach ($allRates as $rate) {
-            /** @var $rate Quote\Address\Rate  **/
-            $rates[$rate->getCode()] = $rate->getCode();
-        }
-
-        // Check if selected shipping method exists
-        $method = $shipping->getShippingMethod();
-        if ($method && isset($rates[$method])) {
-            return $method;
-        }
-
-        // Check if default shipping method exists, use it then!
-        $method = 'shipping';
-        if ($method && isset($rates[$method])) {
-            $shipping->setShippingMethod($method);
-            return $method;
-        }
-
-        // Fallback, use first shipping method found
-        $rate = $allRates[0];
-        $method = $rate->getCode();
-        $shipping->setShippingMethod($method);
-        $shipping->save();
+        $searchCriteria = $this->scBuilder->addFilter('briqpay_session_id', $sessionId)->create();
+        $result = $this->orderRepo->getList($searchCriteria);
+        $orders = $result->getItems();
+        return array_shift($orders);
     }
 
     /**
-     * @return GetPaymentStatusResponse
-     * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
-     */
-    private function getPaymentStatus(): GetPaymentStatusResponse
-    {
-        return $this->sessionManagement->readSession(
-            $this->checkoutSessionManager->getSessionId(),
-            $this->checkoutSessionManager->getSessionToken()
-        );
-    }
-
-    /**
-     * Dispatch post events
+     * Updates order state and status depending on briqpay payment state.
+     * Authorizes payment on state 'purchasecomplete'
      *
-     * @param $order
-     * @param $quote
+     * @param Order $order
+     * @param string $briqpayState
+     * @return void
      */
-    private function dispatchPostEvents($order, $quote)
+    private function handleState(Order $order, string $briqpayState)
     {
-        $this->_eventManager->dispatch(
-            'checkout_type_onepage_save_order_after',
-            ['order' => $order, 'quote' => $quote]
-        );
+        $comment = 'Received callback. Briqpay Payment state was: ' . $briqpayState;
 
-        $this->_eventManager->dispatch(
-            'briqpay_checkout_complete',
-            ['order' => $order, 'quote' => $quote]
-        );
+        if ($briqpayState === self::PAYMENT_STATE_PURCHASE_REJECTED) {
+            $order->setState(Order::STATE_HOLDED);
+        }
+
+        if ($briqpayState === self::PAYMENT_STATE_PURCHASE_COMPLETE) {
+            $order->setState(Order::STATE_PROCESSING);
+            if ($order->getPayment()->getBaseAmountAuthorized() < $order->getBaseTotalDue()) {
+                $payment = $order->getPayment();
+                /** @var Payment $payment */
+                $payment->authorize(true, $order->getBaseTotalDue());
+            }
+        }
+
+        if ($briqpayState === self::PAYMENT_STATE_PAYMENT_PROCESSING &&
+            $order->getState() !== Order::STATE_PROCESSING &&
+            $order->getState() !== Order::STATE_HOLDED
+        ) {
+            $order->setState(Order::STATE_NEW);
+        }
+
+        $order->addCommentToStatusHistory($comment);
+        $this->orderRepo->save($order);
     }
 }

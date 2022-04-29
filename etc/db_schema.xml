@@ -6,5 +6,14 @@
                 comment="Briqpay Session Token"/>
         <column xsi:type="varchar" name="briqpay_cart_signature" length="64" nullable="true"
                 comment="Briqpay Cart Signature"/>
+            <constraint xsi:type="unique" referenceId="QUOTE_BRIQPAY_SESSION_ID">
+                <column name="briqpay_session_id" />
+            </constraint>
+    </table>
+    <table name="sales_order">
+        <column xsi:type="varchar" name="briqpay_session_id" length="64" nullable="true" comment="Briqpay Session ID"/>
+        <constraint xsi:type="unique" referenceId="SALES_ORDER_BRIQPAY_SESSION_ID">
+            <column name="briqpay_session_id" />
+        </constraint>
     </table>
 </schema>
