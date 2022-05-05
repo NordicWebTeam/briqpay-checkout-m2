@@ -68,6 +68,11 @@ class GetPaymentStatusResponse implements ResponseInterface
         return $this->data->getData('state');
     }
 
+    public function getCart(): DataObject
+    {
+        return new DataObject($this->data->getData('cart'));
+    }
+
     /**
      * @return array|mixed|null
      */
