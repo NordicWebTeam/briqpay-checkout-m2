@@ -229,7 +229,7 @@ class BriqpayCheckout
     /**
      * @throws CheckoutException
      */
-    private function validate()
+    public function validate()
     {
         foreach ($this->validators as $validator) {
             $validator->validate();

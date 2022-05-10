@@ -8,6 +8,7 @@ use Briqpay\Checkout\Rest\Exception\UpdateCartException;
 use Briqpay\Checkout\Rest\Request\InitializePaymentRequestFactory;
 use Briqpay\Checkout\Rest\Service\Authentication;
 use Exception;
+use Briqpay\Checkout\Model\Checkout\CheckoutException;
 use Magento\Checkout\Controller\Action;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -76,12 +77,18 @@ class Cart extends Action
     public function execute()
     {
         try {
+            $this->briqpayCheckout->validate();
             $this->briqpayCheckout->updateItems(
                 $this->sessionManagement->getSessionId(),
                 $this->sessionManagement->getQuote(),
                 $this->sessionManagement->getSessionToken()
             );
 
+        } catch (CheckoutException $e) {
+            $this->getResponse()->setBody(json_encode([
+                'redirect' => '/checkout/cart'
+            ]));
+            return;
         } catch (Exception $e) {
             $this->getResponse()->setBody(json_encode([
                 'messages' => __('Can not update cart.')
