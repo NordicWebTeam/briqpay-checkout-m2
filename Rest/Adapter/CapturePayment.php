@@ -5,9 +5,9 @@ namespace Briqpay\Checkout\Rest\Adapter;
 use Briqpay\Checkout\Model\Config\ApiConfig;
 use Briqpay\Checkout\Rest\Exception\OrderDeliveryException;
 use Briqpay\Checkout\Rest\RestClient;
-use Briqpay\Checkout\Rest\Schema\Parser;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Magento\Framework\Serialize\Serializer\Json;
 
 class CapturePayment
 {
@@ -27,14 +27,14 @@ class CapturePayment
     private $logger;
 
     /**
-     * @var Parser
-     */
-    private $schemaParser;
-
-    /**
      * @var \Briqpay\Checkout\Helper\UserAgent
      */
     private $userAgent;
+
+    /**
+     * @var Json
+     */
+    private $json;
 
     /**
      * AuthAdapter constructor.
@@ -47,12 +47,14 @@ class CapturePayment
         ApiConfig $config,
         RestClient $restClient,
         \Briqpay\Checkout\Logger\Logger $logger,
-        \Briqpay\Checkout\Helper\UserAgent $userAgent
+        \Briqpay\Checkout\Helper\UserAgent $userAgent,
+        Json $json
     ) {
         $this->endpoint = $config->getAuthBackendUrl();
         $this->restClient = $restClient;
         $this->logger = $logger;
         $this->userAgent = $userAgent;
+        $this->json = $json;
     }
 
     /**
@@ -61,10 +63,11 @@ class CapturePayment
      * @param string $orderReference
      * @param string $tranId
      * @param string $trackingCode
+     * @return string Capture ID from response
      *
      * @throws OrderDeliveryException
      */
-    public function capture($authToken, $sessionId, $amount, $cart = []): void
+    public function capture($authToken, $sessionId, $amount, $cart = []): string
     {
         $uri = "{$this->endpoint}/order-management/v1/capture-order";
         $requestBody = \json_encode([
@@ -84,6 +87,8 @@ class CapturePayment
         try {
             $rawResponse = $this->restClient->post($uri, $requestBody, $headers);
             $this->logger->log(LogLevel::DEBUG, $rawResponse);
+            $decoded = $this->json->unserialize($rawResponse);
+            return $decoded['captureid'] ?? '';
         } catch (\Exception $e) {
             throw new OrderDeliveryException($e->getMessage());
         }
