@@ -37,7 +37,7 @@ class ItemsCollector implements OrderItemCollectorInterface
             );
         }
 
-        if ($subject instanceof \Magento\Payment\Gateway\Data\OrderAdapterInterface) {
+        if ($subject instanceof \Magento\Sales\Api\Data\OrderInterface) {
             $orderAmount = 0;
             foreach ($this->generateItems($subject->getItems()) as $item) {
                 $orderAmount += $item['unitprice'] * $item['quantity'];
