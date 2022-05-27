@@ -8,6 +8,7 @@ use Klarna\Core\Api\BuilderInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote\Address;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\Invoice;
 use Magento\Store\Api\Data\StoreInterface;
@@ -75,14 +76,14 @@ class ShippingCollector implements OrderItemCollectorInterface
             }
         }
 
-        if (($subject instanceof Invoice || $subject instanceof Creditmemo) && !$subject->getIsVirtual()) {
+        if (($subject instanceof Order) && !$subject->getIsVirtual()) {
             $unitPrice = $subject->getBaseShippingInclTax();
             $taxRate = $this->calculateShippingTax($subject, $subject->getStore());
             //$taxAmount = $subject->getShippingTaxAmount() + $object->getShippingHiddenTaxAmount();
 
-            $paymentSession->addData([
+            $paymentSession->addCartItem([
                 'type' => 'virtual',
-                'reference' => $subject->getOrder()->getShippingMethod(),
+                'reference' => $subject->getShippingMethod(),
                 'name' => __('Shipping & Handling')->getText(),
                 'quantity' => 1,
                 'quantityunit' => 'pc',

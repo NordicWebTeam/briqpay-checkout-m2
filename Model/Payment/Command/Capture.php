@@ -49,9 +49,10 @@ class Capture implements CommandInterface
 
         // Detect if payment has been captured
         $isCaptured = $orderPayment->getAdditionalInformation()['briqpay_autocapture'] ?? null;
+        $captureId = '';
         if (!$isCaptured) {
-            $this->capturePaymentService->capture(
-                $payment->getOrder(),
+            $captureId = $this->capturePaymentService->capture(
+                $payment->getPayment()->getOrder(),
                 $sessionId,
                 $commandSubject['amount']
             );
@@ -59,8 +60,9 @@ class Capture implements CommandInterface
 
         $reservationId = $orderPayment->getAdditionalInformation()['briqpay_reservation_id'] ?? null;
 
+        $transactionId = ($isCaptured) ? $reservationId : $captureId;
+        $orderPayment->setTransactionId($transactionId);
         $transaction = $orderPayment->addTransaction(Transaction::TYPE_CAPTURE);
-        $transaction->setTransactionId($reservationId);
         $transaction->setIsClosed(true);
     }
 }
