@@ -77,19 +77,19 @@ class ShippingCollector implements OrderItemCollectorInterface
         }
 
         if (($subject instanceof Order) && !$subject->getIsVirtual()) {
-            $unitPrice = $subject->getBaseShippingInclTax();
+            $discountAmount = $subject->getBaseShippingDiscountAmount();
             $taxRate = $this->calculateShippingTax($subject, $subject->getStore());
             //$taxAmount = $subject->getShippingTaxAmount() + $object->getShippingHiddenTaxAmount();
 
             $paymentSession->addCartItem([
-                'type' => 'virtual',
+                'producttype' => 'virtual',
                 'reference' => $subject->getShippingMethod(),
                 'name' => __('Shipping & Handling')->getText(),
                 'quantity' => 1,
                 'quantityunit' => 'pc',
-                'unitprice' => $this->toApiFloat($unitPrice),
+                'unitprice' => $this->toApiFloat($subject->getBaseShippingInclTax() - $discountAmount),
                 'taxrate' => $this->toApiFloat($taxRate),
-                'discount' => $this->toApiFloat(0)
+                'discount' => $this->toApiFloat($discountAmount)
             ]);
         }
     }
