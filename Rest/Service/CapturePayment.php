@@ -94,7 +94,7 @@ class CapturePayment
         return $this->capturePaymentAdapter->capture(
             $token,
             $sessionId,
-            (int)$amount * 100,
+            $amount * 100,
             $subjectDto->getCart()
         );
     }

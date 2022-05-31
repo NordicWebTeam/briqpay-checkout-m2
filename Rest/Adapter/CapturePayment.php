@@ -72,7 +72,7 @@ class CapturePayment
         $uri = "{$this->endpoint}/order-management/v1/capture-order";
         $requestBody = \json_encode([
             'sessionid' => $sessionId,
-            'amount' => (int)$amount,
+            'amount' => $amount,
             'cart' => $cart
         ]);
 

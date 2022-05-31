@@ -5,12 +5,13 @@ namespace Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\Collector;
 use Briqpay\Checkout\Model\Checkout\DTO\PaymentSession\CreatePaymentSession;
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderItemCollectorInterface;
 use Klarna\Core\Api\BuilderInterface;
+use Magento\Framework\DataObject;
+use Magento\Framework\DataObjectFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Creditmemo;
-use Magento\Sales\Model\Order\Invoice;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Tax\Model\Calculation;
@@ -29,6 +30,16 @@ class ShippingCollector implements OrderItemCollectorInterface
     private $scopeConfig;
 
     /**
+     * @var TaxConfig
+     */
+    private $taxConfig;
+
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
+    /**
      * ShippingCollector constructor.
      *
      * @param Calculation $taxCalculator
@@ -36,11 +47,15 @@ class ShippingCollector implements OrderItemCollectorInterface
      */
     public function __construct(
         Calculation $taxCalculator,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        TaxConfig $taxConfig,
+        DataObjectFactory $dataObjectFactory
     )
     {
         $this->taxCalculator = $taxCalculator;
         $this->scopeConfig = $scopeConfig;
+        $this->taxConfig = $taxConfig;
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -54,44 +69,125 @@ class ShippingCollector implements OrderItemCollectorInterface
             if (isset($totals['shipping'])) {
                 /** @var Address $total */
                 $total = $totals['shipping'];
+                /** @var Address $address */
                 $address = $subject->getShippingAddress();
-                $discountAmount = $address->getBaseShippingDiscountAmount();
 
                 $taxRate = $this->calculateShippingTax($subject, $store);
-                $unitPrice = $address->getBaseShippingInclTax();
-                $amount = $this->toApiFloat($address->getBaseShippingInclTax() - $discountAmount);
+
+                $discountPercent = $this->calculateShippingDiscountPercent($subject);
 
                 $paymentSession->addCartItem([
                     'producttype' => 'virtual',
-                    'reference' => $total->getCode(),
-                    'name' => $total->getName() ?: $total->getCode(),
+                    'reference' => 'shipping',
+                    'name' => __('Shipping & Handling')->getText(),
                     'quantity' => 1,
                     'quantityunit' => 'pc',
-                    'unitprice' => $amount,
+                    'unitprice' => $this->toApiFloat($address->getBaseShippingAmount()),
                     'taxrate' => $this->toApiFloat($taxRate),
-                    'discount' => $this->toApiFloat($discountAmount)
+                    'discount' => $this->toApiFloat($discountPercent)
                 ]);
 
+                $amount = $this->toApiFloat(
+                    $address->getBaseShippingInclTax()
+                );
                 $paymentSession->addAmount($amount);
             }
         }
 
         if (($subject instanceof Order) && !$subject->getIsVirtual()) {
-            $discountAmount = $subject->getBaseShippingDiscountAmount();
+            $discountPercent = $this->calculateShippingDiscountPercent($subject);
             $taxRate = $this->calculateShippingTax($subject, $subject->getStore());
             //$taxAmount = $subject->getShippingTaxAmount() + $object->getShippingHiddenTaxAmount();
 
             $paymentSession->addCartItem([
                 'producttype' => 'virtual',
-                'reference' => $subject->getShippingMethod(),
+                'reference' => 'shipping',
                 'name' => __('Shipping & Handling')->getText(),
                 'quantity' => 1,
                 'quantityunit' => 'pc',
-                'unitprice' => $this->toApiFloat($subject->getBaseShippingInclTax() - $discountAmount),
+                'unitprice' => $this->toApiFloat($subject->getBaseShippingAmount()),
                 'taxrate' => $this->toApiFloat($taxRate),
-                'discount' => $this->toApiFloat($discountAmount)
+                'discount' => $this->toApiFloat($discountPercent)
             ]);
+
+            $amount = $this->toApiFloat(
+                $subject->getBaseShippingInclTax()
+            );
+            $paymentSession->addAmount($amount);
         }
+    }
+
+    /**
+     * Calculate shipping discount percent based on subject type and tax configuration
+     *
+     * @param Quote|Order $subject
+     * @return int
+     */
+    private function calculateShippingDiscountPercent($subject)
+    {
+        $info = $this->getSubjectShippingInfo($subject);
+
+        $discountAmount = $info->getDiscountAmount();
+
+        if (!$discountAmount) {
+            return 0;
+        }
+
+        $amountExclTax = $info->getAmountExclTax();
+        $amountInclTax = $info->getAmountInclTax();
+
+        $store = $subject->getStore();
+        $discountTax = $this->taxConfig->discountTax($store->getId());
+        $discountBase = ($discountTax) ? $amountInclTax : $amountExclTax;
+
+        if (!$discountBase) {
+            return 0;
+        }
+
+        return ($discountAmount / $discountBase) * 100;
+    }
+
+    /**
+     * Gets data object with shipping info from calculation subject
+     *
+     * @param Quote|Order $subject
+     * @return DataObject
+     */
+    private function getSubjectShippingInfo($subject): DataObject
+    {
+        if ($subject instanceof Quote) {
+            return $this->getQuoteShippingInfo($subject);
+        }
+
+        $info = $this->dataObjectFactory->create()->setData([
+            'discount_amount' => 0,
+            'amount_excl_tax' => 0,
+            'amount_incl_tax' => 0
+        ]);
+
+        if ($subject instanceof Order) {
+            $info->setDiscountAmount($subject->getBaseShippingDiscountAmount());
+            $info->setAmountExclTax($subject->getBaseShippingAmount());
+            $info->setAmountInclTax($subject->getBaseShippingInclTax());
+        }
+
+        return $info;
+    }
+
+    /**
+     * Helper function to get shipping info from a Quote's Shipping Addresss
+     *
+     * @param Quote $quote
+     * @return DataObject
+     */
+    private function getQuoteShippingInfo(Quote $quote): DataObject
+    {
+        $address = $quote->getShippingAddress();
+        return $this->dataObjectFactory->create()->setData([
+            'discount_amount' => $address->getBaseShippingDiscountAmount(),
+            'amount_excl_tax' => $address->getBaseShippingAmount(),
+            'amount_incl_tax' => $address->getBaseShippingInclTax()
+        ]);
     }
 
     /**

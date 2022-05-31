@@ -38,12 +38,14 @@ class ItemsCollector implements OrderItemCollectorInterface
         }
 
         if ($subject instanceof \Magento\Sales\Api\Data\OrderInterface) {
-            $orderAmount = 0;
             foreach ($this->generateItems($subject->getItems()) as $item) {
-                $orderAmount += $item['unitprice'] * $item['quantity'];
                 $paymentSession->addCartItem($item);
             }
-            $paymentSession->setAmount($orderAmount);
+            $paymentSession->addAmount(
+                $this->toApiFloat(
+                    $subject->getBaseGrandTotal() - $subject->getBaseShippingInclTax()
+                )
+            );
         }
     }
 
