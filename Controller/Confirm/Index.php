@@ -8,6 +8,7 @@ use Magento\Checkout\Model\Session;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Exception\LocalizedException;
 
 class Index extends Action
 {
@@ -120,10 +121,12 @@ class Index extends Action
             $this->checkoutSessionManager->setBriqpayPaymentMethod($paymentResponse->getPurchasePaymentMethod());
 
             return $this->_redirect('briqpay/order/success');
+        } catch (LocalizedException $e) {
+            $this->messageManager->addErrorMessage($e->getMessage());
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage('Can not instantiate your payment request. Please try again.');
-            return $this->_redirect('checkout/cart');
         }
+        return $this->_redirect('checkout/cart');
     }
 
     /**

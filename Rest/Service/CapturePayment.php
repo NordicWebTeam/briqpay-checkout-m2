@@ -6,6 +6,7 @@ use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderLineCollectorsAgre
 use Briqpay\Checkout\Model\Config\ApiConfig;
 use Briqpay\Checkout\Rest\Exception\OrderDeliveryException;
 use Magento\Payment\Gateway\Data\OrderAdapterInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\OrderRepository;
 
 class CapturePayment
@@ -71,7 +72,7 @@ class CapturePayment
     }
 
     /**
-     * @param OrderAdapterInterface $order
+     * @param OrderInterface $order
      * @param $sessionId
      * @param $amount
      *
@@ -80,7 +81,7 @@ class CapturePayment
      * @throws \Briqpay\Checkout\Rest\Exception\AdapterException
      * @throws \Magento\Framework\Exception\AuthenticationException
      */
-    public function capture(OrderAdapterInterface $order, $sessionId, $amount)
+    public function capture(OrderInterface $order, $sessionId, $amount)
     {
         $authRequest = $this->authRequestFactory->create([
             'clientId' => $this->config->getClientId($order->getStoreId()),
@@ -90,10 +91,10 @@ class CapturePayment
         $token = $this->sessionAuthTokenService->generateToken($sessionId, $authRequest->getAuthHeader());
         $subjectDto = $this->orderLineCollectorsAgreggator->aggregateItems($order);
 
-        $this->capturePaymentAdapter->capture(
+        return $this->capturePaymentAdapter->capture(
             $token,
             $sessionId,
-            (int)$amount * 100,
+            $amount * 100,
             $subjectDto->getCart()
         );
     }
