@@ -5,6 +5,7 @@ namespace Briqpay\Checkout\Rest\Webservice;
 use Briqpay\Checkout\Rest\Webservice\Exception\HttpRequestException;
 use Briqpay\Checkout\Rest\Webservice\Exception\HttpResponseException;
 use Laminas\Http\Client;
+use Laminas\Http\ClientFactory;
 
 class HttpClient
 {
@@ -21,11 +22,11 @@ class HttpClient
 
     /**
      * HttpClient constructor.
-     * @param Client $client
+     * @param ClientFactory $clientFactory
      */
-    public function __construct(Client $client)
+    public function __construct(ClientFactory $clientFactory)
     {
-        $this->client = $client;
+        $this->client = $clientFactory->create();
     }
 
     /**
