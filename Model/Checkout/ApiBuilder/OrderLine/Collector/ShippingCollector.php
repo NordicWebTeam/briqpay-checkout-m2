@@ -129,7 +129,7 @@ class ShippingCollector implements OrderItemCollectorInterface
 
         $discountAmount = $info->getDiscountAmount();
 
-        if (!$discountAmount) {
+        if (!floatVal($discountAmount)) {
             return 0;
         }
 
@@ -140,7 +140,7 @@ class ShippingCollector implements OrderItemCollectorInterface
         $discountTax = $this->taxConfig->discountTax($store->getId());
         $discountBase = ($discountTax) ? $amountInclTax : $amountExclTax;
 
-        if (!$discountBase) {
+        if (!floatVal($discountBase)) {
             return 0;
         }
 
