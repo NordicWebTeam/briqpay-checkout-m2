@@ -3,9 +3,29 @@
 namespace Briqpay\Checkout\Model\Quote;
 
 use Magento\Quote\Model\Quote;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
 
 class SignatureHasher
 {
+    /**
+     * @var SerializerInterface
+     */
+    private SerializerInterface $serializer;
+
+    /**
+     * @var EncryptorInterface
+     */
+    private EncryptorInterface $encryptor;
+
+    public function __construct(
+        SerializerInterface $serializer,
+        EncryptorInterface $encryptor
+    ) {
+        $this->serializer = $serializer;
+        $this->encryptor = $encryptor;
+    }
+
     /**
      * @param Quote $quote
      *
@@ -39,6 +59,6 @@ class SignatureHasher
         }
         ksort($info['items']);
 
-        return md5(serialize($info));
+        return $this->encryptor->encrypt($this->serializer->serialize($info));
     }
 }
