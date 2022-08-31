@@ -26,16 +26,6 @@ class InitializePayment
     private $apiBuilder;
 
     /**
-     * @var CheckoutSetupProvider
-     */
-    private $checkoutSetupProvider;
-
-    /**
-     * @var \Briqpay\Checkout\Model\Quote\SignatureHasher
-     */
-    private $quoteHasher;
-
-    /**
      * InitializePayment constructor.
      *
      * @param InitializePaymentRequestFactory $initializePaymentRequestFactory
@@ -45,13 +35,11 @@ class InitializePayment
     public function __construct(
         InitializePaymentRequestFactory $initializePaymentRequestFactory,
         InitializePaymentAdapter $initializePayment,
-        \Briqpay\Checkout\Model\Quote\SignatureHasher $quoteHasher,
         ApiBuilder $apiBuilder
     ) {
         $this->initializePaymentRequestFactory = $initializePaymentRequestFactory;
         $this->initializePayment = $initializePayment;
         $this->apiBuilder = $apiBuilder;
-        $this->quoteHasher = $quoteHasher;
     }
 
     /**

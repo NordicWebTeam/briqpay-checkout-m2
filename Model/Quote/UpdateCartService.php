@@ -18,19 +18,9 @@ class UpdateCartService
     private $updateCart;
 
     /**
-     * @var \Briqpay\Checkout\Rest\Request\InitializePaymentRequestFactory
-     */
-    private $initializePaymentRequestFactory;
-
-    /**
      * @var \Briqpay\Checkout\Model\Checkout\ApiBuilder\ApiBuilder
      */
     private $apiBuilder;
-
-    /**
-     * @var SignatureHasher
-     */
-    private $quoteHasher;
 
     /**
      * QuoteRepository constructor.
@@ -38,15 +28,11 @@ class UpdateCartService
     public function __construct(
         \Briqpay\Checkout\Rest\Service\Authentication $authService,
         \Briqpay\Checkout\Rest\Service\UpdateCart $updateCart,
-        \Briqpay\Checkout\Model\Checkout\ApiBuilder\ApiBuilder $apiBuilder,
-        \Briqpay\Checkout\Model\Quote\SignatureHasher $quoteHasher,
-        \Briqpay\Checkout\Rest\Request\InitializePaymentRequestFactory $initializePaymentRequestFactory
+        \Briqpay\Checkout\Model\Checkout\ApiBuilder\ApiBuilder $apiBuilder
     ) {
         $this->authService = $authService;
         $this->updateCart = $updateCart;
-        $this->initializePaymentRequestFactory = $initializePaymentRequestFactory;
         $this->apiBuilder = $apiBuilder;
-        $this->quoteHasher = $quoteHasher;
     }
 
     /**
