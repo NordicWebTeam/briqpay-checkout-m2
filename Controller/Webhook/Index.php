@@ -14,12 +14,9 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Quote\Model\Quote;
-use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 
 /**
  * Class Index
- *
- * @package Briqpay\Checkout\Controller\Callback
  */
 class Index extends Action
 {
@@ -100,14 +97,6 @@ class Index extends Action
         $this->orderRepository = $callbackContext->getOrderRepository();
         $this->quoteResponseHandler = $callbackContext->getResponseHandler();
         $this->paymentProcessor = $callbackContext->getPaymentProcessor();
-    }
-
-    public function getTestOrder()
-    {
-        $orderCollection = \Magento\Framework\App\ObjectManager::getInstance()->get(CollectionFactory::class)->create();
-        return $orderCollection
-            ->addFieldToFilter('entity_id', ['eq' => 73])
-            ->getFirstItem();
     }
 
     /**

@@ -151,6 +151,8 @@ class BriqpayCheckout
             return;
         }
 
+        $this->quote->getExtensionAttributes()->setBriqpayCartSignature($newSignature);
+        $this->quote->setData(QuoteSchema::CART_SIGNATURE, $newSignature);
         try {
             $this->updateItems($sessionId, $this->quote, $token);
             if ($this->quote->getIsChanged()) {
