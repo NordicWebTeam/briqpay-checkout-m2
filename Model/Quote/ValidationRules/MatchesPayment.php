@@ -8,8 +8,6 @@ use Magento\Framework\Validation\ValidationResultFactory;
 use Briqpay\Checkout\Rest\Adapter\ReadSession;
 use Briqpay\Checkout\Model\Checkout\CheckoutSession\SessionManagement;
 use Briqpay\Checkout\Model\Checkout\ApiBuilder\OrderLine\OrderLineCollectorsAgreggator;
-use Briqpay\Checkout\Rest\Adapter\CancelAdapter;
-use Briqpay\Checkout\Rest\Exception\AdapterException;
 
 /**
  * Validate that quote matches Briqpay payment
@@ -32,11 +30,6 @@ class MatchesPayment implements QuoteValidationRuleInterface
     private $readSession;
 
     /**
-     * @var CancelAdapter
-     */
-    private $cancelAdapter;
-
-    /**
      * @var OrderLineCollectorsAgreggator
      */
     private $aggregator;
@@ -50,13 +43,11 @@ class MatchesPayment implements QuoteValidationRuleInterface
         ValidationResultFactory $resultFactory,
         SessionManagement $sessionManagement,
         ReadSession $readSession,
-        CancelAdapter $cancelAdapter,
         OrderLineCollectorsAgreggator $aggregator
     ) {
         $this->resultFactory = $resultFactory;
         $this->sessionManagement = $sessionManagement;
         $this->readSession = $readSession;
-        $this->cancelAdapter = $cancelAdapter;
         $this->aggregator = $aggregator;
     }
 
@@ -69,15 +60,7 @@ class MatchesPayment implements QuoteValidationRuleInterface
         }
 
         $this->processedQuote = $quote;
-
-        $valid = false;
-        try {
-            $valid = $this->compareWithPayment();
-        } catch (\Exception $e) {
-            return $this->returnError();
-        }
-
-        if (!$valid) {
+        if (!$this->compareWithPayment()) {
             return $this->returnError();
         }
 
@@ -137,28 +120,19 @@ class MatchesPayment implements QuoteValidationRuleInterface
     }
 
     /**
-     * Cancel payment and return invalid status with error message
+     * Return invalid status with error message
      *
      * @return array
-     * @throws AdapterException
      */
     private function returnError()
     {
-        $this->processedQuote->getPayment()->unsAdditionalInformation();
-        $this->cancelAdapter->cancel(
-            $this->sessionManagement->getSessionToken(),
-            $this->sessionManagement->getSessionId(),
-            'Cart contents do not match payment'
-        );
-
         $error = __(
             'Your cart differs from the payment. '
             . 'Please try placing the order again. '
             . 'Avoid updating your cart in a different tab or window while completing the checkout.'
         );
 
-        $this->sessionManagement->setSessionId(false);
-        $this->sessionManagement->setSessionToken(false);
+        $this->processedQuote->addMessage($error);
         return [$this->resultFactory->create(['errors' => [$error]])];
     }
 }

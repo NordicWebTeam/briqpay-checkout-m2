@@ -60,8 +60,6 @@
                 <item name="initialize" xsi:type="string">Magento\Payment\Gateway\Command\NullCommand</item>
                 <item name="capture" xsi:type="string">Briqpay\Checkout\Model\Payment\Command\Capture</item>
                 <item name="refund" xsi:type="string">Briqpay\Checkout\Model\Payment\Command\Refund</item>
-                <item name="cancel" xsi:type="string">Briqpay\Checkout\Model\Payment\Command\Cancel</item>
-                <item name="void" xsi:type="string">Briqpay\Checkout\Model\Payment\Command\Cancel</item>
             </argument>
         </arguments>
     </virtualType>
