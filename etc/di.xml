@@ -102,7 +102,7 @@
                 type="Briqpay\Checkout\Rest\Authentification\HttpAuthentication"/>
 
     <type name="Magento\Checkout\Block\Onepage\Link">
-        <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Block\Checkout\Url" sortOrder="10" disabled="false"/>
+        <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Url" sortOrder="10" disabled="false"/>
     </type>
 
     <type name="Briqpay\Checkout\Model\Checkout\Context\Checkout">
@@ -124,7 +124,7 @@
     </type>
 
     <type name="Magento\Checkout\Block\Cart\Sidebar">
-        <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Block\Checkout\Url" sortOrder="10" disabled="false"/>
+        <plugin name="briqpay_url" type="\Briqpay\Checkout\Plugin\Url" sortOrder="10" disabled="false"/>
     </type>
 
     <!-- Loggers setting-->
