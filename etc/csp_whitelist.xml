@@ -4,11 +4,13 @@
         <policy id="script-src">
             <values>
                 <value id="local-briqpay" type="host">https://briqpay.test</value>
+                <value id="briqpay-src" type="host">*.briqpay.com</value>
             </values>
         </policy>
         <policy id="frame-src">
             <values>
                 <value id="local-briqpay" type="host">https://briqpay.test</value>
+                <value id="briqpay-frame" type="host">*.briqpay.com</value>
             </values>
         </policy>
     </policies>
