@@ -21,13 +21,13 @@ class AuthRequest
      * @param string $clientSecret
      */
     public function __construct(
+        \Briqpay\Checkout\Helper\UserAgent $userAgent,
         $clientId = '',
-        $clientSecret = '',
-        \Briqpay\Checkout\Helper\UserAgent $userAgent
+        $clientSecret = ''
     )
     {
-        $this->authHeader = sprintf("Basic %s", base64_encode("$clientId:$clientSecret"));
         $this->userAgent = $userAgent;
+        $this->authHeader = sprintf("Basic %s", base64_encode("$clientId:$clientSecret"));
     }
 
     /**
