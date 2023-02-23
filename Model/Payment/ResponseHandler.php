@@ -24,7 +24,7 @@ class ResponseHandler
         $briqpayPaymentMethod = $paymentStatus->getPurchasePaymentMethod();
         $this->setPaymentData($payment, [
             'briqpay_session_id' => $briqpayPaymentMethod->getSessionId(),
-            'briqpay_method' => $briqpayPaymentMethod->getPspName(),
+            'briqpay_method' => $briqpayPaymentMethod->getName(),
             'briqpay_reservation_id' => $briqpayPaymentMethod->getReservationId(),
             'briqpay_payment_status' => $paymentStatus->getState(),
             'briqpay_autocapture' => $briqpayPaymentMethod->getAutoCapture()
