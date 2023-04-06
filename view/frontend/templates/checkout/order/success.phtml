@@ -21,9 +21,6 @@ $realId = $block->getRealOrderId();
                 <span class="note">
                     <?= __("Price including VAT"); ?>
                 </span>
-                <span class="note">
-                    <?= __("You have chosen to pay by <b>{$block->getLatestPaymentMethod()}.</b>"); ?>
-                </span>
             </div>
 
             <div class="order_inside">
@@ -71,7 +68,7 @@ $realId = $block->getRealOrderId();
                     <thead>
                     <tr>
                         <th class="col-item"><?= __('Product') ?></th>
-                        <th class="col-subtotal"><?= __('Amount') ?></th>
+                        <th class="col-subtotal"><?= __('Summa') ?></th>
                     </tr>
                     </thead>
                     <tbody>
