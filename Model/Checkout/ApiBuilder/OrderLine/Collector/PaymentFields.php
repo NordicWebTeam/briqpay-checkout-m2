@@ -51,7 +51,7 @@ class PaymentFields implements OrderItemCollectorInterface
         $paymentSession->setLocale($this->checkoutConfig->getCheckoutLanguage());
         $paymentSession->setCountry($this->checkoutConfig->getDefaultCountry());
         $paymentSession->setReference([
-            "ref" => "quote_{$subject->getId()}"
+            "ref" => $subject->reserveOrderId()
         ]);
         $paymentSession->setMerchantConfig([
             "maxamount" => $this->checkoutConfig->isBriqpayMaxamount(),
